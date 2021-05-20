@@ -1,0 +1,44 @@
+[
+	{
+		"from": "0x989418e99E3B29A81906fb9998AEfa74EAae2539",
+		"topic": "0x30bdcf23002cf602da83b188394bcc301ab4d549a416248466c09fc88e2252ae",
+		"event": "ERC721ControlledBaseURISet",
+		"args": {
+			"0": "https://nfts.hoosmartchain.com/hscbox/",
+			"baseURI": "https://nfts.hoosmartchain.com/hscbox/"
+		}
+	},
+	{
+		"from": "0x989418e99E3B29A81906fb9998AEfa74EAae2539",
+		"topic": "0x2f8788117e7eff1d82e926ec794901d17c78024a50270940304540a733656f0d",
+		"event": "RoleGranted",
+		"args": {
+			"0": "0x0000000000000000000000000000000000000000000000000000000000000000",
+			"1": "0xC49926C4124cEe1cbA0Ea94Ea31a6c12318df947",
+			"2": "0xB597725617D02BFe65b99e5B2D8223cFbC0Cc3fA",
+			"role": "0x0000000000000000000000000000000000000000000000000000000000000000",
+			"account": "0xC49926C4124cEe1cbA0Ea94Ea31a6c12318df947",
+			"sender": "0xB597725617D02BFe65b99e5B2D8223cFbC0Cc3fA"
+		}
+	},
+	{
+		"from": "0x989418e99E3B29A81906fb9998AEfa74EAae2539",
+		"topic": "0xe9d29247c29487d59c9ceaa4d485328d669ffeb8a859c898d37d91d0f845e0ef",
+		"event": "ERC721ControlledInitialized",
+		"args": {
+			"0": "HOO Smart Chain NFTBox",
+			"1": "HSCBOX",
+			"name": "HOO Smart Chain NFTBox",
+			"symbol": "HSCBOX"
+		}
+	},
+	{
+		"from": "0xB597725617D02BFe65b99e5B2D8223cFbC0Cc3fA",
+		"topic": "0xc23b9b260b803fee172e6b5e46501ed00704743403d3c1fb40f37020f51e66bf",
+		"event": "ERC721ControlledCreated",
+		"args": {
+			"0": "0x989418e99E3B29A81906fb9998AEfa74EAae2539",
+			"token": "0x989418e99E3B29A81906fb9998AEfa74EAae2539"
+		}
+	}
+]
