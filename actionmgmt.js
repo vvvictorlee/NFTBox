@@ -125,7 +125,7 @@ const ba = "0xD0874c0ccf6A320A25147bbc02Af67733efFC236";
 // actionMgmt.openBox(ba);
 
 
-var Tx = require('ethereumjs-tx');//.Transaction;
+var Tx = require('ethereumjs-tx').Transaction;
 const ethereumjs_common = require('ethereumjs-common').default;
 
 async function sendSignedTx(account, account_secrets, encodedabi, contract_address, isTokenIdOption, msg_value) {
