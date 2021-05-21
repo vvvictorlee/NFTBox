@@ -12,19 +12,18 @@ exports.claimbox = async (req, res) => {
     }
 
     const result = await actionMgmt.claimBox(req.body.params.address);
-    if (null==result)
-    {
-return res.status(404).send({
-    code: 10001, 
-    message: 'fail', 
-    data: ""
-});
-}
-const json ={
-    code: 10000, 
-    message: 'success', 
-    data: result
-}
+    if (null == result) {
+        return res.status(404).send({
+            code: 10001,
+            message: 'fail',
+            data: ""
+        });
+    }
+    const json = {
+        code: 10000,
+        message: 'success',
+        data: result
+    }
     res.send(json);
 };
 
@@ -38,20 +37,19 @@ exports.openbox = async (req, res) => {
         });
     }
 
-    const result = await actionMgmt.openbox(req.body.params.address);
-if (null==result)
-    {
-return res.status(404).send({
-    code: 10001, 
-    message: 'fail', 
-    data: ""
-});
-}
-const json ={
-    code: 10000, 
-    message: 'success', 
-    data: result
-}
+    const result = await actionMgmt.openBox(req.body.params.address);
+    if (null == result) {
+        return res.status(404).send({
+            code: 10001,
+            message: 'fail',
+            data: ""
+        });
+    }
+    const json = {
+        code: 10000,
+        message: 'success',
+        data: result
+    }
     res.send(json);
 
 };
@@ -59,13 +57,13 @@ const json ={
 // Find a single note with a noteId
 exports.banners = async (req, res) => {
     const info = await dataMgmt.getBoxInfoJson();
-const json ={
-    code: 10000,
-    message: 'success',
-    data: {
-        records: info
-    }
-};
+    const json = {
+        code: 10000,
+        message: 'success',
+        data: {
+            records: info
+        }
+    };
 
     res.send(json);
 
@@ -86,7 +84,7 @@ const json ={
 // Find a single note with a noteId
 exports.myboxes = async (req, res) => {
     console.log(req.body)
-  if (!req.body.params.address) {
+    if (!req.body.params.address) {
         return res.status(400).send({
             message: "address can not be empty"
         });
@@ -96,14 +94,14 @@ exports.myboxes = async (req, res) => {
 
     const boxes = await dataMgmt.getBoxAddresses(req.body.params.address);
 
-const json = {
-    code: 10000, 
-    message: 'success', 
-    data: {
-        records: boxes
-    }
+    const json = {
+        code: 10000,
+        message: 'success',
+        data: {
+            records: boxes
+        }
 
-}
+    }
     res.send(json);
 
 

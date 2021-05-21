@@ -92,16 +92,13 @@ class ActionMgmt {
         await this.depositTokens(boxAddress, tokens);
         let times = await datamgmt.updateUserTimes(userAddress);
 
-        return { "address": boxAddress,"last_times": times, "level": level };
+        return { "address": boxAddress, "last_times": times, "level": level };
     }
 
     async openBox(boxAddress) {
         const index = 1;
         let detail = await datamgmt.getBoxDetail(boxAddress);
-        console.log(detail)
-
         let [level, tokens] = await datamgmt.getBoxLevelAward(detail.randomNumber);
-        console.log(tokens)
         let encodedabi = await contracts[index].methods.plunder(
             erc721tokenaddress,
             detail.tokenId,
@@ -111,7 +108,8 @@ class ActionMgmt {
         ).encodeABI();
         let receipt = await sendSignedTx(proxy[0], proxy[1], encodedabi, CONTRACT_ADDRESS[index]);
         if (receipt["status"] != undefined && receipt["status"]) {
-             const boxinfo =  await  datamgmt.getBoxInfoJson(level);
+            const boxinfo = await datamgmt.getBoxInfoJson(level);
+            // console.log(level,boxinfo)
             return boxinfo;
         }
 

@@ -122,15 +122,14 @@ class DataMgmt {
 
 
     async getBoxInfoJson(index) {
-        const i = index|0;
+        const i = index | 0;
         if (this._boxlevelinfo == null) {
             this._boxlevelinfo = getJSON(boxlevelinfo)
         }
-        if (0==i)
-{
-        return this._boxlevelinfo;
-}
-return this._boxlevelinfo[i-1];
+        if (0 == i) {
+            return this._boxlevelinfo;
+        }
+        return this._boxlevelinfo[i - 1].tokens;
     }
 
     async genBoxInfoJson() {
@@ -192,12 +191,10 @@ return this._boxlevelinfo[i-1];
             let obj = {};
             let tokens = [];
             obj["upperbound"] = upperbounds[i];
-            tokens = [];
             let token = {};
             token["ids"] = addresses;
             token["amounts"] = amounts[i];
-            tokens.push(token);
-            obj["tokens"] = tokens;
+            obj["tokens"] = token;
             json.push(obj)
         }
 
@@ -215,6 +212,8 @@ async function test() {
     // await dataMgmt.genBoxInfoJson();
     // r = await dataMgmt.getBoxInfoJson();
     // console.log(JSON.stringify(r))
+    r = await dataMgmt.getBoxInfoJson(1);
+    console.log(JSON.stringify(r))
     // await dataMgmt.genrandseq();
     // for (let i = 0; i < 3; i++) {
     //     r = await dataMgmt.getRandSeqValue();
@@ -239,6 +238,6 @@ async function test() {
 
 
 }
-// test();
+test();
 
 module.exports = DataMgmt

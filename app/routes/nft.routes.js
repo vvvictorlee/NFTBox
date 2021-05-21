@@ -6,7 +6,7 @@ module.exports = (app) => {
         await nft.claimbox(req, res);
     });
     app.post('/api/openbox', async function (req, res, next) {
-        await nft.myboxs(req, res);
+        await nft.openbox(req, res);
     });
     // Retrieve all NFTs
     app.get('/api/banners', async function (req, res, next) {
