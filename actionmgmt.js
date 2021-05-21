@@ -49,13 +49,13 @@ class ActionMgmt {
     async computeBoxAddress(tokenId) {
         const index = 1;
         result = await contracts[index].methods.computeAddress(erc721tokenaddress, tokenId).call({ from: proxy[0] });
-        console.log("box address==", result);
+        //console.log("box address==", result);
         return result
     }
 
     async createERC721Controlled() {
         const index = 0;
-        console.log(candidate)
+        //console.log(candidate)
         let encodedabi = await contracts[index].methods.createERC721Controlled("HOO Smart Chain NFTBox", "HSCBOX", "https://nfts.hoosmartchain.com/hscbox/").encodeABI();
         await sendSignedTx(proxy[0], proxy[1], encodedabi, CONTRACT_ADDRESS[i], true);
     }
@@ -64,7 +64,7 @@ class ActionMgmt {
     //1
     async createBox(userAddress) {
         const index = 0;
-        console.log(userAddress)
+        //console.log(userAddress)
         let encodedabi = await contracts[index].methods.mint(userAddress).encodeABI();
         let id = await sendSignedTx(proxy[0], proxy[1], encodedabi, CONTRACT_ADDRESS[index], true);
         return id;
@@ -109,7 +109,7 @@ class ActionMgmt {
         let receipt = await sendSignedTx(proxy[0], proxy[1], encodedabi, CONTRACT_ADDRESS[index]);
         if (receipt["status"] != undefined && receipt["status"]) {
             const boxinfo = await datamgmt.getBoxInfoJson(level);
-            // console.log(level,boxinfo)
+            // //console.log(level,boxinfo)
             return boxinfo;
         }
 
@@ -150,13 +150,13 @@ async function sendSignedTx(account, account_secrets, encodedabi, contract_addre
     tx.sign(privateKey);
 
     var serializedTx = tx.serialize();
-    console.log("=====sendSignedTransaction===")
+    //console.log("=====sendSignedTransaction===")
     let receipt = await web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'));
     JSON.stringify(receipt);
-    console.log(JSON.stringify(receipt))
+    //console.log(JSON.stringify(receipt))
     if (isTokenId) {
         id = receipt["logs"][0]["topics"][3];
-        console.log("=====id====", id, web3.utils.hexToNumber(id))
+        //console.log("=====id====", id, web3.utils.hexToNumber(id))
         return id;
     }
 
@@ -169,24 +169,24 @@ function instanceContract() {
         abi = require("./abi/" + ABI_FILES[i]).abi;
         contract = new web3.eth.Contract(abi, CONTRACT_ADDRESS[i]);
         if (undefined == contract) {
-            console.log("un");
+            //console.log("un");
             return;
         }
         contracts.push(contract)
         contractobjs[CONTRACT_ADDRESS[i]] = contract
     }
-    // console.log(Contract.methods)
+    // //console.log(Contract.methods)
 }
 
 function instanceERC721Contract() {
     abi = require("./abi/" + ERC721_ABI_FILE).abi;
     contract = new web3.eth.Contract(abi, ERC721_CONTRACT_ADDRESS);
     if (undefined == contract) {
-        console.log("un");
+        //console.log("un");
         return;
     }
     contracts.push(contract)
-    // console.log(Contract.methods)
+    // //console.log(Contract.methods)
 }
 
 

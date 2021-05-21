@@ -69,7 +69,7 @@ class DataMgmt {
         if (this._tokeids == null) {
             this._tokeids = getJSON(tokenids)
         }
-        console.log(this._tokeids)
+        //console.log(this._tokeids)
         if (this._tokeids[address] == undefined) {
             return {};
         }
@@ -97,10 +97,10 @@ class DataMgmt {
         var d1 = new Date().getTime();
         originalArray.sort(function () { return 0.5 - Math.random(); });
         for (var i = 0; i < count; i++) {
-            console.log(originalArray[i] + " , ");
+            //console.log(originalArray[i] + " , ");
         }
         var d2 = new Date().getTime();
-        console.log("运算耗时" + (d2 - d1));
+        //console.log("运算耗时" + (d2 - d1));
         putJSON(randomsequence, originalArray)
     }
 
@@ -211,17 +211,17 @@ async function test() {
     // await dataMgmt.genBoxLevelJson();
     // await dataMgmt.genBoxInfoJson();
     // r = await dataMgmt.getBoxInfoJson();
-    // console.log(JSON.stringify(r))
+    // //console.log(JSON.stringify(r))
     r = await dataMgmt.getBoxInfoJson(1);
-    console.log(JSON.stringify(r))
+    //console.log(JSON.stringify(r))
     // await dataMgmt.genrandseq();
     // for (let i = 0; i < 3; i++) {
     //     r = await dataMgmt.getRandSeqValue();
-    //     console.log(r)
+    //     //console.log(r)
     // }
     // for (let i = 3; i < 49; i += 20) {
     //     r = await dataMgmt.getBoxLevelAward(i);
-    //     console.log(r)
+    //     //console.log(r)
     // }
     // for (let i = 3; i < 49; i += 20) {
     //     await dataMgmt.saveTokenId(i, i + 10);
@@ -229,7 +229,7 @@ async function test() {
 
     // for (let i = 0; i < 3; i++) {
     //     r = await dataMgmt.checkUserTimes(i + 1);
-    //     console.log(r)
+    //     //console.log(r)
     // }
 
     // for (let i = 0; i < 3; i++) {

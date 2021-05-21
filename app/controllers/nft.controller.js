@@ -83,7 +83,7 @@ exports.banners = async (req, res) => {
 
 // Find a single note with a noteId
 exports.myboxes = async (req, res) => {
-    console.log(req.body)
+    //console.log(req.body)
     if (!req.body.params.address) {
         return res.status(400).send({
             message: "address can not be empty"
