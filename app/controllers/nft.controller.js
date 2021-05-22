@@ -15,8 +15,7 @@ exports.claimbox = async (req, res) => {
     if (null == result) {
         return res.status(404).send({
             code: 10001,
-            message: 'fail',
-            data: ""
+            message: 'fail'
         });
     }
     const json = {
@@ -37,18 +36,18 @@ exports.openbox = async (req, res) => {
         });
     }
 
-    const result = await actionMgmt.openBox(req.body.params.address);
-    if (null == result) {
+    const [result,msg] = await actionMgmt.openBox(req.body.params.address);
+    console.log(result)
+    if (Number(0) != Number(result)) {
         return res.status(404).send({
             code: 10001,
-            message: 'fail',
-            data: ""
+            message: msg
         });
     }
     const json = {
         code: 10000,
         message: 'success',
-        data: result
+        data: msg
     }
     res.send(json);
 

@@ -9,12 +9,14 @@ const randomsequence = datapath + "randomsequence.json";
 const currentindex = datapath + "currentindex.json";
 const boxlevels = datapath + "boxlevels.json";
 const boxlevelinfo = datapath + "boxlevelinfo.json";
+const openedboxes = datapath + "openedboxes.json";
 class DataMgmt {
     _users = null;
     _tokeids = null;
     _randSeq = null;
     _boxlevels = null;
     _boxlevelinfo = null;
+    _openedboxes = null;
     async getBoxLevelAward(randomNumber) {
         if (this._boxlevels == null) {
             this._boxlevels = getJSON(boxlevels)
@@ -29,9 +31,7 @@ class DataMgmt {
     }
 
     async checkUserTimes(user) {
-        if (this._users == null) {
-            this._users = getJSON(users)
-        }
+        this._users = getJSON(users)
         if (this._users[user] != undefined && Number(this._users[user]) > 0) {
             return true;
         }
@@ -39,9 +39,7 @@ class DataMgmt {
     }
 
     async updateUserTimes(user) {
-        if (this._users == null) {
-            this._users = getJSON(users)
-        }
+        this._users = getJSON(users)
         if (this._users[user] != undefined && Number(this._users[user]) > 0) {
             this._users[user] = Number(this._users[user]) - 1
             putJSON(users, this._users)
@@ -52,9 +50,7 @@ class DataMgmt {
 
     async saveBoxDetail(address, detailInfo, isBoxAddressOption) {
         const isBoxAddress = isBoxAddressOption || false
-        if (this._tokeids == null) {
-            this._tokeids = getJSON(tokenids)
-        }
+        this._tokeids = getJSON(tokenids)
         if (this._tokeids[address] == undefined) {
             this._tokeids[address] = [];
         }
@@ -65,22 +61,36 @@ class DataMgmt {
 
     }
 
+    async saveOpenedBoxAddress(address) {
+        this._openedboxes = getJSON(openedboxes)
+
+        this._openedboxes.push(address)
+
+        putJSON(openedboxes, this._openedboxes)
+
+    }
+
+    async checkOpenedBoxAddress(address) {
+        this._openedboxes = getJSON(openedboxes)
+
+        return -1 != this._openedboxes.indexOf(address)
+    }
+
     async getBoxAddresses(address) {
-        if (this._tokeids == null) {
-            this._tokeids = getJSON(tokenids)
-        }
+        this._tokeids = getJSON(tokenids)
         // //console.log(address,"======getBoxAddresses=====",this._tokeids)
         if (this._tokeids[address] == undefined) {
             return {};
         }
 
-        return this._tokeids[address]
+        this._openedboxes = getJSON(openedboxes)
+
+        const result = this._tokeids[address].filter((v) => -1 == this._openedboxes.indexOf(v.boxAddress));
+        return result;
     }
 
     async getBoxDetail(boxAddress) {
-        if (this._tokeids == null) {
-            this._tokeids = getJSON(tokenids)
-        }
+        this._tokeids = getJSON(tokenids)
         if (this._tokeids[boxAddress] == undefined) {
             return {};
         }
@@ -105,9 +115,7 @@ class DataMgmt {
     }
 
     async getRandSeqValue() {
-        if (this._randSeq == null) {
-            this._randSeq = getJSON(randomsequence)
-        }
+        this._randSeq = getJSON(randomsequence)
         let ci = await this.getCurrentIndex();
 
         return this._randSeq[ci];
@@ -123,9 +131,7 @@ class DataMgmt {
 
     async getBoxInfoJson(index) {
         const i = index | 0;
-        if (this._boxlevelinfo == null) {
-            this._boxlevelinfo = getJSON(boxlevelinfo)
-        }
+        this._boxlevelinfo = getJSON(boxlevelinfo)
         if (0 == i) {
             return this._boxlevelinfo;
         }
@@ -218,8 +224,10 @@ async function test() {
     // await dataMgmt.genBoxInfoJson();
     // r = await dataMgmt.getBoxInfoJson();
     // //console.log(JSON.stringify(r))
-    r = await dataMgmt.getBoxInfoJson(1);
+    // r = await dataMgmt.getBoxInfoJson(1);
     //console.log(JSON.stringify(r))
+    r = await dataMgmt.getBoxAddresses("0x4a79c58CCf9d80353c02357F26D6f7b99fA9991e");
+    console.log(JSON.stringify(r))
     // await dataMgmt.genrandseq();
     // for (let i = 0; i < 3; i++) {
     //     r = await dataMgmt.getRandSeqValue();

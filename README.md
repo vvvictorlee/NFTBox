@@ -34,7 +34,7 @@ curl -X POST \
 ```
 curl -X POST \
      -H 'Content-Type: application/json' \
-     -d '{"jsonrpc":"2.0","id":"id","method":"openbox","params":{"address":"0xE1cdCB6C6B69e03d210B0Cfa49270F7f0D5EC243"}}' \
+     -d '{"jsonrpc":"2.0","id":"id","method":"openbox","params":{"address":"0xC6019a869Fd3B421A5b0BFD4a83b86799E3cBAAF"}}' \
      http://localhost:6789/api/openbox
 
 
