@@ -25,6 +25,6 @@ require('./app/routes/nft.routes.js')(app);
 
 const port = process.env.PORT || 6789
 app.listen(port)
-//console.log('Listening on port: ' + port)
+console.log('Listening on port: ' + port)
 
 

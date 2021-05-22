@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": false,
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "start:prod": "DEBUG=app node  -r dotenv/config server.js dotenv_config_path=.env",
+    "start:test": "DEBUG=app node  -r dotenv/config server.js dotenv_config_path=.env.test"
   },
   "dependencies": {
     "connect-history-api-fallback": "^1.6.0",

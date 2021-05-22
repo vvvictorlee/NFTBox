@@ -69,7 +69,7 @@ class DataMgmt {
         if (this._tokeids == null) {
             this._tokeids = getJSON(tokenids)
         }
-        //console.log(this._tokeids)
+        // //console.log(address,"======getBoxAddresses=====",this._tokeids)
         if (this._tokeids[address] == undefined) {
             return {};
         }
@@ -175,8 +175,14 @@ class DataMgmt {
     // 5000,2500,1300,1000,200
     async genBoxLevelJson() {
         const upperbounds = [5000, 2500, 1200, 200, 0];
-        const addresses = ["0x8970F39632E01C59e4d104AbDD53FB39779aad67", "0x296010CADc0B2E78A4dB3f83d9dE712C8112A7e8",
-            "0xcC5d00BD9f416Fa7640292d9C1B23E03Bd0219D2", "0x35B8878FAe85CcdAaaF991b41aed201F4F35C42a"];
+        const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS || ["0x989418e99E3B29A81906fb9998AEfa74EAae2539", "0xF89FfE451d065E488188ca0e4dFd0318DDe034c8",
+            "0x8970F39632E01C59e4d104AbDD53FB39779aad67", "0x296010CADc0B2E78A4dB3f83d9dE712C8112A7e8",
+            "0xcC5d00BD9f416Fa7640292d9C1B23E03Bd0219D2", "0x35B8878FAe85CcdAaaF991b41aed201F4F35C42a",
+            "0x93c0cEb6d5e77439A6A33A4cd75F28a965706209"
+        ];
+        const addresses = CONTRACT_ADDRESS.slice(2, 6)
+        // const addresses = ["0x8970F39632E01C59e4d104AbDD53FB39779aad67", "0x296010CADc0B2E78A4dB3f83d9dE712C8112A7e8",
+        //     "0xcC5d00BD9f416Fa7640292d9C1B23E03Bd0219D2", "0x35B8878FAe85CcdAaaF991b41aed201F4F35C42a"];
         const amounts = [
             ["0.607", "6.072", "0.00607", "0.607"],
             ["0.809", "8.097", "0.00809", "0.809"],
@@ -238,6 +244,6 @@ async function test() {
 
 
 }
-test();
+// test();
 
 module.exports = DataMgmt

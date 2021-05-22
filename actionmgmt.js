@@ -3,6 +3,19 @@ const Web3 = require('web3');
 
 const fs = require('fs');
 require('dotenv').config();
+const debug = require("debug");
+const formula = debug('formula');
+// debug.enable("formula");
+// // // debug.disable("formula");
+// // // const trader = debug('trader');
+// debug.enable("trader");
+// debug.disable("trader");
+
+// debug.enable("*");
+
+// debug.enable('foo:*,-foo:bar');
+// let namespaces = debug.disable();
+// debug.enable(namespaces);
 const DataMgmt = require("./datamgmt.js");
 const datamgmt = new DataMgmt()
 // const readJson = (fileName) => {
@@ -13,12 +26,14 @@ const datamgmt = new DataMgmt()
 // const dodo_names = (process.env.DODO_NAMES || "").split(",") || []
 const secrets_pairs = process.env.SECRETS || []
 const secrets = JSON.parse(secrets_pairs);
-const CONTRACT_ADDRESS = ["0x989418e99E3B29A81906fb9998AEfa74EAae2539", "0xF89FfE451d065E488188ca0e4dFd0318DDe034c8",
+const CONTRACT_ADDRESS =  ["0x989418e99E3B29A81906fb9998AEfa74EAae2539", "0xF89FfE451d065E488188ca0e4dFd0318DDe034c8",
     "0x8970F39632E01C59e4d104AbDD53FB39779aad67", "0x296010CADc0B2E78A4dB3f83d9dE712C8112A7e8",
     "0xcC5d00BD9f416Fa7640292d9C1B23E03Bd0219D2", "0x35B8878FAe85CcdAaaF991b41aed201F4F35C42a",
     "0x93c0cEb6d5e77439A6A33A4cd75F28a965706209"
 ];
-const ABI_FILES = ["ERC721Controlled.json", "LootBoxController.json",
+
+
+const ABI_FILES =  ["ERC721Controlled.json", "LootBoxController.json",
     "ERC20Mintable.json", "ERC20Mintable.json", "ERC20Mintable.json",
     "ERC20Mintable.json", "ERC20Mintable.json"];
 
@@ -73,6 +88,7 @@ class ActionMgmt {
     async depositTokens(boxAddress, tokens) {
         const index = 0;
         for (let i = 0; i < tokens.ids.length; i++) {
+////console.log(boxAddress, tokens.amounts[i],web3.utils.toHex(web3.utils.toWei(tokens.amounts[i].toString())))
             let encodedabi = await contractobjs[tokens.ids[i]].methods.transfer(boxAddress, web3.utils.toHex(web3.utils.toWei(tokens.amounts[i].toString()))).encodeABI();
             await sendSignedTx(proxy[0], proxy[1], encodedabi, tokens.ids[i]);
         }
@@ -166,6 +182,7 @@ async function sendSignedTx(account, account_secrets, encodedabi, contract_addre
 
 function instanceContract() {
     for (let i = 0; i < CONTRACT_ADDRESS.length; i++) {
+ABI_FILES[i]
         abi = require("./abi/" + ABI_FILES[i]).abi;
         contract = new web3.eth.Contract(abi, CONTRACT_ADDRESS[i]);
         if (undefined == contract) {

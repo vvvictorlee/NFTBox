@@ -90,7 +90,6 @@ exports.myboxes = async (req, res) => {
         });
     }
 
-    res.header('Content-Type', 'application/json');
 
     const boxes = await dataMgmt.getBoxAddresses(req.body.params.address);
 

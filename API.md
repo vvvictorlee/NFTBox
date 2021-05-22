@@ -210,6 +210,13 @@ curl -X POST \
      -H 'Content-Type: application/json' \
      -d '{"jsonrpc":"2.0","id":"id","method":"claimbox","params":{"address":"0x4a79c58CCf9d80353c02357F26D6f7b99fA9991e"}}' \
      https://box.hoosmartchain.com/api/claimbox
+
+0x187E9C0A52742604690eD1647E130e7616146b08
+
+curl -X POST \
+     -H 'Content-Type: application/json' \
+     -d '{"jsonrpc":"2.0","id":"id","method":"claimbox","params":{"address":"0x187E9C0A52742604690eD1647E130e7616146b08"}}' \
+     https://box.hoosmartchain.com/api/claimbox
 ```
 * 应答
 ```
@@ -272,6 +279,12 @@ curl -X POST \
      -H 'Content-Type: application/json' \
      -d '{"jsonrpc":"2.0","id":"id","method":"myboxes","params":{"address":"0x4a79c58CCf9d80353c02357F26D6f7b99fA9991e"}}' \
      https://box.hoosmartchain.com/api/myboxes
+
+curl -X POST \
+     -H 'Content-Type: application/json' \
+     -d '{"jsonrpc":"2.0","id":"id","method":"myboxes","params":{"address":"0x187E9C0A52742604690eD1647E130e7616146b08"}}' \
+     https://box.hoosmartchain.com/api/myboxes
+
 
 ```
 
