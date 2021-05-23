@@ -152,6 +152,7 @@ module.exports = {
         //   warnings: true,
         //   errors: true
         // },
+        disableHostCheck: true,
         open: IS_PROD,
         host: '0.0.0.0',
         port: 5721,
