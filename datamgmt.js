@@ -23,7 +23,7 @@ class DataMgmt {
         }
         let i = 0;
         for (i = 0; i < this._boxlevels.length; ++i) {
-            if (Number(randomNumber) > Number(this._boxlevels[i].upperbound)) {
+            if (Number(randomNumber) <= Number(this._boxlevels[i].upperbound)) {
                 return [i + 1, this._boxlevels[i].tokens];
             }
         }
@@ -224,19 +224,20 @@ async function test() {
     // await dataMgmt.genBoxInfoJson();
     // r = await dataMgmt.getBoxInfoJson();
     // //console.log(JSON.stringify(r))
-    // r = await dataMgmt.getBoxInfoJson(1);
-    //console.log(JSON.stringify(r))
-    r = await dataMgmt.getBoxAddresses("0x4a79c58CCf9d80353c02357F26D6f7b99fA9991e");
+    r = await dataMgmt.getBoxInfoJson(1);
     console.log(JSON.stringify(r))
+    // r = await dataMgmt.getBoxAddresses("0x4a79c58CCf9d80353c02357F26D6f7b99fA9991e");
+    // console.log(JSON.stringify(r))
     // await dataMgmt.genrandseq();
     // for (let i = 0; i < 3; i++) {
     //     r = await dataMgmt.getRandSeqValue();
     //     //console.log(r)
     // }
-    // for (let i = 3; i < 49; i += 20) {
-    //     r = await dataMgmt.getBoxLevelAward(i);
-    //     //console.log(r)
-    // }
+    const levels = [3,230,1300,3300,5500]
+    for (let i = 0; i < levels.length; i ++) {
+        r = await dataMgmt.getBoxLevelAward(levels[i]);
+        console.log(r)
+    }
     // for (let i = 3; i < 49; i += 20) {
     //     await dataMgmt.saveTokenId(i, i + 10);
     // }
@@ -252,6 +253,6 @@ async function test() {
 
 
 }
-// test();
+test();
 
 module.exports = DataMgmt
