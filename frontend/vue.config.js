@@ -154,7 +154,7 @@ module.exports = {
         // },
         open: IS_PROD,
         host: '0.0.0.0',
-        port: 8080,
+        port: 5721,
         https: false,
         hotOnly: false,
         proxy: {
