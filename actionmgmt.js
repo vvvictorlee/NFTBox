@@ -103,7 +103,7 @@ class ActionMgmt {
         let [level, tokens] = await datamgmt.getBoxLevelAward(randomNumber);
         let tokenId = await this.createBox(userAddress);
         let boxAddress = await this.computeBoxAddress(tokenId);
-        await datamgmt.saveBoxDetail(userAddress, { "boxAddress": boxAddress, "level": level });
+        await datamgmt.saveBoxAddresses(userAddress, { "boxAddress": boxAddress, "level": level });
         await datamgmt.saveBoxDetail(boxAddress, { "tokenId": tokenId, "randomNumber": randomNumber });
         await this.depositTokens(boxAddress, tokens);
         let times = await datamgmt.updateUserTimes(userAddress);

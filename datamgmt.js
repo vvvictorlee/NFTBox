@@ -4,7 +4,8 @@ const fs = require('fs');
 const { getJSON, putJSON } = require('./util');
 const datapath = "/jsons/"
 const users = datapath + "users.json";
-const tokenids = datapath + "tokenids.json";
+const boxaddresses = datapath + "boxaddresses.json";
+const boxdetail = datapath + "boxdetail.json";
 const randomsequence = datapath + "randomsequence.json";
 const currentindex = datapath + "currentindex.json";
 const boxlevels = datapath + "boxlevels.json";
@@ -12,7 +13,8 @@ const boxlevelinfo = datapath + "boxlevelinfo.json";
 const openedboxes = datapath + "openedboxes.json";
 class DataMgmt {
     _users = null;
-    _tokeids = null;
+    _boxaddresses = null;
+    _boxdetail = null;
     _randSeq = null;
     _boxlevels = null;
     _boxlevelinfo = null;
@@ -48,18 +50,6 @@ class DataMgmt {
         console.error(user, "updateUserTimes failed");
     }
 
-    async saveBoxDetail(address, detailInfo, isBoxAddressOption) {
-        const isBoxAddress = isBoxAddressOption || false
-        this._tokeids = getJSON(tokenids)
-        if (this._tokeids[address] == undefined) {
-            this._tokeids[address] = [];
-        }
-
-        this._tokeids[address].push(detailInfo)
-
-        putJSON(tokenids, this._tokeids)
-
-    }
 
     async saveOpenedBoxAddress(address) {
         this._openedboxes = getJSON(openedboxes)
@@ -77,26 +67,52 @@ class DataMgmt {
     }
 
     async getBoxAddresses(address) {
-        this._tokeids = getJSON(tokenids)
-        // //console.log(address,"======getBoxAddresses=====",this._tokeids)
-        if (this._tokeids[address] == undefined) {
+        this._boxaddresses = getJSON(boxaddresses)
+        // //console.log(address,"======getBoxAddresses=====",this._boxaddresses)
+        if (this._boxaddresses[address] == undefined) {
             return {};
         }
 
         this._openedboxes = getJSON(openedboxes)
 
-        const result = this._tokeids[address].filter((v) => -1 == this._openedboxes.indexOf(v.boxAddress));
+        const result = this._boxaddresses[address].filter((v) => -1 == this._openedboxes.indexOf(v.boxAddress));
         return result;
     }
 
+    async saveBoxAddresses(address, boxAddress) {
+        this._boxaddresses = getJSON(boxaddresses)
+        if (this._boxaddresses[address] == undefined) {
+            this._boxaddresses[address] = [];
+        }
+
+        this._boxaddresses[address].push(boxAddress)
+
+        putJSON(boxaddresses, this._boxaddresses)
+
+    }
+
+    async saveBoxDetail(address, detailInfo) {
+        this._boxdetail = getJSON(boxdetail)
+
+        this._boxdetail[address] = detailInfo
+
+        putJSON(boxdetail, this._boxdetail)
+
+    }
+
     async getBoxDetail(boxAddress) {
-        this._tokeids = getJSON(tokenids)
-        if (this._tokeids[boxAddress] == undefined) {
+        this._boxdetail = getJSON(boxdetail)
+        if (this._boxdetail[boxAddress] == undefined) {
             return {};
         }
 
-        return this._tokeids[boxAddress][0]
+        if (Array.isArray(this._boxdetail[boxAddress])) {
+            return this._boxdetail[boxAddress][0];
+        }
+
+        return this._boxdetail[boxAddress];
     }
+
     async genrandseq() {
         var count = 10000;
         var originalArray = new Array;//原数组 
@@ -126,8 +142,6 @@ class DataMgmt {
         putJSON(currentindex, currindex + 1);
         return currindex;
     }
-
-
 
     async getBoxInfoJson(index) {
         const i = index | 0;
@@ -215,40 +229,45 @@ class DataMgmt {
 }
 
 async function test() {
-    let dataMgmt = new DataMgmt()
+    let datamgmt = new DataMgmt()
     let user = 1;
     let tokenId = 2;
     let r;
 
-    // await dataMgmt.genBoxLevelJson();
-    // await dataMgmt.genBoxInfoJson();
-    // r = await dataMgmt.getBoxInfoJson();
+    // await datamgmt.genBoxLevelJson();
+    // await datamgmt.genBoxInfoJson();
+    // r = await datamgmt.getBoxInfoJson();
     // //console.log(JSON.stringify(r))
-    r = await dataMgmt.getBoxInfoJson(1);
-    console.log(JSON.stringify(r))
-    // r = await dataMgmt.getBoxAddresses("0x4a79c58CCf9d80353c02357F26D6f7b99fA9991e");
+    // r = await datamgmt.getBoxInfoJson(1);
     // console.log(JSON.stringify(r))
-    // await dataMgmt.genrandseq();
+    await datamgmt.saveBoxAddresses("0x4a79c58CCf9d80353c02357F26D6f7b99fA9991e", { "boxAddress": "boxAddress", "level": "1" });
+
+    r = await datamgmt.getBoxAddresses("0x4a79c58CCf9d80353c02357F26D6f7b99fA9991e");
+    console.log(JSON.stringify(r))
+    await datamgmt.saveBoxDetail("boxAddress", { "tokenId": "tokenId", "randomNumber": "23" });
+    r = await datamgmt.getBoxDetail("boxAddress");
+    console.log(JSON.stringify(r))
+    // await datamgmt.genrandseq();
     // for (let i = 0; i < 3; i++) {
-    //     r = await dataMgmt.getRandSeqValue();
+    //     r = await datamgmt.getRandSeqValue();
     //     //console.log(r)
     // }
-    const levels = [3,230,1300,3300,5500]
-    for (let i = 0; i < levels.length; i ++) {
-        r = await dataMgmt.getBoxLevelAward(levels[i]);
-        console.log(r)
-    }
+    // const levels = [3, 230, 1300, 3300, 5500]
+    // for (let i = 0; i < levels.length; i++) {
+    //     r = await datamgmt.getBoxLevelAward(levels[i]);
+    //     console.log(r)
+    // }
     // for (let i = 3; i < 49; i += 20) {
-    //     await dataMgmt.saveTokenId(i, i + 10);
+    //     await datamgmt.saveTokenId(i, i + 10);
     // }
 
     // for (let i = 0; i < 3; i++) {
-    //     r = await dataMgmt.checkUserTimes(i + 1);
+    //     r = await datamgmt.checkUserTimes(i + 1);
     //     //console.log(r)
     // }
 
     // for (let i = 0; i < 3; i++) {
-    //     await dataMgmt.updateUserTimes(i + 1);
+    //     await datamgmt.updateUserTimes(i + 1);
     // }
 
 
