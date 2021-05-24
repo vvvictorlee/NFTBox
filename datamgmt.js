@@ -2,7 +2,9 @@ const path = require('path')
 
 const fs = require('fs');
 const { getJSON, putJSON } = require('./util');
-const datapath = "/jsons/"
+const _CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS || []
+const CONTRACT_ADDRESS = JSON.parse(_CONTRACT_ADDRESS);
+const datapath = process.env.DATA_PATH || "/jsons/"
 const users = datapath + "users.json";
 const boxaddresses = datapath + "boxaddresses.json";
 const boxdetail = datapath + "boxdetail.json";
@@ -114,7 +116,7 @@ class DataMgmt {
     }
 
     async genrandseq() {
-        var count = 10000;
+        var count = 15000;
         var originalArray = new Array;//原数组 
         //给原数组originalArray赋值 
         for (var i = 0; i < count; i++) {
@@ -154,26 +156,15 @@ class DataMgmt {
 
     async genBoxInfoJson() {
 
-        // 盲盒	PuddingSwap	Lendoo	HeshiSwap	SwapAll
-        // 黑铁	0.607	6.072	0.00607	0.607
-        // 青铜	0.809	8.097	0.00809	0.809
-        // 白银	1.619	16.194	0.01619	1.619
-        // 黄金	2.024	20.242	0.02024	2.024
-        // 钻石	4.048	40.485	0.04048	4.048
 
-        const names = ["PuddingSwap", "Lendoo", "HeshiSwap", "SwapAll"];
-        const symbols = ["PUDDINGSWAP", "LENDOO", "HESHISWAP", "SWAPALL"];
-        const amounts = [
-            ["0.607", "6.072", "0.00607", "0.607"],
-            ["0.809", "8.097", "0.00809", "0.809"],
-            ["1.619", "16.194", "0.01619", "1.619"],
-            ["2.024", "20.242", "0.02024", "2.024"],
-            ["4.048", "40.485", "0.04048", "4.048"]
-        ];
-        const count = 5;
-        const col = 4;
+        // "PuddingSwap","Lendoo","HeshiSwap","GFC","LOOT","Yunge","SwapXT","Roolend","SwapAll"
+
+        const names = ["PuddingSwap", "Lendoo", "HeshiSwap", "GFC", "LOOT", "Yunge", "SwapXT", "Roolend", "SwapAll"];
+        const symbols = ["PUD", "LDT", "HSB", "GFC", "LOOT", "YUNGE", "iXT", "Roolend", "SAP"];
+
+        const col = names.length;
         let json = [];
-        for (var i = 0; i < count; i++) {
+        for (var i = 0; i < amounts.length; i++) {
             let obj = {};
             let tokens = [];
             obj["level"] = i + 1;
@@ -193,27 +184,29 @@ class DataMgmt {
     }
 
     // 5000,2500,1300,1000,200
+    // 10000,3000,1100,600,300
     async genBoxLevelJson() {
-        const upperbounds = [5000, 2500, 1200, 200, 0];
-        const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS || ["0x989418e99E3B29A81906fb9998AEfa74EAae2539", "0xF89FfE451d065E488188ca0e4dFd0318DDe034c8",
-            "0x8970F39632E01C59e4d104AbDD53FB39779aad67", "0x296010CADc0B2E78A4dB3f83d9dE712C8112A7e8",
-            "0xcC5d00BD9f416Fa7640292d9C1B23E03Bd0219D2", "0x35B8878FAe85CcdAaaF991b41aed201F4F35C42a",
-            "0x93c0cEb6d5e77439A6A33A4cd75F28a965706209"
-        ];
-        const addresses = CONTRACT_ADDRESS.slice(2, 6)
+        const upperbounds = [300, 900, 2000, 5000, 15000];
+        // const CONTRACT_ADDRESS = ["0x989418e99E3B29A81906fb9998AEfa74EAae2539", "0xF89FfE451d065E488188ca0e4dFd0318DDe034c8",
+        //     "0x8970F39632E01C59e4d104AbDD53FB39779aad67", "0x296010CADc0B2E78A4dB3f83d9dE712C8112A7e8",
+        //     "0xcC5d00BD9f416Fa7640292d9C1B23E03Bd0219D2", "0x35B8878FAe85CcdAaaF991b41aed201F4F35C42a",
+        //     "0x93c0cEb6d5e77439A6A33A4cd75F28a965706209", "0x8970F39632E01C59e4d104AbDD53FB39779aad67",
+        //     "0x296010CADc0B2E78A4dB3f83d9dE712C8112A7e8",
+        //     "0xcC5d00BD9f416Fa7640292d9C1B23E03Bd0219D2", "0x35B8878FAe85CcdAaaF991b41aed201F4F35C42a"
+        // ];
+
+        // const MAINNET_CONTRACT_ADDRESS = ["0x989418e99E3B29A81906fb9998AEfa74EAae2539", "0xF89FfE451d065E488188ca0e4dFd0318DDe034c8",
+        //     "0xbE8D16084841875a1f398E6C3eC00bBfcbFa571b", "0xd63F3cceef518e183e27615A7D6404d0803210Af",
+        //     "0xd9e2c2b61204837c833a9A301c5DA7b500cB3e6d",
+        //     "0xE9FB7d75822064A71aE2F4E8626D6407F70Fb4eF", "0xD8f6d61C2cC69c04F176616aD1c7de211b00af31", "0x07f823D3d011f7C612084f04D025F4a026F76afd", "0x80c6A3A493aFd7C52f89E6504C90cE6A639783FC", "",
+        //     "0xFE2F1890d8DC69cf16D611C71fEf4A811ca84575"
+        // ];
+
+        const addresses = CONTRACT_ADDRESS.slice(2)
         // const addresses = ["0x8970F39632E01C59e4d104AbDD53FB39779aad67", "0x296010CADc0B2E78A4dB3f83d9dE712C8112A7e8",
         //     "0xcC5d00BD9f416Fa7640292d9C1B23E03Bd0219D2", "0x35B8878FAe85CcdAaaF991b41aed201F4F35C42a"];
-        const amounts = [
-            ["0.607", "6.072", "0.00607", "0.607"],
-            ["0.809", "8.097", "0.00809", "0.809"],
-            ["1.619", "16.194", "0.01619", "1.619"],
-            ["2.024", "20.242", "0.02024", "2.024"],
-            ["4.048", "40.485", "0.04048", "4.048"]
-        ];
-        const count = 5;
-        const col = 4;
         let json = [];
-        for (var i = 0; i < count; i++) {
+        for (var i = 0; i < upperbounds.length; i++) {
             let obj = {};
             let tokens = [];
             obj["upperbound"] = upperbounds[i];
@@ -227,7 +220,13 @@ class DataMgmt {
         putJSON(boxlevels, json)
     }
 }
-
+const amounts = [
+    ["3.1847", "31.8471", "0.03184", "70.0636", "31.8471", "6.3694", "3.1847", "1.5923", "3.1847"],
+    ["1.5923", "15.9235", "0.01592", "35.0318", "15.9235", "3.1847", "1.5923", "0.7961", "1.5923"],
+    ["1.2738", "12.7388", "0.01273", "28.0254", "12.7388", "2.5477", "1.2738", "0.6369", "1.2738"],
+    ["0.6369", "6.3694", "0.00636", "14.0127", "6.3694", "1.2738", "0.6369", "0.3184", "0.6369"],
+    ["0.4777", "4.777", "0.00477", "10.5095", "4.777", "0.9554", "0.4777", "0.2388", "0.4777"]
+];
 async function test() {
     let datamgmt = new DataMgmt()
     let user = 1;
@@ -240,14 +239,14 @@ async function test() {
     // //console.log(JSON.stringify(r))
     // r = await datamgmt.getBoxInfoJson(1);
     // console.log(JSON.stringify(r))
-    await datamgmt.saveBoxAddresses("0x4a79c58CCf9d80353c02357F26D6f7b99fA9991e", { "boxAddress": "boxAddress", "level": "1" });
+    // await datamgmt.saveBoxAddresses("0x4a79c58CCf9d80353c02357F26D6f7b99fA9991e", { "boxAddress": "boxAddress", "level": "1" });
 
-    r = await datamgmt.getBoxAddresses("0x4a79c58CCf9d80353c02357F26D6f7b99fA9991e");
-    console.log(JSON.stringify(r))
-    await datamgmt.saveBoxDetail("boxAddress", { "tokenId": "tokenId", "randomNumber": "23" });
-    r = await datamgmt.getBoxDetail("boxAddress");
-    console.log(JSON.stringify(r))
-    // await datamgmt.genrandseq();
+    // r = await datamgmt.getBoxAddresses("0x4a79c58CCf9d80353c02357F26D6f7b99fA9991e");
+    // console.log(JSON.stringify(r))
+    // await datamgmt.saveBoxDetail("boxAddress", { "tokenId": "tokenId", "randomNumber": "23" });
+    // r = await datamgmt.getBoxDetail("boxAddress");
+    // console.log(JSON.stringify(r))
+    await datamgmt.genrandseq();
     // for (let i = 0; i < 3; i++) {
     //     r = await datamgmt.getRandSeqValue();
     //     //console.log(r)
@@ -272,6 +271,26 @@ async function test() {
 
 
 }
-test();
+
+
+
+let handlers = {
+    "t": (async function () {
+        test();
+    }),
+    "g": (async function () {
+        console.log("==gen==");
+        let datamgmt = new DataMgmt()
+        await datamgmt.genrandseq();
+    }),
+
+    "default": (async function () {
+    })
+
+};
+
+console.log(process.argv);
+const f = handlers[process.argv[2]] || handlers["default"];
+f();
 
 module.exports = DataMgmt

@@ -26,20 +26,26 @@ const datamgmt = new DataMgmt()
 // const dodo_names = (process.env.DODO_NAMES || "").split(",") || []
 const secrets_pairs = process.env.SECRETS || []
 const secrets = JSON.parse(secrets_pairs);
-const CONTRACT_ADDRESS = ["0x989418e99E3B29A81906fb9998AEfa74EAae2539", "0xF89FfE451d065E488188ca0e4dFd0318DDe034c8",
-    "0x8970F39632E01C59e4d104AbDD53FB39779aad67", "0x296010CADc0B2E78A4dB3f83d9dE712C8112A7e8",
-    "0xcC5d00BD9f416Fa7640292d9C1B23E03Bd0219D2", "0x35B8878FAe85CcdAaaF991b41aed201F4F35C42a",
-    "0x93c0cEb6d5e77439A6A33A4cd75F28a965706209"
-];
+const _CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS || []
+const CONTRACT_ADDRESS = JSON.parse(_CONTRACT_ADDRESS);
+// const CONTRACT_ADDRESS = ["0x989418e99E3B29A81906fb9998AEfa74EAae2539", "0xF89FfE451d065E488188ca0e4dFd0318DDe034c8",
+//     "0x8970F39632E01C59e4d104AbDD53FB39779aad67", "0x296010CADc0B2E78A4dB3f83d9dE712C8112A7e8",
+//     "0xcC5d00BD9f416Fa7640292d9C1B23E03Bd0219D2", "0x35B8878FAe85CcdAaaF991b41aed201F4F35C42a",
+//     "0x93c0cEb6d5e77439A6A33A4cd75F28a965706209"
+// ];
+ 
+const _ABI_FILES = process.env.ABI_FILES || []
+let ABI_FILES = JSON.parse(_ABI_FILES);
+// const ABI_FILES = ["ERC721Controlled.json", "LootBoxController.json",
+//     "ERC20Mintable.json", "ERC20Mintable.json", "ERC20Mintable.json",
+//     "ERC20Mintable.json", "ERC20Mintable.json"];
 
+ABI_FILES =  ABI_FILES.concat(new Array(CONTRACT_ADDRESS.length-3).fill(ABI_FILES[ABI_FILES.length-1]))
 
-const ABI_FILES = ["ERC721Controlled.json", "LootBoxController.json",
-    "ERC20Mintable.json", "ERC20Mintable.json", "ERC20Mintable.json",
-    "ERC20Mintable.json", "ERC20Mintable.json"];
 
 const ERC721_ABI_FILE = "ERC721ControlledFactory.json"
-let ERC721_CONTRACT_ADDRESS;
-
+let ERC721_CONTRACT_ADDRESS="0x71725cb45adc6Fb2962B407EB3824F13030c5430";
+let erc721contract ;
 let contracts = [];
 let contractobjs = {};
 const NETWORK_ID = process.env.CHAIN_ID || 170;
@@ -55,8 +61,8 @@ let abi = {};
 let contract = {};
 let candidate = validators[1][0];
 let proxy = validators[2];
-instanceContract();
-// instanceERC721Contract();
+// instanceContract();
+instanceERC721Contract();
 let id;
 let erc721;
 let result;
@@ -67,12 +73,14 @@ class ActionMgmt {
         //console.log("box address==", result);
         return result
     }
-
+   async getReceipt() {
+var receipt = await web3.eth.getTransactionReceipt('0x92e079aaeda3f8b54b5c0e836a5a650b7ca9d13903b547de0993eb87cbe3ddf3');
+console.log(receipt);
+    }
     async createERC721Controlled() {
-        const index = 0;
         //console.log(candidate)
-        let encodedabi = await contracts[index].methods.createERC721Controlled("HOO Smart Chain NFTBox", "HSCBOX", "https://nfts.hoosmartchain.com/hscbox/").encodeABI();
-        await sendSignedTx(proxy[0], proxy[1], encodedabi, CONTRACT_ADDRESS[i], true);
+        let encodedabi = await erc721contract.methods.createERC721Controlled("HOO Smart Chain NFTBox", "HSCBOX", "https://nfts.hoosmartchain.com/hscbox/").encodeABI();
+        await sendSignedTx(proxy[0], proxy[1], encodedabi, ERC721_CONTRACT_ADDRESS, true);
     }
 
     // 0x4a79c58CCf9d80353c02357F26D6f7b99fA9991e
@@ -173,10 +181,10 @@ async function sendSignedTx(account, account_secrets, encodedabi, contract_addre
     tx.sign(privateKey);
 
     var serializedTx = tx.serialize();
-    //console.log("=====sendSignedTransaction===")
+    console.log("=====sendSignedTransaction===")
     let receipt = await web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'));
     JSON.stringify(receipt);
-    //console.log(JSON.stringify(receipt))
+    console.log(JSON.stringify(receipt))
     if (isTokenId) {
         id = receipt["logs"][0]["topics"][3];
         //console.log("=====id====", id, web3.utils.hexToNumber(id))
@@ -204,15 +212,33 @@ function instanceContract() {
 
 function instanceERC721Contract() {
     abi = require("./abi/" + ERC721_ABI_FILE).abi;
-    contract = new web3.eth.Contract(abi, ERC721_CONTRACT_ADDRESS);
-    if (undefined == contract) {
-        //console.log("un");
+    erc721contract = new web3.eth.Contract(abi, ERC721_CONTRACT_ADDRESS);
+    if (undefined == erc721contract) {
+        console.log("un");
         return;
     }
-    contracts.push(contract)
-    // //console.log(Contract.methods)
+    //console.log(erc721contract.methods)
 }
 
+let handlers = {
+    "c": (async function () {
+        console.log("==createERC721Controlled==");
+        let actionmgmt = new ActionMgmt()
+        await actionmgmt.createERC721Controlled();
+    }),
+  "r": (async function () {
+        console.log("==getReceipt==");
+        let actionmgmt = new ActionMgmt()
+        await actionmgmt.getReceipt();
+    }),
+    "default": (async function () {
+    })
+
+};
+
+console.log(process.argv);
+const f = handlers[process.argv[2]] || handlers["default"];
+f();
 
 
 module.exports = ActionMgmt

@@ -5,7 +5,12 @@
   "scripts": {
     "start": "node server.js",
     "start:prod": "DEBUG=app node  -r dotenv/config server.js dotenv_config_path=.env",
-    "start:test": "DEBUG=app node  -r dotenv/config server.js dotenv_config_path=.env.test"
+    "start:test": "DEBUG=app node  -r dotenv/config server.js dotenv_config_path=.env.test",
+    "gen:prod": "DEBUG=app node  -r dotenv/config datamgmt.js g dotenv_config_path=.env",
+    "gen:test": "DEBUG=app node  -r dotenv/config datamgmt.js g dotenv_config_path=.env.test",
+    "create:prod": "DEBUG=app node  -r dotenv/config actionmgmt.js c dotenv_config_path=.env",
+    "receipt:prod": "DEBUG=app node  -r dotenv/config actionmgmt.js r dotenv_config_path=.env"
+
   },
   "dependencies": {
     "connect-history-api-fallback": "^1.6.0",
