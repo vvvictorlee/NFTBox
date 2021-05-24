@@ -1,94 +1,101 @@
 <template>
-	<div class="home">
-        <loading-tip v-show="loadingTips"></loading-tip>
-		<div class="right-x-bg"></div>
-		<div class="left-x-bg"></div>
-		<div class="hsc-logo"></div>
-		<div class="banner_title" @click="sendTransaction">
-			<div class="banner-flag"></div>
+	<div class="mobile-home">
+		<loading-tip v-show="loadingTips"></loading-tip>
+		<div class="language-top">
+			<div class="language-container">
+				<language-mobile></language-mobile>
+			</div>
 		</div>
-		<div class="swapper-container">
-			<div class="right-flag"></div>
-			<div class="swapper-content">
-				<van-swipe class="my-swipe" :autoplay="3000" indicator-color="white" @change="onChange">
-					<van-swipe-item v-for="(item,index) in getBannerList" :key="index + 'swipitem'">
-						<div class="swipe-img-item">
-							<img v-lazy="publicPath + item.imgurl" />
-						</div>
-					</van-swipe-item>
-				</van-swipe>
-				<div class="right-text">
-					<div class="right-title">{{getBannerList[caclCurrent] && getBannerList[caclCurrent].name || ''}}</div>
-					<div class="right-summary">
-						<div class="summary-text1">可开出代币</div>
-						<div class="summary-text2">
-							<span v-for="(ele,index) in (getBannerList[caclCurrent] && getBannerList[caclCurrent].tokens || [])" :key="index + 'tokens'">{{`${index == 0 ? '' : '、'} ${ele.symbol}`}}</span>
+		<div class="home">
+			<div class="right-x-bg"></div>
+			<div class="left-x-bg"></div>
+			<div class="hsc-logo"></div>
+			<div class="banner_title" @click="sendTransaction">
+				<div class="banner-flag"></div>
+			</div>
+			<div class="swapper-container">
+				<div class="right-flag"></div>
+				<div class="swapper-content">
+					<van-swipe class="my-swipe" :autoplay="3000" indicator-color="white" @change="onChange">
+						<van-swipe-item v-for="(item,index) in getBannerList" :key="index + 'swipitem'">
+							<div class="swipe-img-item">
+								<img v-lazy="publicPath + item.imgurl" />
+							</div>
+						</van-swipe-item>
+					</van-swipe>
+					<div class="right-text">
+						<div class="right-title">{{$t((getBannerList[caclCurrent] && getBannerList[caclCurrent].i18Text)) || (getBannerList[caclCurrent] && getBannerList[caclCurrent].name)}}</div>
+						<div class="right-summary">
+							<div class="summary-text1">{{$t('home.test1')}}</div>
+							<div class="summary-text2">
+								<span v-for="(ele,index) in (getBannerList[caclCurrent] && getBannerList[caclCurrent].tokens || [])" :key="index + 'tokens'">{{`${index == 0 ? '' : '、'} ${ele.symbol}`}}</span>
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
-		<div class="account-container">
-			<!-- <div class="account-tips">{{`Account: `}}</div> -->
-            <div class="account-addr-container">
-                <div class="account-addr">{{clientAccount | formatAccountMobile}}</div>
-                <!-- <div class="account-addr">Connect</div> -->
-            </div>
-		</div>
-		<div class="button-container">
-			<div class="check-button">查看获奖名单</div>
-			<div class="caim-button" @click="receiveNftBox">领取盲盒</div>
-		</div>
-		<div class="open-button" @click="clickMyBoxes">我的宝库</div>
-		<div class="tips-area">
-			<div class="tips-title">温馨提示</div>
-			<ul>
-				<li>1.盲盒等级为：钻石、白金、黄金、白银、青铜，每个等级对应不同的活动代币种类及数量.</li>
-				<li>2.只有在获奖名单中的用户地址，才可以领取到盲盒.</li>
-				<li>3.盲盒需要手动打开，获取其中奖励.</li>
-				<li>4.该活动是在HSC上完成的活动，最终解释权归HSC所有.</li>
-			</ul>
-		</div>
-		<!-- 领取盲盒 -->
-		<nft-dialog ref="receiveDailog">
-			<template slot="dcontent">
-				<div class="receive-nft-box">
-					<div class="receive-title">您的地址，领取盲盒：</div>
-					<div class="receive-addr">
-						<div class="addr-input">
-							<!-- <input type="text" v-model="inputAddr"> -->
-							{{clientAccount | formatAccountMobile}}
+			<div class="account-container">
+				<!-- <div class="account-tips">{{`Account: `}}</div> -->
+				<div class="account-addr-container">
+					<div class="account-addr" v-if="clientAccount">{{clientAccount | formatAccountMobile}}</div>
+					<div class="account-addr" v-if="!clientAccount">Connect</div>
+				</div>
+			</div>
+			<div class="button-container">
+				<div class="check-button">{{$t('home.test2')}}</div>
+				<div class="caim-button" @click="receiveNftBox">{{$t('home.test3')}}</div>
+			</div>
+			<div class="open-button" @click="clickMyBoxes">{{$t('home.test4')}}</div>
+			<div class="tips-area">
+				<div class="tips-title">{{$t('home.test5')}}</div>
+				<ul>
+					<li>{{$t('home.test6')}}</li>
+					<li>{{$t('home.test7')}}</li>
+					<li>{{$t('home.test8')}}</li>
+					<li>{{$t('home.test9')}}</li>
+				</ul>
+			</div>
+			<!-- 领取盲盒 -->
+			<nft-dialog ref="receiveDailog">
+				<template slot="dcontent">
+					<div class="receive-nft-box">
+						<div class="receive-title">{{$t('home.test10')}}</div>
+						<div class="receive-addr">
+							<div class="addr-input">
+								<!-- <input type="text" v-model="inputAddr"> -->
+								{{clientAccount | formatAccountMobile}}
+							</div>
+							<div class="addr-lable">{{$t('home.test11')}}</div>
 						</div>
-						<div class="addr-lable">粘贴</div>
+						<div class="addr-submit-button" @click="receiveSubmit">{{$t('home.test12')}}</div>
 					</div>
-					<div class="addr-submit-button" @click="receiveSubmit">提交</div>
-				</div>
-			</template>
-		</nft-dialog>
-		<!-- 打开盲盒 -->
-		<box-dialog ref="openDailog">
-			<template slot="dtitle">
-				<div class="open-nft-title">
-					<div class="right-icon"></div>
-					<div class="title-text">我的宝库</div>
-				</div>
-			</template>
-			<template slot="dcontent">
-				<div class="open-nft-box">
-					<div class="box-container">
-						<div class="box-item-container" v-for="(item,index) in getMyboxList" :key="index + 'myboxs'">
-							<div class="box-item" :class="[item.is_active ? 'active-item' : '']" @click.stop="selectBox(item,index)">
-								<div class="img-container">
-									<img v-lazy="publicPath + item.imgurl" />
+				</template>
+			</nft-dialog>
+			<!-- 打开盲盒 -->
+			<box-dialog ref="openDailog">
+				<template slot="dtitle">
+					<div class="open-nft-title">
+						<div class="right-icon"></div>
+						<div class="title-text">{{$t('home.test13')}}</div>
+					</div>
+				</template>
+				<template slot="dcontent">
+					<div class="open-nft-box">
+						<div class="box-container">
+							<div class="box-item-container" v-for="(item,index) in getMyboxList" :key="index + 'myboxs'">
+								<div class="box-item" :class="[item.is_active ? 'active-item' : '']" @click.stop="selectBox(item,index)">
+									<div class="img-container">
+										<img v-lazy="publicPath + item.imgurl" />
+									</div>
+									<div class="img-name">{{$t(item.i18Text)}}</div>
 								</div>
-								<div class="img-name">{{item.name}}</div>
 							</div>
 						</div>
+						<div class="open-submit-button" @click="openSubmit">{{$t('home.test14')}}</div>
 					</div>
-					<div class="open-submit-button" @click="openSubmit">立即开启</div>
-				</div>
-			</template>
-		</box-dialog>
+				</template>
+			</box-dialog>
+		</div>
 	</div>
 </template>
 
@@ -99,6 +106,7 @@ import BoxDialog from './BoxDialog';
 const Web3 = require('web3');
 // import MetaMaskOnboarding from '@metamask/onboarding';
 import BoxMinxin from '../minxin/minxin';
+import LanguageMobile from '../../components/LanguageMobile';
 export default {
 	name: 'Home',
 	data() {
@@ -117,9 +125,10 @@ export default {
 		'nft-dialog': NftDialog,
 		'mult-input': MultInput,
 		'box-dialog': BoxDialog,
+		'language-mobile': LanguageMobile,
 	},
 	created() {
-		this.setBannerList();
+		this.initBannerList();
 	},
 	async mounted() {
 		let that = this;
@@ -226,15 +235,22 @@ export default {
 
 	},
 	methods: {
-
 		//领取盲盒
 		receiveNftBox() {
 			let that = this;
+            if(!that.isConnected) {
+                that.$Toast('please connect wallet');
+				return;
+            }
 			that.$refs['receiveDailog'].openDialog();
 		},
 		//我的盲盒
 		clickMyBoxes() {
 			let that = this;
+            if(!that.isConnected) {
+                that.$Toast('please connect wallet');
+				return;
+            }
 			//获取我的盲盒list
 			that.handleMyBoxes();
 			//打开弹窗
@@ -312,31 +328,51 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
-.home {
-	padding-top: 0.8rem;
+.mobile-home {
+	padding-top: 0.2rem;
 	background: #232323;
 	min-height: 100vh;
-	width: 7.5rem;
-	position: relative;
-	.left-x-bg {
-		position: absolute;
-		top: 4.78rem;
-		left: 0;
-		width: 3.5rem;
-		height: 7.64rem;
-		background: url("../../assets/image/x-bg.png") no-repeat;
-		background-size: 100% 100%;
+	.language-top {
+		height: 0.6rem;
+		width: 7.5rem;
+		position: relative;
+        cursor: pointer;
+		.language-container {
+			position: absolute;
+			top: 0;
+			right: 0.4rem;
+			z-index: 999;
+			width: 2rem;
+			height: 0.6rem;
+			border-radius: 0.3rem;
+			border: 2px solid rgba(255, 255, 255, 0.2);
+		}
 	}
-	.right-x-bg {
-		position: absolute;
-		top: 0;
-		right: 0;
-		width: 3.5rem;
-		height: 7.64rem;
-		background: url("../../assets/image/x-bg.png") no-repeat;
-		background-size: 100% 100%;
+	.home {
+		padding-top: 0.8rem;
+		width: 7.5rem;
+		position: relative;
+		.left-x-bg {
+			position: absolute;
+			top: 4.78rem;
+			left: 0;
+			width: 3.5rem;
+			height: 7.64rem;
+			background: url("../../assets/image/x-bg.png") no-repeat;
+			background-size: 100% 100%;
+		}
+		.right-x-bg {
+			position: absolute;
+			top: 0;
+			right: 0;
+			width: 3.5rem;
+			height: 7.64rem;
+			background: url("../../assets/image/x-bg.png") no-repeat;
+			background-size: 100% 100%;
+		}
 	}
 }
+
 .hsc-logo {
 	height: 0.46rem;
 	width: 5.28rem;
@@ -411,17 +447,17 @@ export default {
 		font-size: 0.4rem;
 	}
 	.account-addr-container {
-        cursor: pointer;
-        padding-left: 0.4rem;
-	    padding-right: 0.4rem;
-        height: 0.8rem;
-        border-radius: 0.4rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #000;
-	    background-color: #05f6ea;
-        transition: background-color 0.2s ease 0s, opacity 0.2s ease 0s;
+		cursor: pointer;
+		padding-left: 0.4rem;
+		padding-right: 0.4rem;
+		height: 0.8rem;
+		border-radius: 0.4rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: #000;
+		background-color: #05f6ea;
+		transition: background-color 0.2s ease 0s, opacity 0.2s ease 0s;
 		.account-addr {
 			margin-left: 0;
 		}
@@ -436,7 +472,7 @@ export default {
 	img {
 		display: block;
 		height: 3.8rem;
-		width: 4.8rem;
+		width: 3.8rem;
 		margin-right: 1rem;
 	}
 }
@@ -542,7 +578,7 @@ export default {
 			border: 1px solid #02ead0 !important;
 		}
 		.addr-lable {
-			width: 0.56rem;
+			min-width: 0.56rem;
 			height: 0.4rem;
 			font-size: 0.28rem;
 			font-family: PingFangSC-Medium, PingFang SC;
@@ -640,15 +676,15 @@ export default {
 				}
 				.img-container {
 					margin: 0 auto;
-					height: 1.72rem;
+					height: 2rem;
 					width: 2.2rem;
 					display: flex;
 					justify-content: center;
 					align-items: center;
 					img {
 						display: block;
-						height: 100%;
-						width: 100%;
+						height: 1.9rem;
+						width: 1.9rem;
 					}
 				}
 				.img-name {

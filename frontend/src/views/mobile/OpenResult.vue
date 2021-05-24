@@ -3,7 +3,7 @@
 		<div class="right-x-bg"></div>
 		<div class="left-x-bg"></div>
 		<div class="result-container" :class="[pageType == 'fail' ? 'fail-border': 'sucess-boder']">
-			<div class="first-title sucess-color">{{`恭喜您成功打开${getOpenBoxInfo.name}获得`}}</div>
+			<div class="first-title sucess-color">{{`${$t('home.test15')} ${$t(getOpenBoxInfo.i18Text)} ${$t('home.test16')}`}}</div>
 			<div class="content-container">
 				<div class="second-part">
 					<div class="second-text1" v-for="(item,index) in getOpenBoxInfo.tokens" :key="index + 'tokens'">
@@ -16,7 +16,7 @@
 			</div>
 			<div class="button-container">
 				<div class="check-button" @click.stop="goBack">ok</div>
-				<div class="copy-button">截图分享</div>
+				<!-- <div class="copy-button">{{$t('home.test17')}}</div> -->
 			</div>
 		</div>
 	</div>

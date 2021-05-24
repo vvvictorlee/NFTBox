@@ -1,10 +1,10 @@
 <template>
 	<div class="receive-result">
-		<div class="right-x-bg"></div>
-		<div class="left-x-bg"></div>
+		<!-- <div class="right-x-bg"></div>
+		<div class="left-x-bg"></div> -->
 		<div class="result-container" :class="[pageType == 'fail' ? 'fail-border': 'sucess-boder']">
-			<div class="first-title" :class="[pageType == 'fail' ? 'fail-color': 'sucess-color']">{{pageType == 'fail' ? '领取失败' : '领取成功'}}</div>
-			<div class="first-sammary">{{`您还剩${getOpenMessage.last_times}次机会`}}</div>
+			<div class="first-title" :class="[pageType == 'fail' ? 'fail-color': 'sucess-color']">{{pageType == 'fail' ? $t('home.test18') : $t('home.test19')}}</div>
+			<div class="first-sammary">{{`${$t('home.test20')} ${getOpenMessage.last_times} ${$t('home.test21')}`}}</div>
 			<div class="content-container" v-if="!(pageType == 'fail')">
 				<div class="box-banner">
 					<div class="img-container">
@@ -12,15 +12,15 @@
 					</div>
 				</div>
 				<div class="second-part">
-					<div class="second-text1">{{computedBoxInfo.name}}</div>
+					<div class="second-text1">{{$t(computedBoxInfo.i18Text) || computedBoxInfo.name}}</div>
 					<div class="second-text2">
-						<span>可开出代币：</span>
+						<span>{{$t('home.test22')}}</span>
 						<span v-for="(ele,index) in (computedBoxInfo.tokens || [])" :key="index + 'tokens'">{{`${index == 0 ? '' : '、'} ${ele.symbol}`}}</span>
 					</div>
 					<!-- <div class="second-text3">盲盒私钥</div> -->
 					<!-- <div class="second-text4">0x0aade7759446e07ad10cc6456d41e05c80c88bd1</div> -->
 				</div>
-				<div class="copy-button" @click.stop="goBack">领取到宝库</div>
+				<div class="copy-button" @click.stop="goBack">{{$t('home.test23')}}</div>
 			</div>
 			<div class="content-container" v-if="(pageType == 'fail')">
 				<div class="fail-flag">
@@ -30,19 +30,19 @@
 				</div>
 				<div class="second-part">
 					<div class="fail-text-container">
-						<div class="fail-text1">很遗憾，您未能获得盲盒</div>
-						<div class="fail-text2">可能已领取完或没有领取资格</div>
+						<div class="fail-text1">{{$t('home.test24')}}</div>
+						<div class="fail-text2">{{$t('home.test25')}}</div>
 					</div>
 				</div>
-				<div class="check-button">查看排名</div>
+				<div class="check-button">{{$t('home.test26')}}</div>
 			</div>
 			<div class="tips-area">
-				<div class="tips-title">温馨提示</div>
+				<div class="tips-title">{{$t('home.test5')}}</div>
 				<ul>
-					<li>1.盲盒等级为：钻石、白金、黄金、白银、青铜，每个等级对应不同的活动代币种类及数量.</li>
-					<li>2.只有在获奖名单中的用户地址，才可以领取到盲盒.</li>
-					<li>3.盲盒需要手动打开，获取其中奖励.</li>
-					<li>4.该活动是在HSC上完成的活动，最终解释权归HSC所有.</li>
+					<li>{{$t('home.test6')}}</li>
+					<li>{{$t('home.test7')}}.</li>
+					<li>3{{$t('home.test8')}}</li>
+					<li>{{$t('home.test9')}}</li>
 				</ul>
 			</div>
 		</div>
@@ -71,6 +71,7 @@ export default {
 			let boxInfo = {
 				name: '',
 				imgurl: "image/diamond_box.png",
+                i18Text: 'home.test27',
 				tokens: [],
 			};
 			if (!level) {
@@ -89,9 +90,9 @@ export default {
 		console.log(this.$route.params.id);
 	},
 	methods: {
-        goBack() {
-            this.$router.go(-1);
-        },
+		goBack() {
+			this.$router.go(-1);
+		},
 	},
 }
 </script>
@@ -170,7 +171,7 @@ export default {
 				width: 3.48rem;
 				.img-container {
 					height: 2.72rem;
-				    width: 3.48rem;
+					width: 3.48rem;
 					display: flex;
 					justify-content: center;
 					align-items: center;
@@ -249,7 +250,8 @@ export default {
 				}
 			}
 			.copy-button {
-				width: 2.8rem;
+				min-width: 2.8rem;
+                max-width: 4.6rem;
 				height: 0.8rem;
 				line-height: 0.8rem;
 				border: 1px solid #0ecda9;

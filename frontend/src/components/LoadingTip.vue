@@ -19,7 +19,7 @@ export default {
     props: {
         tipsMessage: {
             type: String,
-            default: '处理中....',
+            default: 'Processing....',
         },
     },
 }

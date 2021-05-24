@@ -1,6 +1,11 @@
 <template>
 	<div class="pc-home">
         <loading-tip v-show="loadingTips"></loading-tip>
+        <div class="language-top">
+			<div class="language-container">
+				<language-pc></language-pc>
+			</div>
+		</div>
 		<div class="home">
 			<div class="right-x-bg"></div>
 			<div class="left-x-bg"></div>
@@ -20,9 +25,9 @@
 							</van-swipe-item>
 						</van-swipe>
 						<div class="right-text">
-							<div class="right-title">{{getBannerList[caclCurrent] && getBannerList[caclCurrent].name || ''}}</div>
+							<div class="right-title">{{$t((getBannerList[caclCurrent] && getBannerList[caclCurrent].i18Text)) || (getBannerList[caclCurrent] && getBannerList[caclCurrent].name)}}</div>
 							<div class="right-summary">
-								<span>可开出代币：</span>
+								<span>{{$t('home.test1')}}</span>
 								<span v-for="(ele,index) in (getBannerList[caclCurrent] && getBannerList[caclCurrent].tokens || [])" :key="index + 'tokens'">{{`${index == 0 ? '' : '、'} ${ele.symbol}`}}</span>
 							</div>
 						</div>
@@ -32,37 +37,37 @@
 			<div class="account-container">
 				<!-- <div class="account-tips">{{`Account: `}}</div> -->
 				<div class="account-addr-container">
-					<div class="account-addr">{{clientAccount | formatAccount}}</div>
-                    <!-- <div class="account-addr">Connect</div> -->
+					<div class="account-addr" v-if="clientAccount">{{clientAccount | formatAccount}}</div>
+                    <div class="account-addr" v-if="!clientAccount">Connect</div>
 				</div>
 			</div>
 			<div class="button-container">
-				<div class="check-button">查看获奖名单</div>
-				<div class="caim-button" @click="receiveNftBox">领取盲盒</div>
-				<div class="open-button" @click="clickMyBoxes">我的宝库</div>
+				<div class="check-button">{{$t('home.test2')}}</div>
+				<div class="caim-button" @click="receiveNftBox">{{$t('home.test3')}}</div>
+				<div class="open-button" @click="clickMyBoxes">{{$t('home.test4')}}</div>
 			</div>
 			<div class="tips-area">
-				<div class="tips-title">温馨提示</div>
+				<div class="tips-title">{{$t('home.test5')}}</div>
 				<ul>
-					<li>1.盲盒等级为：钻石、白金、黄金、白银、青铜，每个等级对应不同的活动代币种类及数量.</li>
-					<li>2.只有在获奖名单中的用户地址，才可以领取到盲盒.</li>
-					<li>3.盲盒需要手动打开，获取其中奖励.</li>
-					<li>4.该活动是在HSC上完成的活动，最终解释权归HSC所有.</li>
+					<li>{{$t('home.test6')}}</li>
+					<li>{{$t('home.test7')}}</li>
+					<li>{{$t('home.test8')}}</li>
+					<li>{{$t('home.test9')}}</li>
 				</ul>
 			</div>
 			<!-- 领取盲盒 -->
 			<nft-dialog ref="receiveDailog">
 				<template slot="dcontent">
 					<div class="receive-nft-box">
-						<div class="receive-title">您的地址，领取盲盒：</div>
+						<div class="receive-title">{{$t('home.test10')}}</div>
 						<div class="receive-addr">
 							<div class="addr-input">
 								<!-- <input type="text" v-model="inputAddr"> -->
 								{{clientAccount | formatAccount}}
 							</div>
-							<div class="addr-lable">粘贴</div>
+							<div class="addr-lable">{{$t('home.test11')}}</div>
 						</div>
-						<div class="addr-submit-button" @click="receiveSubmit">提交</div>
+						<div class="addr-submit-button" @click="receiveSubmit">{{$t('home.test12')}}</div>
 					</div>
 				</template>
 			</nft-dialog>
@@ -71,7 +76,7 @@
 				<template slot="dtitle">
 					<div class="open-nft-title">
 						<div class="right-icon"></div>
-						<div class="title-text">我的宝库</div>
+						<div class="title-text">{{$t('home.test13')}}</div>
 					</div>
 				</template>
 				<template slot="dcontent">
@@ -82,11 +87,11 @@
 									<div class="img-container">
 										<img v-lazy="publicPath + item.imgurl" />
 									</div>
-									<div class="img-name">{{item.name}}</div>
+									<div class="img-name">{{$t(item.i18Text)}}</div>
 								</div>
 							</div>
 						</div>
-						<div class="open-submit-button" @click="openSubmit">立即开启</div>
+						<div class="open-submit-button" @click="openSubmit">{{$t('home.test14')}}</div>
 					</div>
 				</template>
 			</box-dialog>
@@ -101,9 +106,8 @@ import BoxDialog from './BoxDialog';
 import MultInput from './MultInput';
 const Web3 = require('web3');
 // import MetaMaskOnboarding from '@metamask/onboarding';
-
 import BoxMinxin from '../minxin/minxin';
-import LoadingTip from '../../components/LoadingTip.vue';
+import LanguagePc from '../../components/LanguagePc';
 export default {
 	name: 'Home',
 	data() {
@@ -121,10 +125,11 @@ export default {
 	components: {
 		'nft-dialog': NftDialog,
 		'mult-input': MultInput,
-		'box-dialog': BoxDialog
+		'box-dialog': BoxDialog,
+        'language-pc': LanguagePc,
 	},
 	created() {
-		this.setBannerList();
+		this.initBannerList();
 	},
 	async mounted() {
 		let that = this;
@@ -241,11 +246,19 @@ export default {
 		//领取盲盒
 		receiveNftBox() {
 			let that = this;
+            if(!that.isConnected) {
+                that.$Toast('please connect wallet');
+				return;
+            }
 			that.$refs['receiveDailog'].openDialog();
 		},
 		//我的盲盒
 		clickMyBoxes() {
 			let that = this;
+            if(!that.isConnected) {
+                that.$Toast('please connect wallet');
+				return;
+            }
 			//获取我的盲盒list
 			that.handleMyBoxes();
 			//打开弹窗
@@ -328,13 +341,29 @@ export default {
 .pc-home {
 	width: 100%;
 	min-width: 800px;
-	padding-top: 100px;
+	padding-top: 20px;
 	padding-bottom: 140px;
 	background: #232323;
+    .language-top {
+		height: 34px;
+		width: 100%;
+		position: relative;
+        cursor: pointer;
+		.language-container {
+			position: absolute;
+			top: 0;
+			right: 20px;
+			z-index: 999;
+			width: 120px;
+			height: 34px;
+			border-radius: 20px;
+			border: 2px solid rgba(255, 255, 255, 0.2);
+		}
+	}
 	.home {
 		min-height: 600px;
 		padding-top: 40px;
-		margin: 0 auto;
+		margin: 20px auto 0 auto;
 		width: 655px;
 		background: #303030;
 		position: relative;
@@ -455,8 +484,8 @@ export default {
 	justify-content: center;
 	img {
 		display: block;
-		height: 190px;
-		width: 244px;
+		height: 180px;
+		width: 180px;
 	}
 }
 .button-container {
@@ -652,8 +681,8 @@ export default {
 					align-items: center;
 					img {
 						display: block;
-						height: 100%;
-						width: 100%;
+						height: 85px;
+						width: 85px;
 					}
 				}
 				.img-name {

@@ -4,6 +4,7 @@ import router from "./router/index";
 import Store from "./store/index";
 import VueWechatTitle from "vue-wechat-title";
 import VueI18n from 'vue-i18n';
+import Config from './views/config/index';
 // import 'lib-flexible'; // 对应设置根的字体
 import Vant from 'vant';
 import 'vant/lib/index.css';
@@ -31,10 +32,10 @@ import i18nMsg from "./i18n/index";
 Vue.use(Lazyload, {
     lazyComponent: true,
 });
-
+// console.log(Store.state.language.localeLang);
 //语言国际化
 const i18n = new VueI18n({
-	locale: Store.state.language.locale || "zh-hans", // 语言标识
+	locale: Store.state.language.localeLang || "zh-hans", // 语言标识
 	messages: {
 		"zh-hans": i18nMsg["zh-hans"], // 中文语言包
 		"en": i18nMsg["en"], // 英文语言包
@@ -48,5 +49,6 @@ Vue.config.productionTip = false
 new Vue({
     router,
     i18n,
+    Store,
     render: h => h(App),
 }).$mount('#app')

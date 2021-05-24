@@ -33,7 +33,7 @@ const CONTRACT_ADDRESS = JSON.parse(_CONTRACT_ADDRESS);
 //     "0xcC5d00BD9f416Fa7640292d9C1B23E03Bd0219D2", "0x35B8878FAe85CcdAaaF991b41aed201F4F35C42a",
 //     "0x93c0cEb6d5e77439A6A33A4cd75F28a965706209"
 // ];
- 
+
 const _ABI_FILES = process.env.ABI_FILES || []
 let ABI_FILES = JSON.parse(_ABI_FILES);
 // const ABI_FILES = ["ERC721Controlled.json", "LootBoxController.json",
