@@ -64,6 +64,11 @@ export default {
 			let flag = !!this.clientAccount;
 			return flag;
 		},
+        hasBoxList() {
+            let len = this.getMyboxList.length;
+            let flag = len > 0 ? true : false;
+            return flag;
+        },
 	},
 	filters: {
 		formatAccount(account) {
@@ -159,11 +164,12 @@ export default {
 						}
 						// element.is_active = false;
 					});
-
-					that.setMyboxList(records);
 				}
+                that.setMyboxList(records);
 			}).catch(err => {
 				that.loadingTips = false;
+                let errorRecords = [];
+                that.setMyboxList(errorRecords);
 			});
 		},
 		//选中一个盲盒
@@ -226,7 +232,14 @@ export default {
 		//提交打开盲盒
 		openSubmit() {
 			let that = this;
-			let requestItem = that.getMyboxList.find((item) => {
+            let temArr = that.getMyboxList || [];
+            let len = temArr.length;
+            console.log(len)
+            if(len == 0) {
+                that.$Toast('no box can select');
+				return;
+            }
+			let requestItem = temArr.find((item) => {
 				return item.is_active;
 			});
 			console.log(requestItem);

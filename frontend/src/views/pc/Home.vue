@@ -1,7 +1,7 @@
 <template>
 	<div class="pc-home">
-        <loading-tip v-show="loadingTips"></loading-tip>
-        <div class="language-top">
+		<loading-tip v-show="loadingTips"></loading-tip>
+		<div class="language-top">
 			<div class="language-container">
 				<language-pc></language-pc>
 			</div>
@@ -38,7 +38,7 @@
 				<!-- <div class="account-tips">{{`Account: `}}</div> -->
 				<div class="account-addr-container">
 					<div class="account-addr" v-if="clientAccount">{{clientAccount | formatAccount}}</div>
-                    <div class="account-addr" v-if="!clientAccount">Connect</div>
+					<div class="account-addr" v-if="!clientAccount">Connect</div>
 				</div>
 			</div>
 			<div class="button-container">
@@ -81,7 +81,7 @@
 				</template>
 				<template slot="dcontent">
 					<div class="open-nft-box">
-						<div class="box-container">
+						<div class="box-container"  v-if="hasBoxList">
 							<div class="box-item-container" v-for="(item,index) in getMyboxList" :key="index + 'myboxs'">
 								<div class="box-item" :class="[item.is_active ? 'active-item' : '']" @click.stop="selectBox(item,index)">
 									<div class="img-container">
@@ -90,6 +90,10 @@
 									<div class="img-name">{{$t(item.i18Text)}}</div>
 								</div>
 							</div>
+						</div>
+						<div class="nodata-container" v-if="!hasBoxList">
+                            <div class="no-data-icon"></div>
+                            <div class="no-data-text">no data...</div>
 						</div>
 						<div class="open-submit-button" @click="openSubmit">{{$t('home.test14')}}</div>
 					</div>
@@ -126,7 +130,7 @@ export default {
 		'nft-dialog': NftDialog,
 		'mult-input': MultInput,
 		'box-dialog': BoxDialog,
-        'language-pc': LanguagePc,
+		'language-pc': LanguagePc,
 	},
 	created() {
 		this.initBannerList();
@@ -246,19 +250,19 @@ export default {
 		//领取盲盒
 		receiveNftBox() {
 			let that = this;
-            if(!that.isConnected) {
-                that.$Toast('please connect wallet');
+			if (!that.isConnected) {
+				that.$Toast('please connect wallet');
 				return;
-            }
+			}
 			that.$refs['receiveDailog'].openDialog();
 		},
 		//我的盲盒
 		clickMyBoxes() {
 			let that = this;
-            if(!that.isConnected) {
-                that.$Toast('please connect wallet');
+			if (!that.isConnected) {
+				that.$Toast('please connect wallet');
 				return;
-            }
+			}
 			//获取我的盲盒list
 			that.handleMyBoxes();
 			//打开弹窗
@@ -344,11 +348,11 @@ export default {
 	padding-top: 20px;
 	padding-bottom: 140px;
 	background: #232323;
-    .language-top {
+	.language-top {
 		height: 34px;
 		width: 100%;
 		position: relative;
-        cursor: pointer;
+		cursor: pointer;
 		.language-container {
 			position: absolute;
 			top: 0;
@@ -448,7 +452,7 @@ export default {
 }
 .account-container {
 	margin-top: 40px;
-    margin-left: 40px;
+	margin-left: 40px;
 	height: 40px;
 	display: flex;
 	align-items: center;
@@ -459,18 +463,18 @@ export default {
 	.account-tips {
 		font-size: 28px;
 	}
-    .account-addr-container {
-        cursor: pointer;
-        padding-left: 20px;
-	    padding-right: 20px;
-        height: 40px;
-        border-radius: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #000;
-	    background-color: #05f6ea;
-        transition: background-color 0.2s ease 0s, opacity 0.2s ease 0s;
+	.account-addr-container {
+		cursor: pointer;
+		padding-left: 20px;
+		padding-right: 20px;
+		height: 40px;
+		border-radius: 20px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: #000;
+		background-color: #05f6ea;
+		transition: background-color 0.2s ease 0s, opacity 0.2s ease 0s;
 		.account-addr {
 			margin-left: 0;
 		}
@@ -695,6 +699,24 @@ export default {
 				}
 			}
 		}
+	}
+	.nodata-container {
+		width: 520px;
+		min-height: 200px;
+		.no-data-icon {
+			width: 88px;
+			height: 76px;
+			margin: 80px auto 40px auto;
+			background: url("../../assets/image/no-data-new.svg")
+				no-repeat;
+			background-size: 100% 100%;
+		}
+        .no-data-text{
+            font-size: 14px;
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: 500;
+            color: #ccc;
+        }
 	}
 	.open-submit-button {
 		margin-top: 34px;

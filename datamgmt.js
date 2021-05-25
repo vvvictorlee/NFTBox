@@ -247,7 +247,7 @@ async function test() {
     // await datamgmt.saveBoxDetail("boxAddress", { "tokenId": "tokenId", "randomNumber": "23" });
     // r = await datamgmt.getBoxDetail("boxAddress");
     // console.log(JSON.stringify(r))
-    await datamgmt.genrandseq();
+    // await datamgmt.genrandseq();
     // for (let i = 0; i < 3; i++) {
     //     r = await datamgmt.getRandSeqValue();
     //     //console.log(r)
@@ -279,18 +279,23 @@ let handlers = {
     "t": (async function () {
         test();
     }),
-    "g": (async function () {
-        console.log("==gen==");
+    "genrandseq": (async function () {
+        console.log("==genrandseq==");
         let datamgmt = new DataMgmt()
         await datamgmt.genrandseq();
     }),
-
+    "genlevel": (async function () {
+        console.log("==genlevel==");
+        let datamgmt = new DataMgmt()
+        await datamgmt.genBoxLevelJson();
+        await datamgmt.genBoxInfoJson();
+    }),
     "default": (async function () {
     })
 
 };
 
-console.log(process.argv);
+// console.log(process.argv);
 const f = handlers[process.argv[2]] || handlers["default"];
 f();
 

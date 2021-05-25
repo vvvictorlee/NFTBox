@@ -6,8 +6,10 @@
     "start": "node server.js",
     "start:prod": "DEBUG=app node  -r dotenv/config server.js dotenv_config_path=.env",
     "start:test": "DEBUG=app node  -r dotenv/config server.js dotenv_config_path=.env.test",
-    "gen:prod": "DEBUG=app node  -r dotenv/config datamgmt.js g dotenv_config_path=.env",
-    "gen:test": "DEBUG=app node  -r dotenv/config datamgmt.js g dotenv_config_path=.env.test",
+    "gen:prod": "DEBUG=app node  -r dotenv/config datamgmt.js genrandseq dotenv_config_path=.env",
+    "gen:test": "DEBUG=app node  -r dotenv/config datamgmt.js genrandseq dotenv_config_path=.env.test",
+    "genlevel:prod": "DEBUG=app node  -r dotenv/config datamgmt.js genlevel dotenv_config_path=.env",
+    "genlevel:test": "DEBUG=app node  -r dotenv/config datamgmt.js genlevel dotenv_config_path=.env.test",
     "create:prod": "DEBUG=app node  -r dotenv/config actionmgmt.js c dotenv_config_path=.env",
     "receipt:prod": "DEBUG=app node  -r dotenv/config actionmgmt.js r dotenv_config_path=.env"
 

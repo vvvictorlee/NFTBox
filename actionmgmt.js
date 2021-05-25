@@ -61,8 +61,8 @@ let abi = {};
 let contract = {};
 let candidate = validators[1][0];
 let proxy = validators[2];
-// instanceContract();
-instanceERC721Contract();
+instanceContract();
+// instanceERC721Contract();
 let id;
 let erc721;
 let result;
@@ -236,7 +236,7 @@ let handlers = {
 
 };
 
-console.log(process.argv);
+// console.log(process.argv);
 const f = handlers[process.argv[2]] || handlers["default"];
 f();
 

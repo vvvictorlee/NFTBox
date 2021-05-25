@@ -81,7 +81,7 @@
 				</template>
 				<template slot="dcontent">
 					<div class="open-nft-box">
-						<div class="box-container">
+						<div class="box-container" v-if="hasBoxList">
 							<div class="box-item-container" v-for="(item,index) in getMyboxList" :key="index + 'myboxs'">
 								<div class="box-item" :class="[item.is_active ? 'active-item' : '']" @click.stop="selectBox(item,index)">
 									<div class="img-container">
@@ -90,6 +90,10 @@
 									<div class="img-name">{{$t(item.i18Text)}}</div>
 								</div>
 							</div>
+						</div>
+						<div class="nodata-container" v-if="!hasBoxList">
+							<div class="no-data-icon"></div>
+							<div class="no-data-text">no data...</div>
 						</div>
 						<div class="open-submit-button" @click="openSubmit">{{$t('home.test14')}}</div>
 					</div>
@@ -238,19 +242,19 @@ export default {
 		//领取盲盒
 		receiveNftBox() {
 			let that = this;
-            if(!that.isConnected) {
-                that.$Toast('please connect wallet');
+			if (!that.isConnected) {
+				that.$Toast('please connect wallet');
 				return;
-            }
+			}
 			that.$refs['receiveDailog'].openDialog();
 		},
 		//我的盲盒
 		clickMyBoxes() {
 			let that = this;
-            if(!that.isConnected) {
-                that.$Toast('please connect wallet');
+			if (!that.isConnected) {
+				that.$Toast('please connect wallet');
 				return;
-            }
+			}
 			//获取我的盲盒list
 			that.handleMyBoxes();
 			//打开弹窗
@@ -336,7 +340,7 @@ export default {
 		height: 0.6rem;
 		width: 7.5rem;
 		position: relative;
-        cursor: pointer;
+		cursor: pointer;
 		.language-container {
 			position: absolute;
 			top: 0;
@@ -697,6 +701,23 @@ export default {
 					color: #05f6e8;
 				}
 			}
+		}
+	}
+	.nodata-container {
+		width: 5.2rem;
+		min-height: 2rem;
+		.no-data-icon {
+			width: 1.4rem;
+			height: 1.2rem;
+			margin: 0.8rem auto 0.6rem auto;
+			background: url("../../assets/image/no-data-new.svg") no-repeat;
+			background-size: 100% 100%;
+		}
+		.no-data-text {
+			font-size: .28rem;
+			font-family: PingFangSC-Regular, PingFang SC;
+			font-weight: 500;
+			color: #ccc;
 		}
 	}
 	.open-submit-button {
