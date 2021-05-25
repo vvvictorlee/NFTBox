@@ -238,7 +238,6 @@ async function sendSignedTx(account, account_secrets, encodedabi, contract_addre
 
 function instanceContract() {
     for (let i = 0; i < CONTRACT_ADDRESS.length; i++) {
-        ABI_FILES[i]
         abi = require("./abi/" + ABI_FILES[i]).abi;
         contract = new web3.eth.Contract(abi, CONTRACT_ADDRESS[i]);
         if (undefined == contract) {
