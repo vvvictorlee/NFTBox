@@ -19,6 +19,12 @@ curl -X POST \
 ```
 
 ```
+
+curl -X POST \
+     -H 'Content-Type: application/json' \
+     -d '{"jsonrpc":"2.0","id":"id","method":"claimbox","params":{"address":"0x4a79c58CCf9d80353c02357F26D6f7b99fA9991e","times":2}}' \
+     http://localhost:6789/api/claimbox
+
 curl -X POST \
      -H 'Content-Type: application/json' \
      -d '{"jsonrpc":"2.0","id":"id","method":"claimbox","params":{"address":"0x4a79c58CCf9d80353c02357F26D6f7b99fA9991e"}}' \
@@ -35,6 +41,12 @@ curl -X POST \
 curl -X POST \
      -H 'Content-Type: application/json' \
      -d '{"jsonrpc":"2.0","id":"id","method":"openbox","params":{"address":"0xC6019a869Fd3B421A5b0BFD4a83b86799E3cBAAF"}}' \
+     http://localhost:6789/api/openbox
+
+
+curl -X POST \
+     -H 'Content-Type: application/json' \
+     -d '{"jsonrpc":"2.0","id":"id","method":"openbox","params":{"address":["0x4b2C93469063e23786dF13Baa42CAfB8F67005de","0x387c71E8003092199dB65c6c3cbB2C36a9163E9A"]}}' \
      http://localhost:6789/api/openbox
 
 

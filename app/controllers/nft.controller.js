@@ -11,9 +11,31 @@ exports.claimbox = async (req, res) => {
         });
     }
 
-    const result = await actionMgmt.claimBox(req.body.params.address);
+    let result = null;
+    if (req.body.params.times != undefined) {
+        if (Number(req.body.params.times) <= 0 || Number(req.body.params.times) > 10) {
+            return res.send({
+                code: 10001,
+                message: 'times must be between 1 and 10'
+            });
+        }
+
+        const addresses = req.body.params.address;
+        let results = {};
+        for (let i = 0; i < req.body.params.times; i++) {
+            result = await actionMgmt.claimBox(req.body.params.address);
+            console.log(result)
+            results[i + 1] = result;
+        }
+        result = results;
+    }
+    else {
+        result = await actionMgmt.claimBox(req.body.params.address);
+        console.log(result)
+    }
+
     if (null == result) {
-        return res.status(404).send({
+        return res.send({
             code: 10001,
             message: 'fail'
         });
@@ -35,11 +57,29 @@ exports.openbox = async (req, res) => {
             message: "address can not be empty"
         });
     }
+    let result = null;
+    let msg = "";
+    if (Array.isArray(req.body.params.address)) {
+        const addresses = req.body.params.address;
+        let results = {};
+        let msgs = {};
+        for (let address of addresses) {
+            [result, msg] = await actionMgmt.openBox(address);
+            console.log(result, msg)
+            results[address] = result;
+            msgs[address] = msg;
+        }
+        result = results;
+        msg = msgs;
+    }
+    else {
+        [result, msg] = await actionMgmt.openBox(req.body.params.address);
+        console.log(result, msg)
 
-    const [result,msg] = await actionMgmt.openBox(req.body.params.address);
-    console.log(result)
+    }
+
     if (Number(0) != Number(result)) {
-        return res.status(404).send({
+        return res.send({
             code: 10001,
             message: msg
         });
@@ -89,7 +129,6 @@ exports.myboxes = async (req, res) => {
         });
     }
 
-
     const boxes = await dataMgmt.getBoxAddresses(req.body.params.address);
 
     const json = {
@@ -101,8 +140,6 @@ exports.myboxes = async (req, res) => {
 
     }
     res.send(json);
-
-
 
 };
 

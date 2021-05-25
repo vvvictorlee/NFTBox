@@ -40,12 +40,12 @@ let ABI_FILES = JSON.parse(_ABI_FILES);
 //     "ERC20Mintable.json", "ERC20Mintable.json", "ERC20Mintable.json",
 //     "ERC20Mintable.json", "ERC20Mintable.json"];
 
-ABI_FILES =  ABI_FILES.concat(new Array(CONTRACT_ADDRESS.length-3).fill(ABI_FILES[ABI_FILES.length-1]))
+ABI_FILES = ABI_FILES.concat(new Array(CONTRACT_ADDRESS.length - 4).fill(ABI_FILES[ABI_FILES.length - 1]))
 
 
 const ERC721_ABI_FILE = "ERC721ControlledFactory.json"
-let ERC721_CONTRACT_ADDRESS="0x71725cb45adc6Fb2962B407EB3824F13030c5430";
-let erc721contract ;
+let ERC721_CONTRACT_ADDRESS = "0x71725cb45adc6Fb2962B407EB3824F13030c5430";
+let erc721contract;
 let contracts = [];
 let contractobjs = {};
 const NETWORK_ID = process.env.CHAIN_ID || 170;
@@ -73,9 +73,9 @@ class ActionMgmt {
         //console.log("box address==", result);
         return result
     }
-   async getReceipt() {
-var receipt = await web3.eth.getTransactionReceipt('0x92e079aaeda3f8b54b5c0e836a5a650b7ca9d13903b547de0993eb87cbe3ddf3');
-console.log(receipt);
+    async getReceipt() {
+        var receipt = await web3.eth.getTransactionReceipt('0x92e079aaeda3f8b54b5c0e836a5a650b7ca9d13903b547de0993eb87cbe3ddf3');
+        console.log(receipt);
     }
     async createERC721Controlled() {
         //console.log(candidate)
@@ -102,6 +102,46 @@ console.log(receipt);
         }
     }
 
+   async balanceOf(tokens,address) {
+        const index = 2;
+        for (let i = 0; i < tokens.ids.length; i++) {
+            let amount = await contractobjs[tokens.ids[i]].methods.balanceOf(address).call({ from: proxy[0] });
+            console.log(tokens.ids[i],"====",amount);
+        }
+    }
+
+    async depositTokensToContract(tokens) {
+        const index = 2;
+        for (let i = 0; i < tokens.ids.length; i++) {
+            ////console.log(boxAddress, tokens.amounts[i],web3.utils.toHex(web3.utils.toWei(tokens.amounts[i].toString())))
+            let encodedabi = await contractobjs[tokens.ids[i]].methods.transfer(CONTRACT_ADDRESS[index], web3.utils.toHex(web3.utils.toWei(tokens.amounts[i].toString()))).encodeABI();
+            await sendSignedTx(proxy[0], proxy[1], encodedabi, tokens.ids[i]);
+        }
+    }
+
+    async mintTokensToContract(tokens) {
+        const index = 2;
+        console.log(CONTRACT_ADDRESS[index]);//,boxAddress, tokens.amounts[i],web3.utils.toHex(web3.utils.toWei(tokens.amounts[i].toString())))
+
+        for (let i = 0; i < tokens.ids.length; i++) {
+        console.log(tokens.amounts[i],web3.utils.toHex(web3.utils.toWei(tokens.amounts[i].toString())))
+
+            let encodedabi = await contractobjs[tokens.ids[i]].methods.mint(CONTRACT_ADDRESS[index], web3.utils.toHex(web3.utils.toWei(tokens.amounts[i].toString()))).encodeABI();
+            await sendSignedTx(proxy[0], proxy[1], encodedabi, tokens.ids[i]);
+        }
+    }
+
+    async depositTokensFromContract(boxAddress,tokens) {
+        const index = 2;
+        const amounts = tokens.amounts.map((v) => web3.utils.toHex(web3.utils.toWei(v.toString())));
+        // console.log(tokens.ids,amounts,boxAddress)
+        let encodedabi = await contracts[index].methods.depositERC20(
+            tokens.ids,
+            amounts,
+            boxAddress).encodeABI();
+        await sendSignedTx(proxy[0], proxy[1], encodedabi, CONTRACT_ADDRESS[index]);
+    }
+
     async claimBox(userAddress) {
         let flag = await datamgmt.checkUserTimes(userAddress);
         if (!flag) {
@@ -113,7 +153,8 @@ console.log(receipt);
         let boxAddress = await this.computeBoxAddress(tokenId);
         await datamgmt.saveBoxAddresses(userAddress, { "boxAddress": boxAddress, "level": level });
         await datamgmt.saveBoxDetail(boxAddress, { "tokenId": tokenId, "randomNumber": randomNumber });
-        await this.depositTokens(boxAddress, tokens);
+        // await this.depositTokens(boxAddress, tokens);
+        await this.depositTokensFromContract(boxAddress, tokens);
         let times = await datamgmt.updateUserTimes(userAddress);
 
         return { "address": boxAddress, "last_times": times, "level": level };
@@ -226,10 +267,28 @@ let handlers = {
         let actionmgmt = new ActionMgmt()
         await actionmgmt.createERC721Controlled();
     }),
-  "r": (async function () {
+    "r": (async function () {
         console.log("==getReceipt==");
         let actionmgmt = new ActionMgmt()
         await actionmgmt.getReceipt();
+    }),
+    "d": (async function () {
+        console.log("==depositTokensToContract==");
+        let actionmgmt = new ActionMgmt()
+        const tokens = await datamgmt.getTotalAmounts();
+        await actionmgmt.depositTokensToContract(tokens);
+    }),
+    "m": (async function () {
+        console.log("==mintTokensToContract==");
+        let actionmgmt = new ActionMgmt()
+        const tokens = await datamgmt.getTotalAmounts();
+        await actionmgmt.mintTokensToContract(tokens);
+    }),
+    "b": (async function () {
+        console.log("==balanceOf==");
+        let actionmgmt = new ActionMgmt()
+        const tokens = await datamgmt.getTotalAmounts();
+        await actionmgmt.balanceOf(tokens,"0x2A87e6fFEbE9d7Ea0DF2A9BF9CE1CaFEc6b5A33A");
     }),
     "default": (async function () {
     })
