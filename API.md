@@ -183,12 +183,13 @@ method: POST
 ```javascript
 params: {
     address: '0xA2E21fD9F96CBa00f088c48858c3BaEf3e00cb5C', //hsc账户地址
+    times:2 //可选 领取多个
 }
 ```
 
 返回： 
 
-> 目前应该是一次只能领取一个吧？
+> 目前应该是一次只能领取一个
 
 ```javascript
 {
@@ -211,8 +212,6 @@ curl -X POST \
      -d '{"jsonrpc":"2.0","id":"id","method":"claimbox","params":{"address":"0x4a79c58CCf9d80353c02357F26D6f7b99fA9991e"}}' \
      https://box.hoosmartchain.com/api/claimbox
 
-0x187E9C0A52742604690eD1647E130e7616146b08
-
 curl -X POST \
      -H 'Content-Type: application/json' \
      -d '{"jsonrpc":"2.0","id":"id","method":"claimbox","params":{"address":"0x187E9C0A52742604690eD1647E130e7616146b08"}}' \
@@ -230,6 +229,28 @@ curl -X POST \
   }
 }
 ```
+
+* 请求 多次
+```
+curl -X POST \
+     -H 'Content-Type: application/json' \
+     -d '{"jsonrpc":"2.0","id":"id","method":"claimbox","params":{"address":"0x4a79c58CCf9d80353c02357F26D6f7b99fA9991e"，“times":2}}' \
+     https://box.hoosmartchain.com/api/claimbox
+
+```
+* 应答 多次
+```
+{
+  "code": 10000,
+  "message": "success",
+  "data": [{
+    "address": "0x97c6a2e2a8b0260c756B351bBb8D7a733585eD1c",
+    "last_times": 1146,
+    "level": 4
+  }]
+}
+```
+
 
 ##### 我的宝库
 
@@ -322,10 +343,16 @@ params: {
     address: '0xA2E21fD9F96CBa00f088c48858c3BaEf3e00cb5C', //盲盒地址
 }
 ```
+请求领取多个
+```javascript
+params: {
+    address: ['0xA2E21fD9F96CBa00f088c48858c3BaEf3e00cb5C'], //盲盒地址 列表
+}
+```
 
 返回： 
 
-> 目前应该是一次只能打开一个
+> 一次打开一个
 
 ```javascript
 {
@@ -379,5 +406,46 @@ curl -X POST \
       "amount": "0.607"
     }
   ]
+}
+```
+
+
+* 请求  多个
+  
+```
+curl -X POST \
+     -H 'Content-Type: application/json' \
+     -d '{"jsonrpc":"2.0","id":"id","method":"openbox","params":{"address":["0xE1cdCB6C6B69e03d210B0Cfa49270F7f0D5EC243"]}}' \
+     https://box.hoosmartchain.com/api/openbox
+```
+* 应答
+  
+```
+{
+  "code": 10000,
+  "message": "success",
+  "data":{ "0xE1cdCB6C6B69e03d210B0Cfa49270F7f0D5EC243":[
+    {
+      "name": "PuddingSwap",
+      "symbol": "PUDDINGSWAP",
+      "amount": "0.607"
+    },
+    {
+      "name": "Lendoo",
+      "symbol": "LENDOO",
+      "amount": "6.072"
+    },
+    {
+      "name": "HeshiSwap",
+      "symbol": "HESHISWAP",
+      "amount": "0.00607"
+    },
+    {
+      "name": "SwapAll",
+      "symbol": "SWAPALL",
+      "amount": "0.607"
+    }
+  ]
+}
 }
 ```
