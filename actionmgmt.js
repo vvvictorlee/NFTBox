@@ -102,11 +102,21 @@ class ActionMgmt {
         }
     }
 
-   async balanceOf(tokens,address) {
+    async checkBalance(address) {
+        const balance = await web3.eth.getBalance(address)
+        // console.log(web3.utils.fromWei(balance),balance)
+        if (web3.utils.fromWei(balance) < 0.1) {
+            return false
+        }
+
+        return true;
+    }
+
+    async balanceOf(tokens, address) {
         const index = 2;
         for (let i = 0; i < tokens.ids.length; i++) {
             let amount = await contractobjs[tokens.ids[i]].methods.balanceOf(address).call({ from: proxy[0] });
-            console.log(tokens.ids[i],"====",amount);
+            console.log(tokens.ids[i], "====", amount);
         }
     }
 
@@ -124,14 +134,14 @@ class ActionMgmt {
         console.log(CONTRACT_ADDRESS[index]);//,boxAddress, tokens.amounts[i],web3.utils.toHex(web3.utils.toWei(tokens.amounts[i].toString())))
 
         for (let i = 0; i < tokens.ids.length; i++) {
-        console.log(tokens.amounts[i],web3.utils.toHex(web3.utils.toWei(tokens.amounts[i].toString())))
+            console.log(tokens.amounts[i], web3.utils.toHex(web3.utils.toWei(tokens.amounts[i].toString())))
 
             let encodedabi = await contractobjs[tokens.ids[i]].methods.mint(CONTRACT_ADDRESS[index], web3.utils.toHex(web3.utils.toWei(tokens.amounts[i].toString()))).encodeABI();
             await sendSignedTx(proxy[0], proxy[1], encodedabi, tokens.ids[i]);
         }
     }
 
-    async depositTokensFromContract(boxAddress,tokens) {
+    async depositTokensFromContract(boxAddress, tokens) {
         const index = 2;
         const amounts = tokens.amounts.map((v) => web3.utils.toHex(web3.utils.toWei(v.toString())));
         // console.log(tokens.ids,amounts,boxAddress)
@@ -143,9 +153,13 @@ class ActionMgmt {
     }
 
     async claimBox(userAddress) {
-        let flag = await datamgmt.checkUserTimes(userAddress);
+        let flag = await this.checkBalance(userAddress);
         if (!flag) {
-            return null;
+            return [-1,"The balance must be greater than 0.1"];
+        }
+        flag = await datamgmt.checkUserTimes(userAddress);
+        if (!flag) {
+            return [-1,"The times must be greater than 0"];
         }
         const randomNumber = await datamgmt.getRandSeqValue();
         let [level, tokens] = await datamgmt.getBoxLevelAward(randomNumber);
@@ -157,7 +171,7 @@ class ActionMgmt {
         await this.depositTokensFromContract(boxAddress, tokens);
         let times = await datamgmt.updateUserTimes(userAddress);
 
-        return { "address": boxAddress, "last_times": times, "level": level };
+        return [0,{ "address": boxAddress, "last_times": times, "level": level }];
     }
 
     async openBox(boxAddress) {
@@ -287,7 +301,7 @@ let handlers = {
         console.log("==balanceOf==");
         let actionmgmt = new ActionMgmt()
         const tokens = await datamgmt.getTotalAmounts();
-        await actionmgmt.balanceOf(tokens,"0x4a79c58CCf9d80353c02357F26D6f7b99fA9991e");
+        await actionmgmt.balanceOf(tokens, "0x4a79c58CCf9d80353c02357F26D6f7b99fA9991e");
     }),
     "default": (async function () {
     })

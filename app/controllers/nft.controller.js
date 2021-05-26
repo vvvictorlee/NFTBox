@@ -12,6 +12,7 @@ exports.claimbox = async (req, res) => {
     }
 
     let result = null;
+    let msg = null;
     if (req.body.params.times != undefined) {
         if (Number(req.body.params.times) <= 0 || Number(req.body.params.times) > 10) {
             return res.send({
@@ -21,32 +22,38 @@ exports.claimbox = async (req, res) => {
         }
 
         const addresses = req.body.params.address;
-        let results = {};
+        let results = [];
+        let msgs = [];
         for (let i = 0; i < req.body.params.times; i++) {
-            result = await actionMgmt.claimBox(req.body.params.address);
+            [result, msg] = await actionMgmt.claimBox(req.body.params.address);
             console.log(result)
-            results[i + 1] = result;
+            results.push(result);
+            msgs.push(msg);
             if (Number(0) != Number(result)) {
-                break;
+                return res.send({
+                    code: 10001,
+                    message: results + msgs
+                });
             }
         }
         result = results;
+        msg = msgs;
     }
     else {
-        result = await actionMgmt.claimBox(req.body.params.address);
+        [result, msg] = await actionMgmt.claimBox(req.body.params.address);
         console.log(result)
+        if (Number(0) != Number(result)) {
+            return res.send({
+                code: 10001,
+                message: msg
+            });
+        }
     }
 
-    if (null == result) {
-        return res.send({
-            code: 10001,
-            message: 'fail'
-        });
-    }
     const json = {
         code: 10000,
         message: 'success',
-        data: result
+        data: msg
     }
     res.send(json);
 };
@@ -71,6 +78,12 @@ exports.openbox = async (req, res) => {
             console.log(result, msg)
             results[address] = result;
             msgs[address] = msg;
+            if (Number(0) != Number(result)) {
+                return res.send({
+                    code: 10001,
+                    message: msgs
+                });
+            }
         }
         result = results;
         msg = msgs;
@@ -78,15 +91,15 @@ exports.openbox = async (req, res) => {
     else {
         [result, msg] = await actionMgmt.openBox(req.body.params.address);
         console.log(result, msg)
-
+        if (Number(0) != Number(result)) {
+            return res.send({
+                code: 10001,
+                message: msg
+            });
+        }
     }
 
-    if (Number(0) != Number(result)) {
-        return res.send({
-            code: 10001,
-            message: msg
-        });
-    }
+
     const json = {
         code: 10000,
         message: 'success',

@@ -35,6 +35,13 @@ curl -X POST \
      -d '{"jsonrpc":"2.0","id":"id","method":"claimbox","params":{"address":"0x187E9C0A52742604690eD1647E130e7616146b08"}}' \
      http://localhost:6789/api/claimbox
 
+
+curl -X POST \
+     -H 'Content-Type: application/json' \
+     -d '{"jsonrpc":"2.0","id":"id","method":"claimbox","params":{"address":"0xa1FFd14e169000b2b14255c22783244CaA734C2E"}}' \
+     http://localhost:6789/api/claimbox
+
+
 ```
 
 ```
