@@ -26,6 +26,9 @@ exports.claimbox = async (req, res) => {
             result = await actionMgmt.claimBox(req.body.params.address);
             console.log(result)
             results[i + 1] = result;
+            if (Number(0) != Number(result)) {
+                break;
+            }
         }
         result = results;
     }

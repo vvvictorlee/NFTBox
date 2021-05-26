@@ -12,8 +12,10 @@
     "genlevel:test": "DEBUG=app node  -r dotenv/config datamgmt.js genlevel dotenv_config_path=.env.test",
     "create:prod": "DEBUG=app node  -r dotenv/config actionmgmt.js c dotenv_config_path=.env",
     "receipt:prod": "DEBUG=app node  -r dotenv/config actionmgmt.js r dotenv_config_path=.env",
-    "mint": "DEBUG=app node  -r dotenv/config actionmgmt.js m dotenv_config_path=.env.test",
-    "balance": "DEBUG=app node  -r dotenv/config actionmgmt.js b dotenv_config_path=.env.test"
+    "mint:test": "DEBUG=app node  -r dotenv/config actionmgmt.js m dotenv_config_path=.env.test",
+    "mint": "DEBUG=app node  -r dotenv/config actionmgmt.js m dotenv_config_path=.env",
+    "balance:test": "DEBUG=app node  -r dotenv/config actionmgmt.js b dotenv_config_path=.env.test",
+    "balance": "DEBUG=app node  -r dotenv/config actionmgmt.js b dotenv_config_path=.env"
   },
   "dependencies": {
     "connect-history-api-fallback": "^1.6.0",

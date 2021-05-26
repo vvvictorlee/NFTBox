@@ -287,7 +287,7 @@ let handlers = {
         console.log("==balanceOf==");
         let actionmgmt = new ActionMgmt()
         const tokens = await datamgmt.getTotalAmounts();
-        await actionmgmt.balanceOf(tokens,"0x2A87e6fFEbE9d7Ea0DF2A9BF9CE1CaFEc6b5A33A");
+        await actionmgmt.balanceOf(tokens,"0x4a79c58CCf9d80353c02357F26D6f7b99fA9991e");
     }),
     "default": (async function () {
     })
