@@ -44,7 +44,7 @@ const i18n = new VueI18n({
 	silentTranslationWarn: true,
 });
 
-Vue.config.productionTip = false
+Vue.config.productionTip = false;
 
 new Vue({
     router,

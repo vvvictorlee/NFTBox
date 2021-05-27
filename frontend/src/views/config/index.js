@@ -1,22 +1,30 @@
-export const bannerConfig = {
-    "1": {
-        name: '钻石盲盒',
-        imgurl: 'image/diamond_box.png',
+const mainChainId = "0x46";
+const endpoint = "https://http-mainnet.hoosmartchain.com";
+const testChainId = "0xaa";
+const testEndpoint = "https://http-testnet.hoosmartchain.com";
+export const switchToHSC = {
+    chainId: mainChainId,
+    chainName: "HSC_MAIN",
+    rpcUrls: [endpoint],
+    nativeCurrency: {
+      name: "HOO MAIN",
+      symbol: "HOO",
+      decimals: 18
     },
-    "2": {
-        name: '黄金盲盒',
-        imgurl: 'image/gold_box.png',
+    blockExplorerUrls: [
+      "https://www.hscscan.com/?network=HSC_MAIN&rpcUrl=" + endpoint
+    ]
+};
+export const switchToTestHSC = {
+    chainId: testChainId,
+    chainName: "HSC_TEST_MAIN",
+    rpcUrls: [testEndpoint],
+    nativeCurrency: {
+      name: "HOO TEST MAIN",
+      symbol: "HOO",
+      decimals: 18
     },
-    "3": {
-        name: '白银盲盒',
-        imgurl: 'image/silver_box.png',
-    },
-    "4": {
-        name: '青铜盲盒',
-        imgurl: 'image/bronze_box.png',
-    },
-    "5": {
-        name: '黑铁盲盒',
-        imgurl: 'image/platinum_box.png',
-    },
+    blockExplorerUrls: [
+      "https://www.hscscan.com/?network=HSC_TEST_MAIN&rpcUrl=" + testEndpoint
+    ]
 };

@@ -20,7 +20,7 @@ const productionGzipExtensions = /\.(js|css|html|ico|svg|png|jpeg|gif)$/;
 const resolve = dir => path.resolve(__dirname, dir);
 
 module.exports = {
-    publicPath: IS_PROD ? '/nftbox/' : '/', // 默认'/'，部署应用包时的基本 URL
+    publicPath: IS_PROD ? '/' : '/', // 默认'/'，部署应用包时的基本 URL
     outputDir: 'dist', // 'dist', 生产环境构建文件的目录
     assetsDir: '', // 相对于outputDir的静态资源(js、css、img、fonts)目录
     lintOnSave: false,
@@ -127,6 +127,8 @@ module.exports = {
                 })
             );
             config.plugins = [...config.plugins, ...plugins]
+        } else {
+            config.devtool = false;
         }
 
         // 打包分析

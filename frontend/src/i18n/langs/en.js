@@ -36,7 +36,7 @@ const en = {
         test33: 'and won:',
         test34: 'Get More Fortune Code on HSC',
         test35: 'Copy',
-        text36: 'Use Mobile Screen Capture',
+        test36: 'Use Mobile Screen Capture',
 
         test37: 'Or address with less than 0.1 HOO ',
         test38: 'Buy HOO',

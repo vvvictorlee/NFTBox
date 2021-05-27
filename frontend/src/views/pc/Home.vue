@@ -37,7 +37,7 @@
 			<div class="account-container">
 				<div class="account-addr-container">
 					<div class="account-addr" v-if="clientAccount">{{clientAccount | formatAccount}}</div>
-					<div class="account-addr" v-if="!clientAccount">Connect</div>
+					<div class="account-addr" v-if="!clientAccount" @click="connectWallet">Connect</div>
 				</div>
                 <div class="account-tips">{{`Balance: ${clientBalance} ${balanceTokenName}`}}</div>
 			</div>

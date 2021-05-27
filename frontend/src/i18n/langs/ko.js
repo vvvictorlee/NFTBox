@@ -39,7 +39,7 @@ const ko = {
         test33: 'and won:',
         test34: 'Get More Fortune Code on HSC',
         test35: 'Copy',
-        text36: 'Use Mobile Screen Capture',
+        test36: 'Use Mobile Screen Capture',
 
         test37: '또는 주소의 HOO가 0.1보다 적습니다.',
         test38: 'HOO 구매',

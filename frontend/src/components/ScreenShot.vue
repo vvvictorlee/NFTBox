@@ -63,11 +63,17 @@ export default {
 		return {
 			dialogShow: false,
 			publicPath: process.env.BASE_URL,
-			copyText: this.$t('home.test35'),
 			userAgentGlobal: '',
 		}
 	},
-	mounted() {
+    computed: {
+        copyText() {
+            let buttonText = this.$t('home.test35');
+            buttonText = (userAgentGlobal == 'pc' && navigator.clipboard) ? this.$t('home.test35') : navigator.clipboard ? this.$t('home.test35') : this.$t('home.test36');
+            return buttonText;
+        },
+    },
+    created() {
         let that = this;
 		if (navigator.userAgent.match(/(iPhone|iphone|ipad|ipod|iPad|iPod)/i)) {
 			that.userAgentGlobal = "iphone";
@@ -77,9 +83,11 @@ export default {
 			that.userAgentGlobal = "pc";
 		}
 		// console.log(userAgentGlobal);
-		this.copyText = userAgentGlobal == 'pc' ? this.$t('home.test35') : this.$t('home.test36');
-
+		// this.copyText = userAgentGlobal == 'pc' ? this.$t('home.test35') : this.$t('home.test36');
 		// console.log(this.copyText);
+    },
+	mounted() {
+        
 	},
 	methods: {
 		//打开弹窗
@@ -118,8 +126,8 @@ export default {
                     that.closeDialog();
 				});
 			} else {
-                that.$Toast('Use Mobile Screen Capture');
-                that.closeDialog();
+                that.$Toast('Use other methods to take screenshots');
+                // that.closeDialog();
 			}
 		},
 	},

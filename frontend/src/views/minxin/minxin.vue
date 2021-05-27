@@ -12,6 +12,7 @@ import { mapState, mapGetters, mapActions } from 'vuex';
 import { getBanners, handleReceive, getMyboxes, openBox } from '../../http/home';
 import LoadingTip from '../../components/LoadingTip.vue';
 const Web3 = require('web3');
+import { switchToHSC, switchToTestHSC } from '../config/index';
 export default {
 	name: 'BoxMinxin',
 	data() {
@@ -19,9 +20,9 @@ export default {
 			publicPath: process.env.BASE_URL,
 			current: 0,
 			clientAccount: '',
-            clientBalance: 0,
+			clientBalance: 0,
 			web3Client: null,
-            chainId: 170,
+			chainId: 170,
 			loadingTips: false,
 			bannerConfig: {
 				"1": {
@@ -72,11 +73,11 @@ export default {
 			let flag = len > 0 ? true : false;
 			return flag;
 		},
-        balanceTokenName() {
-            let tokenName = '';
-            tokenName = ((this.chainId == 70) || (this.chainId == 170)) ? 'HOO' : '';
-            return tokenName;
-        },
+		balanceTokenName() {
+			let tokenName = '';
+			tokenName = ((this.chainId == 70) || (this.chainId == 170)) ? 'HOO' : '';
+			return tokenName;
+		},
 	},
 	filters: {
 		formatAccount(account) {
@@ -321,7 +322,7 @@ export default {
 				} catch (error) {
 					// 用户不授权时
 					console.error("User denied account access");
-                    that.$Toast("User denied account access");
+					that.$Toast("User denied account access");
 				}
 			} else if (window.web3) {   // 老版 MetaMask Legacy dapp browsers...
 				web3Provider = window.web3.currentProvider;
@@ -332,16 +333,16 @@ export default {
 			// console.log('----web3Obj----', web3Client);
 			that.web3Client = web3Client;
 
-            //获取主网id
-            that.getChainId();
+			//获取主网id
+			that.getChainId();
 
-            //获取账户和余额
-            that.getAccount();
+			//获取账户和余额
+			that.getAccount();
 
 			window.ethereum.on('accountsChanged', function (accounts) {
 				// Time to reload your interface with accounts[0]!
 				console.log('---accountsChanged-----');
-                that.getAccount();
+				that.getAccount();
 			});
 			let currentChainId = null
 			console.log('---isconnected-----', window.ethereum.isConnected())
@@ -402,43 +403,55 @@ export default {
 			//console.log(web3Client.utils.utf8ToHex("Hello world"));
 			//web3Client.eth.sign("Hello world", that.clientAccount).then(console.log);
 		},
-        //获取账户
-        async getAccount() {
-            let that = this;
-            if(!that.web3Client) {
-                return;
-            }
-            await that.web3Client.eth.getAccounts((error, result) => {
+		//获取账户
+		async getAccount() {
+			let that = this;
+			if (!that.web3Client) {
+				return;
+			}
+			console.log(switchToHSC);
+            let chainId = await that.web3Client.eth.getChainId();
+			await that.web3Client.eth.getAccounts((error, result) => {
 				if (!error) {
 					console.log(result);
 					that.clientAccount = result[0];
+					window.ethereum.request({
+						method: "wallet_addEthereumChain",
+						params: [switchToTestHSC, that.clientAccount]
+					}).then(res => {
+                        console.log(res);
+                        if(!(chainId == 170 || chainId == 70)) {
+                            window.location.reload();
+                        }
+                        // window.location.reload();
+                    }).catch((error) => console.log(error.message));
 				} else {
 					console.log(error);
 				}
 			});
-            that.getBalance();
-        },
-        //获取账户余额
-        async getBalance() {
-            let that = this;
-            if(!that.clientAccount || !that.web3Client) {
-                return;
-            }
-            let balance = await that.web3Client.eth.getBalance(that.clientAccount);
+			that.getBalance();
+		},
+		//获取账户余额
+		async getBalance() {
+			let that = this;
+			if (!that.clientAccount || !that.web3Client) {
+				return;
+			}
+			let balance = await that.web3Client.eth.getBalance(that.clientAccount);
 			let initBalance = that.web3Client.utils.fromWei(balance);
-            that.clientBalance = parseFloat(initBalance).toFixed(4);
-            console.log('---number balance---', initBalance);
-        },
+			that.clientBalance = parseFloat(initBalance).toFixed(4);
+			console.log('---number balance---', initBalance);
+		},
 
-        async getChainId() {
-            let that = this;
-             if(!that.web3Client) {
-                return;
-            }
+		async getChainId() {
+			let that = this;
+			if (!that.web3Client) {
+				return;
+			}
 			let chainId = await that.web3Client.eth.getChainId()
 			console.log(`chain id: ${chainId}`)
 			that.chainId = chainId;
-        },
+		},
 
 	}
 }
