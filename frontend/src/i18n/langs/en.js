@@ -16,7 +16,7 @@ const en = {
         test14: 'Open Now',
         test15: 'Congrats!',
         test16: 'Win',
-        test17: 'Screenshot to share',
+        test17: 'Share',
         test18: 'Failed',
         test19: 'Success',
         test20: 'You still have ',
@@ -31,6 +31,15 @@ const en = {
         test29: 'Silver',
         test30: 'Bronze',
         test31: 'Iron',
+
+        test32: 'I opened HSC',
+        test33: 'and won:',
+        test34: 'Get More Fortune Code on HSC',
+        test35: 'Copy',
+        text36: 'Use Mobile Screen Capture',
+
+        test37: 'Or address with less than 0.1 HOO ',
+        test38: 'Buy HOO',
     }
 };
 export default en;

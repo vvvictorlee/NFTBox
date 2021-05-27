@@ -1,29 +1,32 @@
 <template>
-	<div class="open-result">
-		<div class="right-x-bg"></div>
-		<div class="left-x-bg"></div>
-		<div class="result-container" :class="[pageType == 'fail' ? 'fail-border': 'sucess-boder']">
-			<div class="first-title sucess-color">{{`${$t('home.test15')} ${$t(getOpenBoxInfo.i18Text)} ${$t('home.test16')}`}}</div>
-			<div class="content-container">
-				<div class="second-part">
-					<div class="second-text1" v-for="(item,index) in getOpenBoxInfo.tokens" :key="index + 'tokens'">
-                        <span>{{`${item.symbol} ${item.amount}`}}</span>
-                    </div>
-					<!-- <div class="second-text1">829.25 HOO</div>
+	<div class="mobile-open-result">
+        <div class="left-x-bg"></div>
+		<div class="open-result">
+			<div class="result-container" :class="[pageType == 'fail' ? 'fail-border': 'sucess-boder']">
+				<div class="first-title sucess-color">{{`${$t('home.test15')} ${$t(getOpenBoxInfo.i18Text)} ${$t('home.test16')}`}}</div>
+				<div class="content-container">
+					<div class="second-part">
+						<div class="second-text1" v-for="(item,index) in getOpenBoxInfo.tokens" :key="index + 'tokens'">
+							<span>{{`${item.symbol} ${item.amount}`}}</span>
+						</div>
+						<!-- <div class="second-text1">829.25 HOO</div>
 					<div class="second-text1">0.0000254 BTC</div>
 					<div class="second-text1">0.00012 ETH</div> -->
+					</div>
+				</div>
+				<div class="button-container">
+					<div class="check-button" @click.stop="goBack">ok</div>
+					<div class="copy-button" @click="copyShare">{{$t('home.test17')}}</div>
 				</div>
 			</div>
-			<div class="button-container">
-				<div class="check-button" @click.stop="goBack">ok</div>
-				<!-- <div class="copy-button">{{$t('home.test17')}}</div> -->
-			</div>
 		</div>
+        <screen-shot ref="screenShot" :tokens="getOpenBoxInfo.tokens" :boxText="$t(getOpenBoxInfo.i18Text)"></screen-shot>
 	</div>
 </template>
 
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex';
+import ScreenShot from '../../components/ScreenShot';
 export default {
 	name: 'OpenResult',
 	data() {
@@ -32,6 +35,9 @@ export default {
 			// leftTimes: 10, //剩余次数
 			publicPath: process.env.BASE_URL,
 		}
+	},
+    components: {
+		'screen-shot': ScreenShot,
 	},
 	computed: {
 		...mapGetters({
@@ -42,53 +48,53 @@ export default {
 		this.pageType = (this.$route.params && this.$route.params.id) || "sucess";
 		console.log(this.$route.params.id);
 	},
-    methods: {
-        goBack() {
-            this.$router.go(-1);
+    mounted() {
+		
+	},
+	methods: {
+		goBack() {
+			this.$router.go(-1);
+		},
+        copyShare() {
+            this.$refs['screenShot'].openDialog();
         },
-    },
+	},
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
+.mobile-open-result {
+	background: #303030;
+    padding-top: 1.2rem;
+    padding-bottom: 1.2rem;
+	min-height: calc(100vh - 2.4rem);
+	width: 100%;
+    overflow: hidden;
+    position: relative;
+    .left-x-bg {
+		position: absolute;
+		top: 0;
+		left: 50%;
+		width: 3.5rem;
+		height: 4rem;
+		background: url("../../assets/image/bg-shadow.png") no-repeat;
+		background-size: 100% 100%;
+        transform: translate(-50%, -30%);
+	}
+}
 .open-result {
 	background: #303030;
-	min-height: 100vh;
-	width: 7.5rem;
-	position: relative;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	overflow: hidden;
-	.left-x-bg {
-		position: absolute;
-		top: -1rem;
-		left: 0;
-		width: 3.5rem;
-		height: 7.64rem;
-		background: url("../../assets/image/x-bg.png") no-repeat;
-		background-size: 100% 100%;
-	}
-	.right-x-bg {
-		position: absolute;
-		top: -2rem;
-		right: 0;
-		width: 3.5rem;
-		height: 7.64rem;
-		background: url("../../assets/image/x-bg.png") no-repeat;
-		background-size: 100% 100%;
-	}
 	.result-container {
-		padding-top: 0.72rem;
-		// position: absolute;
-		// top: 0.8rem;
-		// left: 0.4rem;
-		max-height: 9rem;
-		overflow: auto;
+        margin: 0 auto;
 		width: 6.7rem;
 		background: #232323;
 		border-radius: 0.12rem;
+        padding-top: .6rem;
 		&.sucess-boder {
 			border-top: 0.06rem solid #02ead0;
 		}
@@ -118,7 +124,9 @@ export default {
 			text-align: center;
 		}
 		.content-container {
-			padding-top: 0.6rem;
+			margin-top: 0.6rem;
+			max-height: 4rem;
+			overflow-y: scroll;
 			.second-part {
 				padding-left: 0.46rem;
 				padding-right: 0.46rem;

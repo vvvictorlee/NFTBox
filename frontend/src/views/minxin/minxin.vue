@@ -11,6 +11,7 @@
 import { mapState, mapGetters, mapActions } from 'vuex';
 import { getBanners, handleReceive, getMyboxes, openBox } from '../../http/home';
 import LoadingTip from '../../components/LoadingTip.vue';
+const Web3 = require('web3');
 export default {
 	name: 'BoxMinxin',
 	data() {
@@ -18,33 +19,35 @@ export default {
 			publicPath: process.env.BASE_URL,
 			current: 0,
 			clientAccount: '',
+            clientBalance: 0,
 			web3Client: null,
+            chainId: 170,
 			loadingTips: false,
 			bannerConfig: {
 				"1": {
 					name: this.$t('home.test27'),
 					imgurl: 'image/diamond_box.png',
-                    i18Text: 'home.test27',
+					i18Text: 'home.test27',
 				},
 				"2": {
 					name: this.$t('home.test28'),
 					imgurl: 'image/gold_box.png',
-                    i18Text: 'home.test28',
+					i18Text: 'home.test28',
 				},
 				"3": {
 					name: this.$t('home.test29'),
 					imgurl: 'image/silver_box.png',
-                    i18Text: 'home.test29',
+					i18Text: 'home.test29',
 				},
 				"4": {
 					name: this.$t('home.test30'),
 					imgurl: 'image/bronze_box.png',
-                    i18Text: 'home.test30',
+					i18Text: 'home.test30',
 				},
 				"5": {
 					name: this.$t('home.test31'),
 					imgurl: 'image/platinum_box.png',
-                    i18Text: 'home.test31',
+					i18Text: 'home.test31',
 				},
 			},
 		}
@@ -64,10 +67,15 @@ export default {
 			let flag = !!this.clientAccount;
 			return flag;
 		},
-        hasBoxList() {
-            let len = this.getMyboxList.length;
-            let flag = len > 0 ? true : false;
-            return flag;
+		hasBoxList() {
+			let len = this.getMyboxList.length;
+			let flag = len > 0 ? true : false;
+			return flag;
+		},
+        balanceTokenName() {
+            let tokenName = '';
+            tokenName = ((this.chainId == 70) || (this.chainId == 170)) ? 'HOO' : '';
+            return tokenName;
         },
 	},
 	filters: {
@@ -75,7 +83,7 @@ export default {
 			if (!account) {
 				return '';
 			}
-			let len = 13;
+			let len = 10;
 			return `${account.substring(0, len)}...${account.substring(42 - len)}`
 		},
 		formatAccountMobile(account) {
@@ -93,17 +101,17 @@ export default {
 			setMyboxList: "setMyboxList",
 			setOpenBoxInfo: "setOpenBoxInfo",
 		}),
-        formatBannerName(level) {
-            console.log(level)
-            let that = this;
-            if (!level) {
+		formatBannerName(level) {
+			console.log(level)
+			let that = this;
+			if (!level) {
 				return '';
 			}
-            console.log(that.bannerConfig);
-            let findItem = that.bannerConfig[level] || {};
-            let name = findItem && findItem['name'] || '';
-            return name;
-        },
+			console.log(that.bannerConfig);
+			let findItem = that.bannerConfig[level] || {};
+			let name = findItem && findItem['name'] || '';
+			return name;
+		},
 		onChange(index) {
 			this.current = index;
 			// console.log(index);
@@ -165,11 +173,11 @@ export default {
 						// element.is_active = false;
 					});
 				}
-                that.setMyboxList(records);
+				that.setMyboxList(records);
 			}).catch(err => {
 				that.loadingTips = false;
-                let errorRecords = [];
-                that.setMyboxList(errorRecords);
+				let errorRecords = [];
+				that.setMyboxList(errorRecords);
 			});
 		},
 		//选中一个盲盒
@@ -232,13 +240,13 @@ export default {
 		//提交打开盲盒
 		openSubmit() {
 			let that = this;
-            let temArr = that.getMyboxList || [];
-            let len = temArr.length;
-            console.log(len)
-            if(len == 0) {
-                that.$Toast('no box can select');
+			let temArr = that.getMyboxList || [];
+			let len = temArr.length;
+			console.log(len)
+			if (len == 0) {
+				that.$Toast('no box can select');
 				return;
-            }
+			}
 			let requestItem = temArr.find((item) => {
 				return item.is_active;
 			});
@@ -257,7 +265,7 @@ export default {
 				let openBoxInfo = {
 					name: '',
 					level: '',
-                    i18Text: 'home.test27',
+					i18Text: 'home.test27',
 					tokens: [],
 				};
 				if (res.code == '10000') {
@@ -266,7 +274,7 @@ export default {
 					openBoxInfo = {
 						name: requestItem && requestItem.name || '',
 						level: requestItem && requestItem.level || '',
-                        i18Text: requestItem && requestItem.i18Text || '',
+						i18Text: requestItem && requestItem.i18Text || '',
 						tokens: tokens,
 					};
 					that.setOpenBoxInfo(openBoxInfo);
@@ -281,7 +289,7 @@ export default {
 					openBoxInfo = {
 						name: '',
 						level: '',
-                        i18Text: '',
+						i18Text: '',
 						tokens: [],
 					};
 					that.setOpenBoxInfo(openBoxInfo);
@@ -296,6 +304,142 @@ export default {
 				that.loadingTips = false;
 			});
 		},
+
+		// ********************** 连接链上操作 *********************** //
+
+		async connectWallet() {
+			let that = this;
+			let web3Provider = "";
+			// console.log(window.ethereum);
+			if (window.ethereum) {
+				web3Provider = window.ethereum;
+				try {
+					// 请求用户授权
+					await window.ethereum.enable().then(accounts => {
+						console.log('---metamask----', accounts);
+					});
+				} catch (error) {
+					// 用户不授权时
+					console.error("User denied account access");
+                    that.$Toast("User denied account access");
+				}
+			} else if (window.web3) {   // 老版 MetaMask Legacy dapp browsers...
+				web3Provider = window.web3.currentProvider;
+			} else {
+				// web3Provider = new Web3.providers.HttpProvider('https://http-mainnet.hoosmartchain.com');
+			}
+			let web3Client = new Web3(web3Provider);
+			// console.log('----web3Obj----', web3Client);
+			that.web3Client = web3Client;
+
+            //获取主网id
+            that.getChainId();
+
+            //获取账户和余额
+            that.getAccount();
+
+			window.ethereum.on('accountsChanged', function (accounts) {
+				// Time to reload your interface with accounts[0]!
+				console.log('---accountsChanged-----');
+                that.getAccount();
+			});
+			let currentChainId = null
+			console.log('---isconnected-----', window.ethereum.isConnected())
+
+			window.ethereum.on('chainChanged', (chainId) => {
+				// Handle the new chain.
+				// Correctly handling chain changes can be complicated.
+				// We recommend reloading the page unless you have good reason not to.
+				window.location.reload();
+			});
+
+			// window.ethereum.request({
+			// 	method: 'wallet_requestPermissions',
+			// 	params: [{ eth_accounts: {} }],
+			// }).then((permissions) => {
+			// 	const accountsPermission = permissions.find(
+			// 		(permission) => permission.parentCapability === 'eth_accounts'
+			// 	);
+			// 	if (accountsPermission) {
+			// 		console.log('eth_accounts permission successfully requested!');
+			// 	}
+			// }).catch((error) => {
+			// 	if (error.code === 4001) {
+			// 		// EIP-1193 userRejectedRequest error
+			// 		console.log('Permissions needed to continue.');
+			// 	} else {
+			// 		console.error(error);
+			// 	}
+			// });
+
+			// let tempdata = await ethereum.request({ method: 'eth_requestAccounts' });
+			// console.log(tempdata);
+
+			// window.ethereum.request({
+			// 	method: 'wallet_requestPermissions',
+			// 	params: [{ eth_accounts: {} }],
+			// }).then((permissions) => {
+			// 	const accountsPermission = permissions.find(
+			// 		(permission) => permission.parentCapability === 'eth_accounts'
+			// 	);
+			// 	if (accountsPermission) {
+			// 		console.log('eth_accounts permission successfully requested!');
+			// 	}
+			// }).catch((error) => {
+			// 	if (error.code === 4001) {
+			// 		// EIP-1193 userRejectedRequest error
+			// 		console.log('Permissions needed to continue.');
+			// 	} else {
+			// 		console.error(error);
+			// 	}
+			// });
+
+			// first argument is web3.sha3("xyz")
+			// let result = web3.eth.sign('0x9dd2c369a187b4e6b9c402f030e50743e619301ea62aa4c0737d4ef7e10a3d49',that.clientAccount,function(signTxt){
+			//     console.log(signTxt);
+			// });
+
+			//console.log(web3Client.utils.utf8ToHex("Hello world"));
+			//web3Client.eth.sign("Hello world", that.clientAccount).then(console.log);
+		},
+        //获取账户
+        async getAccount() {
+            let that = this;
+            if(!that.web3Client) {
+                return;
+            }
+            await that.web3Client.eth.getAccounts((error, result) => {
+				if (!error) {
+					console.log(result);
+					that.clientAccount = result[0];
+				} else {
+					console.log(error);
+				}
+			});
+            that.getBalance();
+        },
+        //获取账户余额
+        async getBalance() {
+            let that = this;
+            if(!that.clientAccount || !that.web3Client) {
+                return;
+            }
+            let balance = await that.web3Client.eth.getBalance(that.clientAccount);
+			let initBalance = that.web3Client.utils.fromWei(balance);
+            that.clientBalance = parseFloat(initBalance).toFixed(4);
+            console.log('---number balance---', initBalance);
+        },
+
+        async getChainId() {
+            let that = this;
+             if(!that.web3Client) {
+                return;
+            }
+			let chainId = await that.web3Client.eth.getChainId()
+			console.log(`chain id: ${chainId}`)
+			that.chainId = chainId;
+        },
+
 	}
 }
 </script>

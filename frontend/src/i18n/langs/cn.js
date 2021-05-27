@@ -34,6 +34,16 @@ const zh_hans = {
         test29: '白银盲盒',
         test30: '青铜盲盒',
         test31: '黑铁盲盒',
+
+        test32: '我打开了HSC',
+        test33: '获得了：',
+        test34: '获取更多财富机会，立即了解虎符智能链(HSC)',
+        test35: '复制图片',
+        test36: '使用手机截屏功能',
+
+        test37: '或地址的HOO少于0.1个',
+        test38: '购买HOO',
+
     }
 };
 export default zh_hans;

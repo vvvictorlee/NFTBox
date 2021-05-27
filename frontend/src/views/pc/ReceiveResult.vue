@@ -1,8 +1,7 @@
 <template>
 	<div class="pc-receive-result">
+		<div class="left-x-bg"></div>
 		<div class="receive-result">
-			<!-- <div class="right-x-bg"></div>
-			<div class="left-x-bg"></div> -->
 			<div class="result-container" :class="[pageType == 'fail' ? 'fail-border': 'sucess-boder']">
 				<div class="first-title" :class="[pageType == 'fail' ? 'fail-color': 'sucess-color']">{{pageType == 'fail' ? $t('home.test18') : $t('home.test19')}}</div>
 				<div class="first-sammary">{{`${$t('home.test20')} ${getOpenMessage.last_times} ${$t('home.test21')}`}}</div>
@@ -15,14 +14,15 @@
 					<div class="second-part">
 						<div class="second-text1">{{$t(computedBoxInfo.i18Text) || computedBoxInfo.name}}</div>
 						<div class="second-text2">
-                            <span>{{$t('home.test22')}}</span>
+							<span>{{$t('home.test22')}}</span>
 							<span v-for="(ele,index) in (computedBoxInfo.tokens || [])" :key="index + 'tokens'">{{`${index == 0 ? '' : '、'} ${ele.symbol}`}}</span>
-                        </div>
+						</div>
 						<!-- <div class="second-text3">盲盒私钥</div>
 						<div class="second-text4">0x0aade7759446e07ad10cc6456d41e05c80c88bd1</div> -->
 					</div>
-					<div class="button-container">
+					<div class="button-container double-button">
 						<div class="copy-button" @click.stop="goBack">{{$t('home.test23')}}</div>
+                        <div class="copy-button" @click.stop="goHooSpot">{{$t('home.test38')}}</div>
 					</div>
 				</div>
 				<div class="content-container" v-if="(pageType == 'fail')">
@@ -35,10 +35,12 @@
 						<div class="fail-text-container">
 							<div class="fail-text1">{{$t('home.test24')}}</div>
 							<div class="fail-text2">{{$t('home.test25')}}</div>
+                            <div class="fail-text2">{{$t('home.test37')}}</div>
 						</div>
 					</div>
-					<div class="button-container">
+					<div class="button-container double-button">
 						<div class="check-button">{{$t('home.test26')}}</div>
+                        <div class="check-button" @click.stop="goHooSpot">{{$t('home.test38')}}</div>
 					</div>
 				</div>
 				<div class="tips-area">
@@ -69,26 +71,26 @@ export default {
 	computed: {
 		...mapGetters({
 			getOpenMessage: "getOpenMessage",
-            getBannerList: "getBannerList",
+			getBannerList: "getBannerList",
 		}),
 		computedBoxInfo() {
 			let that = this;
-            let level = that.getOpenMessage && that.getOpenMessage.level || '';
-            let boxInfo = {
-                name: '',
-                imgurl:"image/diamond_box.png",
-                i18Text: 'home.test27',
-                tokens: [],
-            };
-            if(!level) {
-                return boxInfo;
-            } else {
-                let tempObj = that.getBannerList.find((item) => {
-                    return item.level == level;
-                })
-                // console.log(tempObj);
-                return tempObj;
-            }
+			let level = that.getOpenMessage && that.getOpenMessage.level || '';
+			let boxInfo = {
+				name: '',
+				imgurl: "image/diamond_box.png",
+				i18Text: 'home.test27',
+				tokens: [],
+			};
+			if (!level) {
+				return boxInfo;
+			} else {
+				let tempObj = that.getBannerList.find((item) => {
+					return item.level == level;
+				})
+				// console.log(tempObj);
+				return tempObj;
+			}
 		},
 	},
 	created() {
@@ -97,8 +99,11 @@ export default {
 	},
 
 	methods: {
-        goBack() {
-            this.$router.go(-1);
+		goBack() {
+			this.$router.go(-1);
+		},
+        goHooSpot() {
+            window.open('https://hoo.co/spot/hoo-usdt',"_blank");
         },
 	},
 }
@@ -109,12 +114,24 @@ export default {
 .pc-receive-result {
 	width: 100%;
 	min-height: calc(100vh - 20px);
-	padding-top: 10px;
+	padding-top: 20px;
 	padding-bottom: 10px;
 	min-width: 800px;
 	background: #232323;
+	position: relative;
+    overflow: hidden;
+	.left-x-bg {
+		position: absolute;
+		top: 0;
+		left: 50%;
+		width: 436px;
+		height: 560px;
+		background: url("../../assets/image/bg-shadow.png") no-repeat;
+		background-size: 100% 100%;
+        transform: translate(-50%, -40%);
+	}
 	.receive-result {
-		margin: 100px auto;
+		margin: 60px auto;
 		background: #303030;
 		min-height: 200px;
 		padding-bottom: 40px;
@@ -125,24 +142,6 @@ export default {
 		align-items: flex-start;
 		overflow: hidden;
 		border-radius: 12px;
-		.left-x-bg {
-			position: absolute;
-			top: -20px;
-			left: 50px;
-			width: 350px;
-			height: 400px;
-			background: url("../../assets/image/x-bg.png") no-repeat;
-			background-size: 100% 100%;
-		}
-		.right-x-bg {
-			position: absolute;
-			top: -100px;
-			right: 0;
-			width: 350px;
-			height: 400px;
-			background: url("../../assets/image/x-bg.png") no-repeat;
-			background-size: 100% 100%;
-		}
 		.result-container {
 			margin-top: 30px;
 			min-height: 200px;
@@ -194,6 +193,7 @@ export default {
 						justify-content: center;
 						align-items: center;
 						overflow: hidden;
+						z-index: 999;
 						img {
 							display: block;
 							height: 100%;
@@ -271,8 +271,13 @@ export default {
 					display: flex;
 					justify-content: center;
 					align-items: center;
-					// padding-left: 20px;
-					// padding-right: 20px;
+					padding-left: 20px;
+					padding-right: 20px;
+                    &.double-button{
+                        display: flex;
+                        justify-content: space-between !important;
+                        align-items: center;
+                    }
 					.copy-button {
 						min-width: 100px;
 						padding-left: 20px;

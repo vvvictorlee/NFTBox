@@ -35,11 +35,11 @@
 				</div>
 			</div>
 			<div class="account-container">
-				<!-- <div class="account-tips">{{`Account: `}}</div> -->
 				<div class="account-addr-container">
 					<div class="account-addr" v-if="clientAccount">{{clientAccount | formatAccount}}</div>
 					<div class="account-addr" v-if="!clientAccount">Connect</div>
 				</div>
+                <div class="account-tips">{{`Balance: ${clientBalance} ${balanceTokenName}`}}</div>
 			</div>
 			<div class="button-container">
 				<div class="check-button">{{$t('home.test2')}}</div>
@@ -108,7 +108,7 @@
 import NftDialog from './NftDialog';
 import BoxDialog from './BoxDialog';
 import MultInput from './MultInput';
-const Web3 = require('web3');
+// const Web3 = require('web3');
 // import MetaMaskOnboarding from '@metamask/onboarding';
 import BoxMinxin from '../minxin/minxin';
 import LanguagePc from '../../components/LanguagePc';
@@ -135,116 +135,8 @@ export default {
 	created() {
 		this.initBannerList();
 	},
-	async mounted() {
-		let that = this;
-
-		// const web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'))
-		// console.log('----account----', web3.eth.accounts)
-
-		let web3Provider = "";
-		console.log(window.ethereum);
-		if (window.ethereum) {
-			web3Provider = window.ethereum;
-			try {
-				// 请求用户授权
-				await window.ethereum.enable().then(accounts => {
-					console.log('---metamask----', accounts);
-				});
-			} catch (error) {
-				// 用户不授权时
-				console.error("User denied account access")
-			}
-		} else if (window.web3) {   // 老版 MetaMask Legacy dapp browsers...
-			web3Provider = window.web3.currentProvider;
-		} else {
-			web3Provider = new Web3.providers.HttpProvider('https://http-mainnet.hoosmartchain.com');
-		}
-		// web3Provider = new Web3.providers.HttpProvider('https://http-mainnet.hoosmartchain.com');
-		let web3Client = new Web3(web3Provider);
-		console.log('----web3Obj----', web3Client);
-		that.web3Client = web3Client;
-
-		await web3Client.eth.getAccounts((error, result) => {
-			if (!error) {
-				console.log(result);
-				that.clientAccount = result[0];
-			} else {
-				console.log(error);
-			}
-		});
-
-		// console.log(that.clientAccount);
-		let accounts = await web3Client.eth.getAccounts();
-		console.log('---defaultAccount---', accounts);
-
-		let balance = await web3Client.eth.getBalance(that.clientAccount);
-		let initBalance = web3Client.utils.fromWei(balance);
-		console.log('---number balance---', initBalance);
-		// console.log(balance.toNumber());
-
-		window.ethereum.on('accountsChanged', function (accounts) {
-			// Time to reload your interface with accounts[0]!
-			console.log('---accountsChanged-----');
-		});
-		let currentChainId = null
-		console.log('---isconnected-----', window.ethereum.isConnected())
-
-		window.ethereum.on('chainChanged', (chainId) => {
-			// Handle the new chain.
-			// Correctly handling chain changes can be complicated.
-			// We recommend reloading the page unless you have good reason not to.
-			window.location.reload();
-		});
-
-		// window.ethereum.request({
-		// 	method: 'wallet_requestPermissions',
-		// 	params: [{ eth_accounts: {} }],
-		// }).then((permissions) => {
-		// 	const accountsPermission = permissions.find(
-		// 		(permission) => permission.parentCapability === 'eth_accounts'
-		// 	);
-		// 	if (accountsPermission) {
-		// 		console.log('eth_accounts permission successfully requested!');
-		// 	}
-		// }).catch((error) => {
-		// 	if (error.code === 4001) {
-		// 		// EIP-1193 userRejectedRequest error
-		// 		console.log('Permissions needed to continue.');
-		// 	} else {
-		// 		console.error(error);
-		// 	}
-		// });
-
-		// let tempdata = await ethereum.request({ method: 'eth_requestAccounts' });
-		// console.log(tempdata);
-
-		// window.ethereum.request({
-		// 	method: 'wallet_requestPermissions',
-		// 	params: [{ eth_accounts: {} }],
-		// }).then((permissions) => {
-		// 	const accountsPermission = permissions.find(
-		// 		(permission) => permission.parentCapability === 'eth_accounts'
-		// 	);
-		// 	if (accountsPermission) {
-		// 		console.log('eth_accounts permission successfully requested!');
-		// 	}
-		// }).catch((error) => {
-		// 	if (error.code === 4001) {
-		// 		// EIP-1193 userRejectedRequest error
-		// 		console.log('Permissions needed to continue.');
-		// 	} else {
-		// 		console.error(error);
-		// 	}
-		// });
-
-		// first argument is web3.sha3("xyz")
-		// let result = web3.eth.sign('0x9dd2c369a187b4e6b9c402f030e50743e619301ea62aa4c0737d4ef7e10a3d49',that.clientAccount,function(signTxt){
-		//     console.log(signTxt);
-		// });
-
-		//console.log(web3Client.utils.utf8ToHex("Hello world"));
-		//web3Client.eth.sign("Hello world", that.clientAccount).then(console.log);
-
+	mounted() {
+		this.connectWallet();
 	},
 	methods: {
 		//领取盲盒
@@ -312,12 +204,7 @@ export default {
 		},
 
 		// ********************** 链上操作 *********************** //
-		async getChainId() {
-			const web3 = new Web3('https://http-mainnet.hoosmartchain.com')
-			let chainId = await web3.eth.getChainId()
-			console.log(`chain id: ${chainId}`)
-			return chainId
-		},
+        
 		async transfer(fromAccount, to, value) {
 			let that = this;
 			let unsigned = {
@@ -452,21 +339,20 @@ export default {
 }
 .account-container {
 	margin-top: 40px;
-	margin-left: 40px;
+	padding-left: 40px;
+	padding-right: 40px;
 	height: 40px;
 	display: flex;
 	align-items: center;
-	justify-content: flex-start;
-	font-family: inherit;
+	justify-content: space-between;
+	font-family: PingFangSC-Regular, PingFang SC;
 	font-size: 18px;
 	font-weight: 500;
-	.account-tips {
-		font-size: 28px;
-	}
 	.account-addr-container {
 		cursor: pointer;
 		padding-left: 20px;
 		padding-right: 20px;
+        width: 240px;
 		height: 40px;
 		border-radius: 20px;
 		display: flex;
@@ -478,6 +364,19 @@ export default {
 		.account-addr {
 			margin-left: 0;
 		}
+	}
+    .account-tips {
+        width: 240px;
+        padding-left: 20px;
+		padding-right: 20px;
+		height: 40px;
+        line-height: 40px;
+		border-radius: 20px;
+        background-color: #05f6ea;
+		transition: background-color 0.2s ease 0s, opacity 0.2s ease 0s;
+        overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 }
 .swipe-img-item {
@@ -654,7 +553,7 @@ export default {
 		justify-content: flex-start;
 		align-items: flex-start;
 		width: 520px;
-		max-height: 540px;
+		max-height: 360px;
 		overflow-y: auto;
 		.box-item-container {
 			margin-bottom: 20px;
@@ -720,8 +619,8 @@ export default {
 	}
 	.open-submit-button {
 		margin-top: 34px;
-		height: 60px;
-		line-height: 60px;
+		height: 50px;
+		line-height: 50px;
 		background: #02ead0;
 		font-size: 18px;
 		font-family: PingFangSC-Regular, PingFang SC;

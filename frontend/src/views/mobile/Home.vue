@@ -10,7 +10,7 @@
 			<div class="right-x-bg"></div>
 			<div class="left-x-bg"></div>
 			<div class="hsc-logo"></div>
-			<div class="banner_title" @click="sendTransaction">
+			<div class="banner_title">
 				<div class="banner-flag"></div>
 			</div>
 			<div class="swapper-container">
@@ -35,11 +35,11 @@
 				</div>
 			</div>
 			<div class="account-container">
-				<!-- <div class="account-tips">{{`Account: `}}</div> -->
 				<div class="account-addr-container">
 					<div class="account-addr" v-if="clientAccount">{{clientAccount | formatAccountMobile}}</div>
 					<div class="account-addr" v-if="!clientAccount">Connect</div>
 				</div>
+				<div class="account-tips">{{`Balance: ${clientBalance} ${balanceTokenName}`}}</div>
 			</div>
 			<div class="button-container">
 				<div class="check-button">{{$t('home.test2')}}</div>
@@ -71,7 +71,7 @@
 					</div>
 				</template>
 			</nft-dialog>
-			<!-- 打开盲盒 -->
+			<!-- 我的宝库 -->
 			<box-dialog ref="openDailog">
 				<template slot="dtitle">
 					<div class="open-nft-title">
@@ -107,7 +107,6 @@
 import NftDialog from './NftDialog';
 import MultInput from './MultInput';
 import BoxDialog from './BoxDialog';
-const Web3 = require('web3');
 // import MetaMaskOnboarding from '@metamask/onboarding';
 import BoxMinxin from '../minxin/minxin';
 import LanguageMobile from '../../components/LanguageMobile';
@@ -134,109 +133,8 @@ export default {
 	created() {
 		this.initBannerList();
 	},
-	async mounted() {
-		let that = this;
-
-		// const web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'))
-		// console.log('----account----', web3.eth.accounts)
-
-		let web3Provider = "";
-		console.log(window.ethereum);
-		if (window.ethereum) {
-			web3Provider = window.ethereum;
-			try {
-				// 请求用户授权
-				await window.ethereum.enable().then(accounts => {
-					console.log(accounts);
-				});
-			} catch (error) {
-				// 用户不授权时
-				console.error("User denied account access")
-			}
-		} else if (window.web3) {   // 老版 MetaMask Legacy dapp browsers...
-			web3Provider = window.web3.currentProvider;
-		} else {
-			web3Provider = new Web3.providers.HttpProvider('https://http-mainnet.hoosmartchain.com');
-		}
-		// web3Provider = new Web3.providers.HttpProvider('https://http-mainnet.hoosmartchain.com');
-		let web3Client = new Web3(web3Provider);
-		console.log(web3Client.version);
-
-		await web3Client.eth.getAccounts((error, result) => {
-			if (!error) {
-				console.log(result);
-				that.clientAccount = result[0];
-			} else {
-				console.log(error);
-			}
-		});
-
-		console.log(that.clientAccount);
-
-		let balance = await web3Client.eth.getBalance(that.clientAccount);
-		console.log(balance);
-		// console.log(balance.toNumber());
-
-		window.ethereum.on('accountsChanged', function (accounts) {
-			// Time to reload your interface with accounts[0]!
-			console.log('---accountsChanged-----');
-		});
-		let currentChainId = null
-		console.log('---isconnected-----', window.ethereum.isConnected())
-
-		window.ethereum.on('chainChanged', (chainId) => {
-			// Handle the new chain.
-			// Correctly handling chain changes can be complicated.
-			// We recommend reloading the page unless you have good reason not to.
-			window.location.reload();
-		});
-
-		// window.ethereum.request({
-		// 	method: 'wallet_requestPermissions',
-		// 	params: [{ eth_accounts: {} }],
-		// }).then((permissions) => {
-		// 	const accountsPermission = permissions.find(
-		// 		(permission) => permission.parentCapability === 'eth_accounts'
-		// 	);
-		// 	if (accountsPermission) {
-		// 		console.log('eth_accounts permission successfully requested!');
-		// 	}
-		// }).catch((error) => {
-		// 	if (error.code === 4001) {
-		// 		// EIP-1193 userRejectedRequest error
-		// 		console.log('Permissions needed to continue.');
-		// 	} else {
-		// 		console.error(error);
-		// 	}
-		// });
-
-		// let tempdata = await ethereum.request({ method: 'eth_requestAccounts' });
-		// console.log(tempdata);
-
-		// window.ethereum.request({
-		// 	method: 'wallet_requestPermissions',
-		// 	params: [{ eth_accounts: {} }],
-		// }).then((permissions) => {
-		// 	const accountsPermission = permissions.find(
-		// 		(permission) => permission.parentCapability === 'eth_accounts'
-		// 	);
-		// 	if (accountsPermission) {
-		// 		console.log('eth_accounts permission successfully requested!');
-		// 	}
-		// }).catch((error) => {
-		// 	if (error.code === 4001) {
-		// 		// EIP-1193 userRejectedRequest error
-		// 		console.log('Permissions needed to continue.');
-		// 	} else {
-		// 		console.error(error);
-		// 	}
-		// });
-
-		// first argument is web3.sha3("xyz")
-		// let result = web3.eth.sign('0x9dd2c369a187b4e6b9c402f030e50743e619301ea62aa4c0737d4ef7e10a3d49',that.clientAccount,function(signTxt){
-		//     console.log(signTxt);
-		// });
-
+	mounted() {
+		this.connectWallet();
 	},
 	methods: {
 		//领取盲盒
@@ -302,12 +200,6 @@ export default {
 			that.clickReceive();
 		},
 		// ********************** 链上操作 *********************** //
-		async getChainId() {
-			const web3 = new Web3('https://http-mainnet.hoosmartchain.com')
-			let chainId = await web3.eth.getChainId()
-			console.log(`chain id: ${chainId}`)
-			return chainId
-		},
 		async transfer(fromAccount, to, value) {
 			let that = this;
 			let unsigned = {
@@ -323,7 +215,7 @@ export default {
 		sendTransaction() {
 			let that = this;
 			console.log(that.clientAccount);
-			let signData = that.transfer('0xf794916AE805AD50dBcDd544d2DB0116C0E31557', '0x187E9C0A52742604690eD1647E130e7616146b08', '0.01');
+			let signData = that.transfer('0xf7949...E805AD50....d544d2DB0116C0E31557', '0x187E9C0A52742...690eD1647E130e...16146b08', '0.01');
 			signData.then(res => { console.log(res) });
 		},
 	},
@@ -333,10 +225,12 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
 .mobile-home {
-	padding-top: 0.2rem;
+	padding-top: 0.4rem;
 	background: #232323;
 	min-height: 100vh;
+	width: 100%;
 	.language-top {
+		margin: 0 auto;
 		height: 0.6rem;
 		width: 7.5rem;
 		position: relative;
@@ -353,6 +247,7 @@ export default {
 		}
 	}
 	.home {
+		margin: 0 auto;
 		padding-top: 0.8rem;
 		width: 7.5rem;
 		position: relative;
@@ -408,7 +303,7 @@ export default {
 	position: relative;
 	.right-flag {
 		position: absolute;
-		bottom: 0.6rem;
+		bottom: 0.8rem;
 		right: 0;
 		height: 2.04rem;
 		width: 2.04rem;
@@ -440,20 +335,18 @@ export default {
 	// padding-right: 0.76rem;
 	// width: 4.48rem;
 	margin: 0.8rem auto 0 auto;
-	height: 0.8rem;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	font-family: inherit;
+	flex-direction: column;
+	font-family: PingFangSC-Regular, PingFang SC;
 	font-size: 0.3rem;
 	font-weight: 600;
-	.account-tips {
-		font-size: 0.4rem;
-	}
 	.account-addr-container {
 		cursor: pointer;
 		padding-left: 0.4rem;
 		padding-right: 0.4rem;
+		width: 4rem;
 		height: 0.8rem;
 		border-radius: 0.4rem;
 		display: flex;
@@ -465,6 +358,20 @@ export default {
 		.account-addr {
 			margin-left: 0;
 		}
+	}
+	.account-tips {
+		margin-top: 0.2rem;
+		height: 0.8rem;
+		width: 4rem;
+		padding-left: 0.4rem;
+		padding-right: 0.4rem;
+		line-height: 0.8rem;
+		border-radius: 0.4rem;
+		background-color: #05f6ea;
+		transition: background-color 0.2s ease 0s, opacity 0.2s ease 0s;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 }
 .swipe-img-item {
@@ -705,18 +612,18 @@ export default {
 	}
 	.nodata-container {
 		width: 5.2rem;
-		min-height: 2rem;
+		min-height: 2.4rem;
 		.no-data-icon {
 			width: 1.4rem;
 			height: 1.2rem;
-			margin: 0.8rem auto 0.6rem auto;
+			margin: 0.4rem auto 0.3rem auto;
 			background: url("../../assets/image/no-data-new.svg") no-repeat;
 			background-size: 100% 100%;
 		}
 		.no-data-text {
-			font-size: .28rem;
+			font-size: 0.3rem;
 			font-family: PingFangSC-Regular, PingFang SC;
-			font-weight: 500;
+			font-weight: 600;
 			color: #ccc;
 		}
 	}
