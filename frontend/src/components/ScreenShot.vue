@@ -69,7 +69,7 @@ export default {
     computed: {
         copyText() {
             let buttonText = this.$t('home.test35');
-            buttonText = (userAgentGlobal == 'pc' && navigator.clipboard) ? this.$t('home.test35') : navigator.clipboard ? this.$t('home.test35') : this.$t('home.test36');
+            buttonText = (userAgentGlobal == 'pc' && navigator.clipboard && navigator.clipboard.write) ? this.$t('home.test35') : this.$t('home.test36');
             return buttonText;
         },
     },
@@ -82,7 +82,7 @@ export default {
 		} else {
 			that.userAgentGlobal = "pc";
 		}
-		// console.log(userAgentGlobal);
+		console.log(userAgentGlobal);
 		// this.copyText = userAgentGlobal == 'pc' ? this.$t('home.test35') : this.$t('home.test36');
 		// console.log(this.copyText);
     },

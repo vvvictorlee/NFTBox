@@ -46,7 +46,7 @@ export default {
 	},
 	created() {
 		this.pageType = (this.$route.params && this.$route.params.id) || "sucess";
-		console.log(this.$route.params.id);
+		// console.log(this.$route.params.id);
 	},
 	mounted() {
 

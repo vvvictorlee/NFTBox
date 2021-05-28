@@ -103,12 +103,12 @@ export default {
 			setOpenBoxInfo: "setOpenBoxInfo",
 		}),
 		formatBannerName(level) {
-			console.log(level)
+			// console.log(level)
 			let that = this;
 			if (!level) {
 				return '';
 			}
-			console.log(that.bannerConfig);
+			// console.log(that.bannerConfig);
 			let findItem = that.bannerConfig[level] || {};
 			let name = findItem && findItem['name'] || '';
 			return name;
@@ -206,7 +206,7 @@ export default {
 			};
 			that.loadingTips = true;
 			handleReceive(requestParams).then(res => {
-				console.log(res)
+				// console.log(res)
 				if (res.code == '10000') {
 					that.loadingTips = false;
 					let openMessage = {
@@ -243,7 +243,7 @@ export default {
 			let that = this;
 			let temArr = that.getMyboxList || [];
 			let len = temArr.length;
-			console.log(len)
+			// console.log(len)
 			if (len == 0) {
 				that.$Toast('no box can select');
 				return;
@@ -251,7 +251,7 @@ export default {
 			let requestItem = temArr.find((item) => {
 				return item.is_active;
 			});
-			console.log(requestItem);
+			// console.log(requestItem);
 			let boxAddress = requestItem && requestItem.boxAddress || '';
 			if (!boxAddress) {
 				that.$Toast('please select one box');
@@ -317,7 +317,7 @@ export default {
 				try {
 					// 请求用户授权
 					await window.ethereum.enable().then(accounts => {
-						console.log('---metamask----', accounts);
+						// console.log('---metamask----', accounts);
 					});
 				} catch (error) {
 					// 用户不授权时
@@ -341,11 +341,11 @@ export default {
 
 			window.ethereum.on('accountsChanged', function (accounts) {
 				// Time to reload your interface with accounts[0]!
-				console.log('---accountsChanged-----');
+				// console.log('---accountsChanged-----');
 				that.getAccount();
 			});
 			let currentChainId = null
-			console.log('---isconnected-----', window.ethereum.isConnected())
+			// console.log('---isconnected-----', window.ethereum.isConnected())
 
 			window.ethereum.on('chainChanged', (chainId) => {
 				// Handle the new chain.
@@ -409,17 +409,17 @@ export default {
 			if (!that.web3Client) {
 				return;
 			}
-			console.log(switchToHSC);
+			// console.log(switchToHSC);
             let chainId = await that.web3Client.eth.getChainId();
 			await that.web3Client.eth.getAccounts((error, result) => {
 				if (!error) {
-					console.log(result);
+					// console.log(result);
 					that.clientAccount = result[0];
 					window.ethereum.request({
 						method: "wallet_addEthereumChain",
 						params: [switchToTestHSC, that.clientAccount]
 					}).then(res => {
-                        console.log(res);
+                        // console.log(res);
                         if(!(chainId == 170 || chainId == 70)) {
                             window.location.reload();
                         }
