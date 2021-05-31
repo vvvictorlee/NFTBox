@@ -69,7 +69,7 @@ export default {
     computed: {
         copyText() {
             let buttonText = this.$t('home.test35');
-            buttonText = (userAgentGlobal == 'pc' && navigator.clipboard && navigator.clipboard.write) ? this.$t('home.test35') : this.$t('home.test36');
+            buttonText = (this.userAgentGlobal == 'pc' && navigator.clipboard && navigator.clipboard.write) ? this.$t('home.test35') : this.$t('home.test36');
             return buttonText;
         },
     },
@@ -103,7 +103,7 @@ export default {
 		screenShot() {
 			let that = this;
 			let node = document.getElementById('screen-shot');
-			if (navigator.clipboard) {
+			if (navigator.clipboard && that.userAgentGlobal == 'pc') {
 				domtoimage.toBlob(node, {
 					height: 770,
 					width: 335

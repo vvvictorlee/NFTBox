@@ -11,7 +11,7 @@
 			<div class="left-x-bg"></div>
 			<div class="hsc-logo"></div>
 			<div class="pc-banner-container">
-				<div class="banner_title" @click="sendTransaction">
+				<div :class="computedBannerLogo">
 					<div class="banner-flag"></div>
 				</div>
 				<div class="swapper-container">
@@ -294,7 +294,38 @@ export default {
 	align-items: center;
 	justify-content: space-between;
 	position: relative;
-	.banner_title {
+    .banner-title-en{
+        height: 190px;
+		width: 250px;
+		background: url("../../assets/image/banner_title_en.png") no-repeat;
+		background-size: 100% 100%;
+		.banner-flag {
+			position: absolute;
+			top: -40px;
+			right: 20px;
+			height: 87px;
+			width: 84px;
+			background: url("../../assets/image/banner_flag.png") no-repeat;
+			background-size: 100% 100%;
+		}
+    }
+    .banner-title-ko{
+        height: 190px;
+		width: 250px;
+		background: url("../../assets/image/banner_title_ko.png") no-repeat;
+		background-size: 100% 100%;
+		.banner-flag {
+			position: absolute;
+			top: -40px;
+			right: 20px;
+			height: 87px;
+			width: 84px;
+			background: url("../../assets/image/banner_flag.png") no-repeat;
+			background-size: 100% 100%;
+		}
+
+    }
+	.banner-title-zh-hans {
 		height: 190px;
 		width: 250px;
 		background: url("../../assets/image/banner_title.png") no-repeat;

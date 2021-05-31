@@ -10,7 +10,7 @@
 			<div class="right-x-bg"></div>
 			<div class="left-x-bg"></div>
 			<div class="hsc-logo"></div>
-			<div class="banner_title">
+			<div :class="computedBannerLogo">
 				<div class="banner-flag"></div>
 			</div>
 			<div class="swapper-container">
@@ -279,11 +279,27 @@ export default {
 	background: url("../../assets/image/logo.png") no-repeat;
 	background-size: 100% 100%;
 }
-.banner_title {
+.banner-title-zh-hans {
 	height: 3.86rem;
 	width: 5rem;
 	margin: 0.4rem 1.74rem 0 0.76rem;
 	background: url("../../assets/image/banner_title.png") no-repeat;
+	background-size: 100% 100%;
+	position: relative;
+}
+.banner-title-en {
+	height: 3.86rem;
+	width: 5rem;
+	margin: 0.4rem 1.74rem 0 0.76rem;
+	background: url("../../assets/image/banner_title_en.png") no-repeat;
+	background-size: 100% 100%;
+	position: relative;
+}
+.banner-title-ko {
+	height: 3.86rem;
+	width: 5rem;
+	margin: 0.4rem 1.74rem 0 0.76rem;
+	background: url("../../assets/image/banner_title_ko.png") no-repeat;
 	background-size: 100% 100%;
 	position: relative;
 }

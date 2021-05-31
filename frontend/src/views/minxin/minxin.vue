@@ -60,6 +60,7 @@ export default {
 		...mapGetters({
 			getBannerList: "getBannerList",
 			getMyboxList: "getMyboxList",
+            getLocaleLang: "getLocaleLang",
 		}),
 		caclCurrent() {
 			return this.current;
@@ -78,6 +79,11 @@ export default {
 			tokenName = ((this.chainId == 70) || (this.chainId == 170)) ? 'HOO' : '';
 			return tokenName;
 		},
+        computedBannerLogo() {
+            let lang = this.getLocaleLang || 'zh-hans';
+            let bannerClass = `banner-title-${lang}`;
+            return bannerClass;
+        },
 	},
 	filters: {
 		formatAccount(account) {
