@@ -22,7 +22,7 @@ const en = {
         test20: 'You still have ',
         test21: 'chance',
         test22: 'Tokens included:',
-        test23: 'Claimed to the treasure trove',
+        test23: 'Claim',
         test24: 'Unfortunately, you have failed to obtain a NFT box',
         test25: 'Claimed or ineligible',
         test26: 'View ranking',

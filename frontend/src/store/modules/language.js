@@ -1,7 +1,7 @@
 import * as types from '../mutation-types';
 
 const state = {
-    localeLang: 'zh-hans',
+    localeLang: 'en', //zh-hans , en, ko
 }
 const actions = {
     //更换语种
@@ -16,6 +16,7 @@ const mutations = {
     //记录当前语言
     [types.LOCALE_LANG](state, status) {
         state.localeLang = status;
+        window.location.reload();
     },
 }
 export default {

@@ -1,24 +1,35 @@
 
+import store from "../store";
+
+const metaExtend = {
+    "ch_name_zh-hans": "HSC盲盒活动",
+    "ch_name_en": "HSC NFT Box Campaign",
+    "ch_name_ko": "HSC 랜덤 박스 이벤트",
+};
+let lang = store.state.language.localeLang || 'en';
+let keyName = `ch_name_${lang}`;
+let titleLang = metaExtend[keyName];
+
 const pcRouterArr = [{
     name: 'Home',
     path: '/',
     component: () => import(/* webpackChunkName: "pc-group-home" */ '../views/pc/Home.vue'),
     meta: {
-        title: 'HSC盲盒活动'
+        title: titleLang,
     },
 }, {
     name: 'OpenResult',
     path: '/open/:id?',
     component: () => import(/* webpackChunkName: "pc-group-open" */ '../views/pc/OpenResult.vue'),
     meta: {
-        title: 'HSC盲盒活动'
+        title: titleLang,
     },
 }, {
     name: 'ReceiveResult',
     path: '/receive/:id?',
     component: () => import(/* webpackChunkName: "pc-group-receive" */ '../views/pc/ReceiveResult.vue'),
     meta: {
-        title: 'HSC盲盒活动'
+        title: titleLang,
     },
 }];
 const mobileRouterArr = [{
@@ -26,21 +37,21 @@ const mobileRouterArr = [{
     path: '/',
     component: () => import(/* webpackChunkName: "mobile-group-home" */ '../views/mobile/Home.vue'),
     meta: {
-        title: 'HSC盲盒活动'
+        title: titleLang,
     },
 }, {
     name: 'OpenResult',
     path: '/open/:id?',
     component: () => import(/* webpackChunkName: "mobile-group-open" */ '../views/mobile/OpenResult.vue'),
     meta: {
-        title: 'HSC盲盒活动'
+        title: titleLang,
     },
 }, {
     name: 'ReceiveResult',
     path: '/receive/:id?',
     component: () => import(/* webpackChunkName: "mobile-group-receive" */ '../views/mobile/ReceiveResult.vue'),
     meta: {
-        title: 'HSC盲盒活动'
+        title: titleLang,
     },
 }];
 

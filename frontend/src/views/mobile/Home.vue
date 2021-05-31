@@ -303,7 +303,7 @@ export default {
 	position: relative;
 	.right-flag {
 		position: absolute;
-		bottom: 0.8rem;
+		bottom: 1rem;
 		right: 0;
 		height: 2.04rem;
 		width: 2.04rem;
@@ -489,15 +489,16 @@ export default {
 			border: 1px solid #02ead0 !important;
 		}
 		.addr-lable {
-			min-width: 0.56rem;
+			min-width: 0.96rem;
 			height: 0.4rem;
 			font-size: 0.28rem;
 			font-family: PingFangSC-Medium, PingFang SC;
 			font-weight: 500;
 			color: #c1c1c1;
+            text-align: center;
 		}
 		.addr-input {
-			width: 4rem;
+			width: 3.6rem;
 			height: 0.64rem;
 			line-height: 0.64rem;
 			font-size: 0.28rem;
