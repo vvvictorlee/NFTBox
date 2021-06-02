@@ -157,6 +157,38 @@ class DataMgmt {
     async genBoxInfoJson() {
 
 
+// 0xbE8D16084841875a1f398E6C3eC00bBfcbFa571b 
+// 0xd63F3cceef518e183e27615A7D6404d0803210Af 
+// 0xd9e2c2b61204837c833a9A301c5DA7b500cB3e6d 
+// 0xE9FB7d75822064A71aE2F4E8626D6407F70Fb4eF 
+// 0xD8f6d61C2cC69c04F176616aD1c7de211b00af31 
+// 0x07f823D3d011f7C612084f04D025F4a026F76afd 
+// 0x80c6A3A493aFd7C52f89E6504C90cE6A639783FC 
+// 0x9d33ea8711b6a37c03aA3a4aE68674901a965F1d 
+// 0xFE2F1890d8DC69cf16D611C71fEf4A811ca84575
+
+// PuddingSwap    10000个    实际价格0.29U
+// 0xbE8D16084841875a1f398E6C3eC00bBfcbFa571b
+// LENDOO             10w个        实际价格0.029U
+// 0xd63F3cceef518e183e27615A7D6404d0803210Af
+// HeshiSwap      100个        预计价格250U
+// 0xd9e2c2b61204837c833a9A301c5DA7b500cB3e6d
+// GFC                     22w个        实际价格0.013U
+// 0xE9FB7d75822064A71aE2F4E8626D6407F70Fb4eF
+// LOOT                  10w个         实际价格0.012U
+// 0xD8f6d61C2cC69c04F176616aD1c7de211b00af31
+// Yunge                  2w个    预计价格0.2U：
+// 0x07f823D3d011f7C612084f04D025F4a026F76afd
+// 确定参与但是未支付
+// SwapXT              1w个          预计价格1U
+// 0x80c6A3A493aFd7C52f89E6504C90cE6A639783FC
+// （测试币参加，正式币再兑换）
+// Roolend              5000个      预计价格2U
+// 合约地址：0x9d33ea8711b6a37c03aA3a4aE68674901a965F1d
+// （测试币参加，正式币再兑换）
+// SwapAll               1w个，预计价格0.4U。
+// 0xFE2F1890d8DC69cf16D611C71fEf4A811ca84575
+
         // "PuddingSwap","Lendoo","HeshiSwap","GFC","LOOT","Yunge","SwapXT","Roolend","SwapAll"
 
         const names = ["PuddingSwap", "Lendoo", "HeshiSwap", "GFC", "LOOT", "Yunge", "SwapXT", "Roolend", "SwapAll"];

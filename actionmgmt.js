@@ -116,7 +116,7 @@ class ActionMgmt {
         const index = 2;
         for (let i = 0; i < tokens.ids.length; i++) {
             let amount = await contractobjs[tokens.ids[i]].methods.balanceOf(address).call({ from: proxy[0] });
-            console.log(tokens.ids[i], "====", amount);
+            console.log(tokens.ids[i], "====",web3.utils.fromWei(amount), "====",amount );
         }
     }
 
@@ -301,7 +301,7 @@ let handlers = {
         console.log("==balanceOf==");
         let actionmgmt = new ActionMgmt()
         const tokens = await datamgmt.getTotalAmounts();
-        await actionmgmt.balanceOf(tokens, "0x4a79c58CCf9d80353c02357F26D6f7b99fA9991e");
+        await actionmgmt.balanceOf(tokens, "0x6956Ed99FB64FCa489E5D819B7ef1bEdb48052d9");
     }),
     "default": (async function () {
     })
