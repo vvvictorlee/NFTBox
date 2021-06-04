@@ -80,7 +80,7 @@ export default {
 			return tokenName;
 		},
         computedBannerLogo() {
-            let lang = this.getLocaleLang || 'zh-hans';
+            let lang = this.getLocaleLang || 'en';
             let bannerClass = `banner-title-${lang}`;
             return bannerClass;
         },
@@ -200,6 +200,18 @@ export default {
 			});
 			that.setMyboxList(tempArr);
 		},
+        //查看获奖名单
+        goWinnerList() {
+            let that = this;
+            let lang = this.getLocaleLang || 'en';
+            let openUrl = 'https://eapy.com/zh_cn/activity/list';
+            if(lang == 'zh-hans') {
+                openUrl = 'https://eapy.com/zh_cn/activity/list';
+            } else {
+                openUrl = 'https://eapy.com/en/activity/list';
+            }
+            window.open(openUrl,"_blank");
+        },
 		//点击领取
 		clickReceive() {
 			let that = this;

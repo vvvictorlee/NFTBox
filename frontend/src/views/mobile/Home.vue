@@ -42,7 +42,7 @@
 				<div class="account-tips">{{`Balance: ${clientBalance} ${balanceTokenName}`}}</div>
 			</div>
 			<div class="button-container">
-				<div class="check-button">{{$t('home.test2')}}</div>
+				<div class="check-button" @click="goWinnerList">{{$t('home.test2')}}</div>
 				<div class="caim-button" @click="receiveNftBox">{{$t('home.test3')}}</div>
 			</div>
 			<div class="open-button" @click="clickMyBoxes">{{$t('home.test4')}}</div>
