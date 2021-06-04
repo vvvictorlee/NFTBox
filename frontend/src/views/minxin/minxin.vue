@@ -423,7 +423,7 @@ export default {
 					that.clientAccount = result[0];
 					window.ethereum.request({
 						method: "wallet_addEthereumChain",
-						params: [switchToTestHSC, that.clientAccount]
+						params: [switchToHSC, that.clientAccount]
 					}).then(res => {
                         // console.log(res);
                         if(!(chainId == 170 || chainId == 70)) {

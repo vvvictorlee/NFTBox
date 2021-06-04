@@ -102,7 +102,7 @@ export default {
 			this.$router.go(-1);
 		},
         goHooSpot() {
-            window.open('https://hoo.co',"_blank");
+            window.open('https://hoo.co/mobile/tips?lang=en',"_blank");
         },
 	},
 }
