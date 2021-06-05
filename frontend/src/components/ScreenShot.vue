@@ -12,7 +12,7 @@
 								<!-- <div class="right-x-bg"></div>
 								<div class="left-x-bg"></div> -->
 								<div class="hsc-logo"></div>
-								<div class="banner_title">
+								<div :class="computedBannerLogo">
 									<div class="banner-flag"></div>
 								</div>
 								<div class="swapper-container">
@@ -45,6 +45,7 @@
 
 <script>
 import domtoimage from 'dom-to-image';
+import BoxMinxin from '../views/minxin/minxin';
 export default {
 	name: 'Dialog',
 	props: {
@@ -59,6 +60,7 @@ export default {
 			default: 'home.test27',
 		},
 	},
+	mixins: [BoxMinxin],
 	data() {
 		return {
 			dialogShow: false,
@@ -216,11 +218,27 @@ export default {
 	background: url("../assets/image/logo.png") no-repeat;
 	background-size: 100% 100%;
 }
-.banner_title {
+.banner-title-zh-hans {
 	height: 190px;
 	width: 250px;
 	margin: 40px 80px 0 36px;
 	background: url("../assets/image/banner_title.png") no-repeat;
+	background-size: 100% 100%;
+	position: relative;
+}
+.banner-title-ko {
+	height: 190px;
+	width: 250px;
+	margin: 40px 80px 0 36px;
+	background: url("../assets/image/banner_title_ko.png") no-repeat;
+	background-size: 100% 100%;
+	position: relative;
+}
+.banner-title-en {
+	height: 190px;
+	width: 250px;
+	margin: 40px 80px 0 36px;
+	background: url("../assets/image/banner_title_en.png") no-repeat;
 	background-size: 100% 100%;
 	position: relative;
 }
