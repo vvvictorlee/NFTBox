@@ -10,6 +10,7 @@
     "gen:test": "DEBUG=app node  -r dotenv/config datamgmt.js genrandseq dotenv_config_path=.env.test",
     "genlevel": "DEBUG=app node  -r dotenv/config datamgmt.js genlevel dotenv_config_path=.env",
     "genlevel:test": "DEBUG=app node  -r dotenv/config datamgmt.js genlevel dotenv_config_path=.env.test",
+    "readcsv": "DEBUG=app node  -r dotenv/config datamgmt.js readcsv dotenv_config_path=.env",
     "create": "DEBUG=app node  -r dotenv/config actionmgmt.js c dotenv_config_path=.env",
     "receipt": "DEBUG=app node  -r dotenv/config actionmgmt.js r dotenv_config_path=.env",
     "mint:test": "DEBUG=app node  -r dotenv/config actionmgmt.js m dotenv_config_path=.env.test",
