@@ -15,7 +15,9 @@
     "receipt": "DEBUG=app node  -r dotenv/config actionmgmt.js r dotenv_config_path=.env",
     "mint:test": "DEBUG=app node  -r dotenv/config actionmgmt.js m dotenv_config_path=.env.test",
     "mint": "DEBUG=app node  -r dotenv/config actionmgmt.js m dotenv_config_path=.env",
+    "tm": "DEBUG=app node  -r dotenv/config actionmgmt.js tm dotenv_config_path=.env",
     "balance:test": "DEBUG=app node  -r dotenv/config actionmgmt.js b dotenv_config_path=.env.test",
+    "balancec": "DEBUG=app node  -r dotenv/config actionmgmt.js bc dotenv_config_path=.env",
     "balance": "DEBUG=app node  -r dotenv/config actionmgmt.js b dotenv_config_path=.env"
   },
   "dependencies": {

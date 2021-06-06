@@ -60,6 +60,7 @@ const web3 = new Web3(new Web3.providers.HttpProvider(PROVIDER_URL));
 let abi = {};
 let contract = {};
 let candidate = validators[1][0];
+let user = validators[1];
 let proxy = validators[2];
 instanceContract();
 // instanceERC721Contract();
@@ -116,7 +117,19 @@ class ActionMgmt {
         const index = 2;
         for (let i = 0; i < tokens.ids.length; i++) {
             let amount = await contractobjs[tokens.ids[i]].methods.balanceOf(address).call({ from: proxy[0] });
-            console.log(tokens.ids[i], "====",web3.utils.fromWei(amount), "====",amount );
+            console.log(tokens.ids[i], "====", web3.utils.fromWei(amount), "====", amount);
+        }
+    }
+
+    async transferTokensToContractFromMainNet(tokens, user) {
+        const index = 2;
+        console.log(CONTRACT_ADDRESS[index])
+        for (let i = 0; i < tokens.ids.length; i++) {
+            let amount = await contractobjs[tokens.ids[i]].methods.balanceOf(user[0]).call({ from: user[0] });
+            amount = web3.utils.fromWei(amount)
+            console.log(user[0], amount, web3.utils.toHex(web3.utils.toWei(amount.toString())))
+            let encodedabi = await contractobjs[tokens.ids[i]].methods.transfer(CONTRACT_ADDRESS[index], web3.utils.toHex(web3.utils.toWei(amount.toString()))).encodeABI();
+            await sendSignedTx(user[0], user[1], encodedabi, tokens.ids[i]);
         }
     }
 
@@ -155,11 +168,11 @@ class ActionMgmt {
     async claimBox(userAddress) {
         let flag = await this.checkBalance(userAddress);
         if (!flag) {
-            return [-1,"The balance must be greater than 0.1"];
+            return [-1, "The balance must be greater than 0.1"];
         }
         flag = await datamgmt.checkUserTimes(userAddress);
         if (!flag) {
-            return [-1,"The times must be greater than 0"];
+            return [-1, "The times must be greater than 0"];
         }
         const randomNumber = await datamgmt.getRandSeqValue();
         let [level, tokens] = await datamgmt.getBoxLevelAward(randomNumber);
@@ -171,7 +184,7 @@ class ActionMgmt {
         await this.depositTokensFromContract(boxAddress, tokens);
         let times = await datamgmt.updateUserTimes(userAddress);
 
-        return [0,{ "address": boxAddress, "last_times": times, "level": level }];
+        return [0, { "address": boxAddress, "last_times": times, "level": level }];
     }
 
     async openBox(boxAddress) {
@@ -303,6 +316,19 @@ let handlers = {
         const tokens = await datamgmt.getTotalAmounts();
         await actionmgmt.balanceOf(tokens, "0x1753783e46a6a7B3d345A92c5265c178f94367cf");
     }),
+    "bc": (async function () {
+        console.log("==balanceOf contract==");
+        let actionmgmt = new ActionMgmt()
+        const tokens = await datamgmt.getTotalAmounts();
+        await actionmgmt.balanceOf(tokens, CONTRACT_ADDRESS[2]);
+    }),
+    "tm": (async function () {
+        console.log("==transferTokensToContractFromMainNet==");
+        let actionmgmt = new ActionMgmt()
+        const tokens = await datamgmt.getTotalAmounts();
+        await actionmgmt.transferTokensToContractFromMainNet(tokens, user);
+    }),
+
     "default": (async function () {
     })
 
