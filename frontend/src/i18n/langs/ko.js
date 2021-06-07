@@ -43,6 +43,7 @@ const ko = {
 
         test37: '또는 주소의 HOO가 0.1보다 적습니다.',
         test38: 'HOO 구매',
+        test39: '5. 주소에 0.1 HOO 이상 보유해야 하며, >325 이상의 10000명의 사용자만 수취 가능합니다.'
     }
 };
 export default ko;

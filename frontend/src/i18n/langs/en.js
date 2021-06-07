@@ -40,6 +40,7 @@ const en = {
 
         test37: 'Or address with less than 0.1 HOO ',
         test38: 'Buy HOO',
+        test39: '5. Addresses with over 0.1 HOO and entries >325 can only claim the box.'
     }
 };
 export default en;
