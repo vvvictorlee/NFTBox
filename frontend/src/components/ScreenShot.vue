@@ -60,7 +60,7 @@ export default {
 			default: 'home.test27',
 		},
 	},
-	mixins: [BoxMinxin],
+    mixins: [BoxMinxin],
 	data() {
 		return {
 			dialogShow: false,

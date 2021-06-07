@@ -48,8 +48,9 @@
 					<ul>
 						<li>{{$t('home.test6')}}</li>
 						<li>{{$t('home.test7')}}.</li>
-						<li>3{{$t('home.test8')}}</li>
+						<li>{{$t('home.test8')}}</li>
 						<li>{{$t('home.test9')}}</li>
+                        <li>{{$t('home.test39')}}</li>
 					</ul>
 				</div>
 			</div>
