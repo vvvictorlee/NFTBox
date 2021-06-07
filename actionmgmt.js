@@ -88,14 +88,14 @@ class ActionMgmt {
     //1
     async createBox(userAddress) {
         const index = 0;
-        //console.log(userAddress)
+        console.log("createBox==", userAddress)
+        console.error("createBox==", userAddress)
         let encodedabi = await contracts[index].methods.mint(userAddress).encodeABI();
         let id = await sendSignedTx(proxy[0], proxy[1], encodedabi, CONTRACT_ADDRESS[index], true);
         return id;
     }
 
     async depositTokens(boxAddress, tokens) {
-        const index = 0;
         for (let i = 0; i < tokens.ids.length; i++) {
             ////console.log(boxAddress, tokens.amounts[i],web3.utils.toHex(web3.utils.toWei(tokens.amounts[i].toString())))
             let encodedabi = await contractobjs[tokens.ids[i]].methods.transfer(boxAddress, web3.utils.toHex(web3.utils.toWei(tokens.amounts[i].toString()))).encodeABI();
@@ -106,11 +106,11 @@ class ActionMgmt {
     async checkBalance(address) {
         const balance = await web3.eth.getBalance(address)
         if (web3.utils.fromWei(balance) < 0.1) {
-            console.error("checkBalance==",address,web3.utils.fromWei(balance),balance)
+            console.error("checkBalance==", address, web3.utils.fromWei(balance), balance)
             return false;
         }
 
-        console.log(address,web3.utils.fromWei(balance),balance)
+        console.log(address, web3.utils.fromWei(balance), balance)
 
         return true;
     }
@@ -159,7 +159,7 @@ class ActionMgmt {
     async depositTokensFromContract(boxAddress, tokens) {
         const index = 2;
         const amounts = tokens.amounts.map((v) => web3.utils.toHex(web3.utils.toWei(v.toString())));
-        // console.log(tokens.ids,amounts,boxAddress)
+        console.log("depositTokensFromContract===", tokens.ids, amounts, boxAddress)
         let encodedabi = await contracts[index].methods.depositERC20(
             tokens.ids,
             amounts,
@@ -316,8 +316,8 @@ let handlers = {
         console.log("==checkBalance==");
         let actionmgmt = new ActionMgmt()
         const tokens = await datamgmt.getTotalAmounts();
-        await actionmgmt.checkBalance( "0xE427f4202c3d43Cf2A538E1a3ED5a34B63d07150");
-        await actionmgmt.checkBalance( "0x0e1855F9f2e2638cbd9d14e5baDad2baC022AF8d");
+        await actionmgmt.checkBalance("0xE427f4202c3d43Cf2A538E1a3ED5a34B63d07150");
+        await actionmgmt.checkBalance("0x0e1855F9f2e2638cbd9d14e5baDad2baC022AF8d");
     }),
     "b": (async function () {
         console.log("==balanceOf==");
