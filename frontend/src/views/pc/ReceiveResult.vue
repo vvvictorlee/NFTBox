@@ -39,7 +39,7 @@
 						</div>
 					</div>
 					<div class="button-container double-button">
-						<div class="check-button">{{$t('home.test26')}}</div>
+						<div class="check-button" @click="goWinnerList">{{$t('home.test26')}}</div>
                         <div class="check-button" @click.stop="goHooSpot">{{$t('home.test38')}}</div>
 					</div>
 				</div>
@@ -59,6 +59,7 @@
 
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex';
+import BoxMinxin from '../minxin/minxin';
 export default {
 	name: 'ReceiveResult',
 	data() {
@@ -68,6 +69,7 @@ export default {
 			publicPath: process.env.BASE_URL,
 		}
 	},
+    mixins: [BoxMinxin],
 	computed: {
 		...mapGetters({
 			getOpenMessage: "getOpenMessage",

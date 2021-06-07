@@ -78,7 +78,7 @@ export default {
 		top: 0;
 		left: 50%;
 		width: 436px;
-		height: 560px;
+		height: 360px;
 		background: url("../../assets/image/bg-shadow.png") no-repeat;
 		background-size: 100% 100%;
         transform: translate(-50%, -40%);
