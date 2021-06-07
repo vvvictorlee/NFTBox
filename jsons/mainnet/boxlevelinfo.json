@@ -8,7 +8,7 @@
       { "name": "GFC", "symbol": "GFC", "amount": "70.0636" },
       { "name": "LOOT", "symbol": "LOOT", "amount": "31.8471" },
       { "name": "Yunge", "symbol": "YUNGE", "amount": "6.3694" },
-      { "name": "SwapXT", "symbol": "iXT", "amount": "31.847" },
+      { "name": "SwapXT", "symbol": "iXT", "amount": "63.694" },
       { "name": "Roolend", "symbol": "Roolend", "amount": "1.5923" },
       { "name": "SwapAll", "symbol": "SAP", "amount": "3.1847" }
     ]
@@ -22,7 +22,7 @@
       { "name": "GFC", "symbol": "GFC", "amount": "35.0318" },
       { "name": "LOOT", "symbol": "LOOT", "amount": "15.9235" },
       { "name": "Yunge", "symbol": "YUNGE", "amount": "3.1847" },
-      { "name": "SwapXT", "symbol": "iXT", "amount": "15.923" },
+      { "name": "SwapXT", "symbol": "iXT", "amount": "31.847" },
       { "name": "Roolend", "symbol": "Roolend", "amount": "0.7961" },
       { "name": "SwapAll", "symbol": "SAP", "amount": "1.5923" }
     ]
@@ -36,7 +36,7 @@
       { "name": "GFC", "symbol": "GFC", "amount": "28.0254" },
       { "name": "LOOT", "symbol": "LOOT", "amount": "12.7388" },
       { "name": "Yunge", "symbol": "YUNGE", "amount": "2.5477" },
-      { "name": "SwapXT", "symbol": "iXT", "amount": "12.738" },
+      { "name": "SwapXT", "symbol": "iXT", "amount": "25.477" },
       { "name": "Roolend", "symbol": "Roolend", "amount": "0.6369" },
       { "name": "SwapAll", "symbol": "SAP", "amount": "1.2738" }
     ]
@@ -50,7 +50,7 @@
       { "name": "GFC", "symbol": "GFC", "amount": "14.0127" },
       { "name": "LOOT", "symbol": "LOOT", "amount": "6.3694" },
       { "name": "Yunge", "symbol": "YUNGE", "amount": "1.2738" },
-      { "name": "SwapXT", "symbol": "iXT", "amount": "6.369" },
+      { "name": "SwapXT", "symbol": "iXT", "amount": "12.738" },
       { "name": "Roolend", "symbol": "Roolend", "amount": "0.3184" },
       { "name": "SwapAll", "symbol": "SAP", "amount": "0.6369" }
     ]
@@ -64,7 +64,7 @@
       { "name": "GFC", "symbol": "GFC", "amount": "10.5095" },
       { "name": "LOOT", "symbol": "LOOT", "amount": "4.777" },
       { "name": "Yunge", "symbol": "YUNGE", "amount": "0.9554" },
-      { "name": "SwapXT", "symbol": "iXT", "amount": "4.777" },
+      { "name": "SwapXT", "symbol": "iXT", "amount": "9.554" },
       { "name": "Roolend", "symbol": "Roolend", "amount": "0.2388" },
       { "name": "SwapAll", "symbol": "SAP", "amount": "0.4777" }
     ]
