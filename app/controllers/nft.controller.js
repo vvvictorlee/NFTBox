@@ -26,7 +26,7 @@ exports.claimbox = async (req, res) => {
         let msgs = [];
         for (let i = 0; i < req.body.params.times; i++) {
             [result, msg] = await actionMgmt.claimBox(req.body.params.address);
-            console.log(result)
+            console.log(result,msg)
             results.push(result);
             msgs.push(msg);
             if (Number(0) != Number(result)) {
@@ -41,7 +41,7 @@ exports.claimbox = async (req, res) => {
     }
     else {
         [result, msg] = await actionMgmt.claimBox(req.body.params.address);
-        console.log(result)
+        console.log(result,msg)
         if (Number(0) != Number(result)) {
             return res.send({
                 code: 10001,

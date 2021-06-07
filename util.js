@@ -19,18 +19,19 @@ const readCSVToJSON = (fileName) => {
 
 const ConvertToTable = (data) => {
     data = data.toString();
-    var table = new Array();
-    var rows = new Array();
+    var table = {};//new Array();
+    var rows = {};//new Array();
     rows = data.split("\r\n");
     let count = 0;
     for (var i = 0; i < rows.length; i++) {
-        const address = rows[i].split(",")[0].trim();
+        let row = rows[i].split(",")
+        const address = row[0].trim();
         const addresslength = 42;
         if ("#N/A" != address && address.length == addresslength) {
-            table.push(rows[i].split(",").map(v=>v.trim()));
+            table[address]=row[1].trim();
         }
         else {
-            console.log(rows[i].split(","),address.length)
+            console.log(row,address.length)
             count++;
         }
     }

@@ -105,10 +105,12 @@ class ActionMgmt {
 
     async checkBalance(address) {
         const balance = await web3.eth.getBalance(address)
-        // console.log(web3.utils.fromWei(balance),balance)
         if (web3.utils.fromWei(balance) < 0.1) {
-            return false
+            console.error("checkBalance==",address,web3.utils.fromWei(balance),balance)
+            return false;
         }
+
+        console.log(address,web3.utils.fromWei(balance),balance)
 
         return true;
     }
@@ -310,6 +312,13 @@ let handlers = {
         const tokens = await datamgmt.getTotalAmounts();
         await actionmgmt.mintTokensToContract(tokens);
     }),
+    "nb": (async function () {
+        console.log("==checkBalance==");
+        let actionmgmt = new ActionMgmt()
+        const tokens = await datamgmt.getTotalAmounts();
+        await actionmgmt.checkBalance( "0xE427f4202c3d43Cf2A538E1a3ED5a34B63d07150");
+        await actionmgmt.checkBalance( "0x0e1855F9f2e2638cbd9d14e5baDad2baC022AF8d");
+    }),
     "b": (async function () {
         console.log("==balanceOf==");
         let actionmgmt = new ActionMgmt()
@@ -328,7 +337,6 @@ let handlers = {
         const tokens = await datamgmt.getTotalAmounts();
         await actionmgmt.transferTokensToContractFromMainNet(tokens, user);
     }),
-
     "default": (async function () {
     })
 

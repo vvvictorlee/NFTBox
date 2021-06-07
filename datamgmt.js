@@ -40,6 +40,7 @@ class DataMgmt {
         if (this._users[user] != undefined && Number(this._users[user]) > 0) {
             return true;
         }
+        console.error("checkUserTimes==",user)
         return false;
     }
 
