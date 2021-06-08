@@ -2,6 +2,7 @@
 const Web3 = require('web3');
 
 const fs = require('fs');
+// const sleep = require('sleep')
 require('dotenv').config();
 const debug = require("debug");
 const formula = debug('formula');
@@ -88,8 +89,8 @@ class ActionMgmt {
     //1
     async createBox(userAddress) {
         const index = 0;
-        console.log("createBox==", userAddress)
-        console.error("createBox==", userAddress)
+        // console.log("createBox==", userAddress)
+        // console.error("createBox==", userAddress)
         let encodedabi = await contracts[index].methods.mint(userAddress).encodeABI();
         let id = await sendSignedTx(proxy[0], proxy[1], encodedabi, CONTRACT_ADDRESS[index], true);
         return id;
@@ -110,7 +111,7 @@ class ActionMgmt {
             return false;
         }
 
-        console.log(address, web3.utils.fromWei(balance), balance)
+        // console.log(address, web3.utils.fromWei(balance), balance)
 
         return true;
     }
@@ -159,7 +160,7 @@ class ActionMgmt {
     async depositTokensFromContract(boxAddress, tokens) {
         const index = 2;
         const amounts = tokens.amounts.map((v) => web3.utils.toHex(web3.utils.toWei(v.toString())));
-        console.log("depositTokensFromContract===", tokens.ids, amounts, boxAddress)
+        // console.log("depositTokensFromContract===", tokens.ids, amounts, boxAddress)
         let encodedabi = await contracts[index].methods.depositERC20(
             tokens.ids,
             amounts,
@@ -228,6 +229,9 @@ var Tx = require('ethereumjs-tx').Transaction;
 const ethereumjs_common = require('ethereumjs-common').default;
 
 async function sendSignedTx(account, account_secrets, encodedabi, contract_address, isTokenIdOption, msg_value) {
+    var d1 = new Date().getTime();
+
+
     let isTokenId = isTokenIdOption || false
     let value = msg_value || 0
     let nonce = await web3.eth.getTransactionCount(account, "pending");
@@ -253,13 +257,19 @@ async function sendSignedTx(account, account_secrets, encodedabi, contract_addre
     var serializedTx = tx.serialize();
     console.log("=====sendSignedTransaction===")
     let receipt = await web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'));
-    JSON.stringify(receipt);
     console.log(JSON.stringify(receipt))
     if (isTokenId) {
         id = receipt["logs"][0]["topics"][3];
         //console.log("=====id====", id, web3.utils.hexToNumber(id))
+        // var d2 = new Date().getTime();
+        // console.log("elapse time" + (d2 - d1));
         return id;
     }
+
+    // var d2 = new Date().getTime();
+    // console.log("elapse time" + (d2 - d1));
+
+    // sleep.msleep(100)
 
     return receipt;
 }

@@ -1,7 +1,7 @@
 const path = require('path')
 
 const fs = require('fs');
-const { getJSON, putJSON,readCSVToJSON } = require('./util');
+const { getJSON, putJSON, readCSVToJSON } = require('./util');
 const _CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS || []
 const CONTRACT_ADDRESS = JSON.parse(_CONTRACT_ADDRESS);
 const datapath = process.env.DATA_PATH || "/jsons/"
@@ -40,7 +40,7 @@ class DataMgmt {
         if (this._users[user] != undefined && Number(this._users[user]) > 0) {
             return true;
         }
-        console.error("checkUserTimes==",user)
+        console.error("checkUserTimes==", user)
         return false;
     }
 
@@ -261,10 +261,22 @@ class DataMgmt {
         return { "ids": addresses, "amounts": amounts }
     }
 
-async readUserFromCsv() {
-    const json = readCSVToJSON(csvfile)
-    putJSON(users, json)
-}
+    async readUserFromCsv() {
+        const json = readCSVToJSON(csvfile)
+        putJSON(users, json)
+    }
+
+   async checkUserTimesWrong() {
+        let boxaddrs = getJSON("jsons/mainnetdata06080642/boxaddresses.json")
+        let users = getJSON("jsons/mainnetdata0607/users.json")
+        let users8 = getJSON("jsons/mainnetdata06080642/users.json")
+        let userso = getJSON("jsons/mainnet/users.json")
+        let s = Object.keys(boxaddrs).filter(v=> Number(boxaddrs[v].length)>Number(userso[v]))
+        console.log("s length==",s.length)
+        s.map(u=>console.log(u,"=",users[u],"=",users8[u],"=",userso[u],"=",boxaddrs[u].length))
+    }
+
+
 }
 const amounts = [
     ["3.1847", "31.8471", "0.03184", "70.0636", "31.8471", "6.3694", "63.694", "1.5923", "3.1847"],
@@ -339,6 +351,11 @@ let handlers = {
         console.log("==readcsv==");
         let datamgmt = new DataMgmt()
         await datamgmt.readUserFromCsv();
+    }),
+    "wrong": (async function () {
+        console.log("==checkUserTimesWrong==");
+        let datamgmt = new DataMgmt()
+        await datamgmt.checkUserTimesWrong();
     }),
     "default": (async function () {
     })
