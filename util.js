@@ -25,7 +25,7 @@ const ConvertToTable = (data) => {
     let count = 0;
     for (var i = 0; i < rows.length; i++) {
         let row = rows[i].split(",")
-        const address = row[0].trim();
+        const address = row[0].trim().toLowerCase();
         const addresslength = 42;
         if ("#N/A" != address && address.length == addresslength) {
             table[address]=row[1].trim();

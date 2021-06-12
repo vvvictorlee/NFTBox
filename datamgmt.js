@@ -37,6 +37,10 @@ class DataMgmt {
 
     async checkUserTimes(user) {
         this._users = getJSON(users)
+        let b = Object.keys(this._users).filter(v=>v.toLowerCase()==user.toLowerCase());
+        if (b.length>0)  {
+            user = b[0];
+        }
         if (this._users[user] != undefined && Number(this._users[user]) > 0) {
             return true;
         }
@@ -46,6 +50,10 @@ class DataMgmt {
 
     async updateUserTimes(user) {
         this._users = getJSON(users)
+        let b = Object.keys(this._users).filter(v=>v.toLowerCase()==user.toLowerCase());
+        if (b.length>0)  {
+            user = b[0];
+        }
         if (this._users[user] != undefined && Number(this._users[user]) > 0) {
             this._users[user] = Number(this._users[user]) - 1
             putJSON(users, this._users)
@@ -73,6 +81,10 @@ class DataMgmt {
     async getBoxAddresses(address) {
         this._boxaddresses = getJSON(boxaddresses)
         // //console.log(address,"======getBoxAddresses=====",this._boxaddresses)
+        let b = Object.keys(this._boxaddresses).filter(v=>v.toLowerCase()==address.toLowerCase());
+        if (b.length>0)  {
+            address = b[0];
+        }
         if (this._boxaddresses[address] == undefined) {
             return {};
         }
@@ -132,6 +144,22 @@ class DataMgmt {
         var d2 = new Date().getTime();
         //console.log("运算耗时" + (d2 - d1));
         putJSON(randomsequence, originalArray)
+    }
+
+    async genrandseqx() {
+        var count = 80;
+        var originalArray = new Array;//原数组 
+        //给原数组originalArray赋值 
+        for (var i = 0; i < count; i++) {
+            originalArray[i] = i + 15000 + 1;
+        }
+        var d1 = new Date().getTime();
+        originalArray.sort(function () { return 0.5 - Math.random(); });
+        for (var i = 0; i < count; i++) {
+            console.log(" , " + originalArray[i]);
+        }
+        var d2 = new Date().getTime();
+        //console.log("运算耗时" + (d2 - d1));
     }
 
     async getRandSeqValue() {
@@ -266,15 +294,107 @@ class DataMgmt {
         putJSON(users, json)
     }
 
-   async checkUserTimesWrong() {
+    async checkUserTimesWrong() {
         let boxaddrs = getJSON("jsons/mainnetdata06080642/boxaddresses.json")
         let users = getJSON("jsons/mainnetdata0607/users.json")
         let users8 = getJSON("jsons/mainnetdata06080642/users.json")
         let userso = getJSON("jsons/mainnet/users.json")
-        let s = Object.keys(boxaddrs).filter(v=> Number(boxaddrs[v].length)>Number(userso[v]))
-        console.log("s length==",s.length)
-        s.map(u=>console.log(u,"=",users[u],"=",users8[u],"=",userso[u],"=",boxaddrs[u].length))
+
+        let s = Object.keys(boxaddrs).filter(v => Number(boxaddrs[v].length) > Number(userso[v]))
+        console.log("s length==", s.length)
+        s.map(u => console.log(u, "=", users[u], "=", users8[u], "=", userso[u], "=", boxaddrs[u].length))
+        let t = s.reduce((acc, u) => acc += boxaddrs[u].length - userso[u], 0)
+        console.log("t==", t)
     }
+
+    async getBoxLevel(randomNumber) {
+        if (this._boxlevels == null) {
+            this._boxlevels = getJSON(boxlevels)
+        }
+        let i = 0;
+        for (i = 0; i < this._boxlevels.length; ++i) {
+            if (Number(randomNumber) <= Number(this._boxlevels[i].upperbound)) {
+                return i + 1;
+            }
+        }
+        return 0;
+    }
+
+    async checkRand() {
+        let r = getJSON("jsons/mainnetdata0609/r.json")
+        let r2 = getJSON("jsons/mainnetdata0609/randomsequence.json")
+        let count = 0;
+        let levels = {};
+        let levels2 = {};
+        for (let i = 1; i <= 5; i++) {
+            levels[i] = 0
+            levels2[i] = 0
+        }
+        for (let i = 0; i < r.length; i++) {
+            if (r[i] > 15000) {
+                console.error("=================", r[i])
+            }
+            if (r[i] != r2[i]) {
+                count++
+                let l = await this.getBoxLevel(r[i])
+                let l2 = await this.getBoxLevel(r2[i])
+                levels[l]++
+                levels2[l2]++
+                console.log(l, "=", r[i], "=", r2[i], "=", r2[i], "=", l2)
+            }
+        }
+
+        console.log("count==", count, "levels==", levels, "levels2==", levels2)
+    }
+
+    async checkUserNumberOne(addr) {
+        let boxaddrs = getJSON("jsons/mainnetdata0610/boxaddresses.json")
+        let openedboxes = getJSON("jsons/mainnetdata0610/openedboxes.json")
+        let _users = getJSON("jsons/mainnetdata0610/users.json")
+        const one = "0x607fe8Ce38097A3e71acBE1FD814bbb0D65C46c3";
+        const inone = "0x607fe8Ce38097A3e71acBE1FD814bbb0D65c46c3";
+
+        let b = Object.keys(_users).filter(v=>v.toLowerCase()==inone.toLowerCase());
+        if (b.length>0){
+        addr = b[0];
+}
+        console.log("b",b,"addr",addr);
+        let s = boxaddrs[one].filter(v => openedboxes.indexOf(v.boxAddress) == -1)
+        console.log(boxaddrs[one].length,"unopenboxes length==", s.length)
+        let oneamounts = new Array(amounts[0].length).fill(0);
+        let levelcounts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+        for (let u of boxaddrs[one]) {
+            // console.log("u.level==",u, u.level)
+            levelcounts[u.level]++;
+        }
+
+        console.log("levelcounts==", levelcounts)
+        console.log("oneamounts==", oneamounts)
+        for (let l of Object.keys(levelcounts)) {
+            // console.log("l==", l)
+            let levelamounts = await this.getLevelAwardAmounts(l-1)
+            for (let i = 0; i < levelamounts.length; i++) {
+                oneamounts[i] = Number(oneamounts[i])+Number(levelamounts[i])*Number(levelcounts[l]);
+            }
+        }
+        const names = ["PuddingSwap", "Lendoo", "HeshiSwap", "GFC", "LOOT", "Yunge", "SwapXT", "Roolend", "SwapAll"];
+        const symbols = ["PUD", "LDT", "HSB", "GFC", "LOOT", "YUNGE", "iXT", "Roolend", "SAP"];
+
+        const addresses = CONTRACT_ADDRESS.slice(3)
+        console.log("names==", names)
+        console.log("symbols==", symbols)
+        console.log("addresses==", addresses)
+        console.log("oneamounts==", oneamounts)
+    }
+
+    async getLevelAwardAmounts(level) {
+        if (this._boxlevels == null) {
+            this._boxlevels = getJSON(boxlevels)
+        }
+
+        return this._boxlevels[level].tokens.amounts;
+    }
+
 
 
 }
@@ -341,6 +461,11 @@ let handlers = {
         let datamgmt = new DataMgmt()
         await datamgmt.genrandseq();
     }),
+    "genrandseqx": (async function () {
+        console.log("==genrandseqx==");
+        let datamgmt = new DataMgmt()
+        await datamgmt.genrandseqx();
+    }),
     "genlevel": (async function () {
         console.log("==genlevel==");
         let datamgmt = new DataMgmt()
@@ -357,6 +482,17 @@ let handlers = {
         let datamgmt = new DataMgmt()
         await datamgmt.checkUserTimesWrong();
     }),
+    "rand": (async function () {
+        console.log("==checkRand==");
+        let datamgmt = new DataMgmt()
+        await datamgmt.checkRand();
+    }),
+    "one": (async function () {
+        console.log("==checkUserNumberOne==");
+        let datamgmt = new DataMgmt()
+        await datamgmt.checkUserNumberOne();
+    }),
+
     "default": (async function () {
     })
 

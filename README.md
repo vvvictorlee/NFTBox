@@ -9,7 +9,7 @@ curl https://box.hoosmartchain.com/api/banners
 ```
 curl -X POST \
      -H 'Content-Type: application/json' \
-     -d '{"jsonrpc":"2.0","id":"id","method":"myboxes","params":{"address":"0x4a79c58CCf9d80353c02357F26D6f7b99fA9991e"}}' \
+     -d '{"jsonrpc":"2.0","id":"id","method":"myboxes","params":{"address":"0x4a79c58ccf9d80353c02357f26d6f7b99fa9991e"}}' \
      http://localhost:6789/api/myboxes
 
 curl -X POST \
@@ -38,10 +38,12 @@ curl -X POST \
 
 curl -X POST \
      -H 'Content-Type: application/json' \
-     -d '{"jsonrpc":"2.0","id":"id","method":"claimbox","params":{"address":"0xa1FFd14e169000b2b14255c22783244CaA734C2E"}}' \
+     -d '{"jsonrpc":"2.0","id":"id","method":"claimbox","params":{"address":"0x4A79C58CCF9D80353C02357F26D6F7B99FA9991E"}}' \
      http://localhost:6789/api/claimbox
 
-
+0xa1fFd14e169000b2b14255c22783244CaA734C2E
+0xa1fFd14e169000b2b14255c22783244CaA734C2E
+0xa1ffd14e169000b2b14255c22783244caa734c2e
 ```
 
 ```
