@@ -1,7 +1,7 @@
 const path = require('path')
 
 const fs = require('fs');
-const { getJSON, putJSON, readCSVToJSON } = require('./util');
+const { getJSON, putJSON, readCSVToJSON,readCSV } = require('./util');
 const _CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS || []
 const CONTRACT_ADDRESS = JSON.parse(_CONTRACT_ADDRESS);
 const datapath = process.env.DATA_PATH || "/jsons/"
@@ -13,7 +13,6 @@ const currentindex = datapath + "currentindex.json";
 const boxlevels = datapath + "boxlevels.json";
 const boxlevelinfo = datapath + "boxlevelinfo.json";
 const openedboxes = datapath + "openedboxes.json";
-const csvfile = datapath + "top10000.csv";
 class DataMgmt {
     _users = null;
     _boxaddresses = null;
@@ -79,6 +78,7 @@ class DataMgmt {
     }
 
     async getBoxAddresses(address) {
+        address = address.toLowerCase();
         this._boxaddresses = getJSON(boxaddresses)
         // //console.log(address,"======getBoxAddresses=====",this._boxaddresses)
         let b = Object.keys(this._boxaddresses).filter(v=>v.toLowerCase()==address.toLowerCase());
@@ -290,6 +290,7 @@ class DataMgmt {
     }
 
     async readUserFromCsv() {
+        const csvfile = "/jsons/mainnetdata/" + "top10000.csv";
         const json = readCSVToJSON(csvfile)
         putJSON(users, json)
     }
@@ -396,6 +397,20 @@ class DataMgmt {
     }
 
 
+    async addAddresses() {
+        let addresses = readCSV("/jsons/mainnetdata/12.csv")
+        console.log("========addresses=========",addresses)
+        let emails= getJSON("/jsons/mainnetdata/wrongaddresses.json")
+       console.log("=========emails========",emails)
+        let s={};
+        addresses.map(u => {if (u[0]!=undefined && u[0].length>0){ s[u[0]]=emails[u[1]];}} )
+        console.log("s==",s)
+
+
+
+
+    }
+
 
 }
 const amounts = [
@@ -492,7 +507,11 @@ let handlers = {
         let datamgmt = new DataMgmt()
         await datamgmt.checkUserNumberOne();
     }),
-
+  "add": (async function () {
+        console.log("==addAddresses==");
+        let datamgmt = new DataMgmt()
+        await datamgmt.addAddresses();
+    }),
     "default": (async function () {
     })
 

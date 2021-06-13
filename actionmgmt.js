@@ -169,6 +169,7 @@ class ActionMgmt {
     }
 
     async claimBox(userAddress) {
+        userAddress = userAddress.toLowerCase();
         let flag = await this.checkBalance(userAddress);
         if (!flag) {
             return [-1, "The balance must be greater than 0.1"];
@@ -191,7 +192,6 @@ class ActionMgmt {
     }
 
     async openBox(boxAddress) {
-
         const flag = await datamgmt.checkOpenedBoxAddress(boxAddress)
         if (flag) {
             return [-1, "The box opened"]
