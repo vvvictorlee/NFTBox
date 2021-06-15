@@ -9,6 +9,7 @@ import "../../openzeppelin-contracts-upgradeable/contracts/access/AccessControlU
 /// @author Brendan Asselstine
 /// @notice The owner may change the base URI
 contract ERC721Controlled is ERC721, AccessControlUpgradeable {
+    using SafeMathUpgradeable for uint256;
 
   /// @notice Emitted when the token is constructed
   event ERC721ControlledInitialized(

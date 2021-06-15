@@ -34,12 +34,11 @@
 					</div>
 				</div>
 			</div>
-			<div class="account-container">
+			<div class="placeholder-container"></div>
+			<div class="account-container" v-if="!!getHscAddress">
 				<div class="account-addr-container">
-					<div class="account-addr" v-if="clientAccount">{{clientAccount | formatAccount}}</div>
-					<div class="account-addr" v-if="!clientAccount" @click="connectWallet">Connect</div>
+					<div class="account-addr">{{getHscAddress | formatAccount}}</div>
 				</div>
-                <div class="account-tips">{{`Balance: ${clientBalance} ${balanceTokenName}`}}</div>
 			</div>
 			<div class="button-container">
 				<div class="check-button" @click="goWinnerList">{{$t('home.test2')}}</div>
@@ -53,9 +52,24 @@
 					<li>{{$t('home.test7')}}</li>
 					<li>{{$t('home.test8')}}</li>
 					<li>{{$t('home.test9')}}</li>
-                    <li>{{$t('home.test39')}}</li>
+					<li>{{$t('home.test39')}}</li>
 				</ul>
 			</div>
+			<!-- login -->
+			<nft-dialog ref="loginDailog">
+				<template slot="dcontent">
+					<div class="receive-nft-box">
+						<div class="receive-title">{{$t('home.test10')}}</div>
+						<div class="receive-addr">
+							<div class="addr-input">
+								<input ref="loginInput" type="text" v-model="loginAddress">
+							</div>
+							<div class="addr-lable">{{$t('home.test11')}}</div>
+						</div>
+						<div class="addr-submit-button" @click="loginSubmit">login</div>
+					</div>
+				</template>
+			</nft-dialog>
 			<!-- 领取盲盒 -->
 			<nft-dialog ref="receiveDailog">
 				<template slot="dcontent">
@@ -64,7 +78,7 @@
 						<div class="receive-addr">
 							<div class="addr-input">
 								<!-- <input type="text" v-model="inputAddr"> -->
-								{{clientAccount | formatAccount}}
+								{{getHscAddress | formatAccount}}
 							</div>
 							<div class="addr-lable">{{$t('home.test11')}}</div>
 						</div>
@@ -82,7 +96,7 @@
 				</template>
 				<template slot="dcontent">
 					<div class="open-nft-box">
-						<div class="box-container"  v-if="hasBoxList">
+						<div class="box-container" v-if="hasBoxList">
 							<div class="box-item-container" v-for="(item,index) in getMyboxList" :key="index + 'myboxs'">
 								<div class="box-item" :class="[item.is_active ? 'active-item' : '']" @click.stop="selectBox(item,index)">
 									<div class="img-container">
@@ -93,8 +107,8 @@
 							</div>
 						</div>
 						<div class="nodata-container" v-if="!hasBoxList">
-                            <div class="no-data-icon"></div>
-                            <div class="no-data-text">no data...</div>
+							<div class="no-data-icon"></div>
+							<div class="no-data-text">no data...</div>
 						</div>
 						<div class="open-submit-button" @click="openSubmit">{{$t('home.test14')}}</div>
 					</div>
@@ -137,29 +151,34 @@ export default {
 		this.initBannerList();
 	},
 	mounted() {
-		this.connectWallet();
+		// this.connectWallet();
+
+		if (!this.getHscAddress) {
+			this.$refs['loginDailog'].openDialog();
+		}
 	},
 	methods: {
 		//领取盲盒
 		receiveNftBox() {
 			let that = this;
 			if (!that.isConnected) {
-				that.$Toast('please connect wallet');
-				return;
+				that.$refs['loginDailog'].openDialog();
+			} else {
+				that.$refs['receiveDailog'].openDialog();
 			}
-			that.$refs['receiveDailog'].openDialog();
+
 		},
 		//我的盲盒
 		clickMyBoxes() {
 			let that = this;
 			if (!that.isConnected) {
-				that.$Toast('please connect wallet');
-				return;
+				that.$refs['loginDailog'].openDialog();
+			} else {
+				//获取我的盲盒list
+				that.handleMyBoxes();
+				//打开弹窗
+				that.$refs['openDailog'].openDialog();
 			}
-			//获取我的盲盒list
-			that.handleMyBoxes();
-			//打开弹窗
-			that.$refs['openDailog'].openDialog();
 		},
 
 		//切换tab
@@ -204,26 +223,17 @@ export default {
 			that.clickReceive();
 		},
 
-		// ********************** 链上操作 *********************** //
-        
-		async transfer(fromAccount, to, value) {
+		//登陆
+		loginSubmit() {
 			let that = this;
-			let unsigned = {
-				from: fromAccount,
-				to: to,
-				value: that.web3Client.utils.numberToHex(that.web3Client.utils.toWei(value, 'ether')),
+			if (!that.loginAddress) {
+				that.$refs['loginInput'].focus();
+				return;
 			}
-
-			let signed = await that.web3Client.eth.sendTransaction(unsigned);
-			return signed
+			that.setHscAddress(that.loginAddress);
+			that.$refs['loginDailog'].closeDialog();
 		},
 
-		sendTransaction() {
-			let that = this;
-			console.log(that.clientAccount);
-			let signData = that.transfer('0xf794916AE805AD50dBcDd544d2DB0116C0E31557', '0x187E9C0A52742604690eD1647E130e7616146b08', '0.01');
-			signData.then(res => { console.log(res) });
-		},
 	},
 }
 </script>
@@ -233,8 +243,9 @@ export default {
 .pc-home {
 	width: 100%;
 	min-width: 800px;
-	padding-top: 20px;
-	padding-bottom: 140px;
+	padding-top: 40px;
+	padding-bottom: 80px;
+	min-height: calc(100vh - 120px);
 	background: #232323;
 	.language-top {
 		height: 34px;
@@ -295,8 +306,8 @@ export default {
 	align-items: center;
 	justify-content: space-between;
 	position: relative;
-    .banner-title-en{
-        height: 190px;
+	.banner-title-en {
+		height: 190px;
 		width: 250px;
 		background: url("../../assets/image/banner_title_en.png") no-repeat;
 		background-size: 100% 100%;
@@ -309,9 +320,9 @@ export default {
 			background: url("../../assets/image/banner_flag.png") no-repeat;
 			background-size: 100% 100%;
 		}
-    }
-    .banner-title-ko{
-        height: 190px;
+	}
+	.banner-title-ko {
+		height: 190px;
 		width: 250px;
 		background: url("../../assets/image/banner_title_ko.png") no-repeat;
 		background-size: 100% 100%;
@@ -324,8 +335,7 @@ export default {
 			background: url("../../assets/image/banner_flag.png") no-repeat;
 			background-size: 100% 100%;
 		}
-
-    }
+	}
 	.banner-title-zh-hans {
 		height: 190px;
 		width: 250px;
@@ -369,8 +379,10 @@ export default {
 		}
 	}
 }
+.placeholder-container {
+	height: 40px;
+}
 .account-container {
-	margin-top: 40px;
 	padding-left: 40px;
 	padding-right: 40px;
 	height: 40px;
@@ -384,7 +396,7 @@ export default {
 		cursor: pointer;
 		padding-left: 20px;
 		padding-right: 20px;
-        width: 240px;
+		width: 240px;
 		height: 40px;
 		border-radius: 20px;
 		display: flex;
@@ -397,16 +409,16 @@ export default {
 			margin-left: 0;
 		}
 	}
-    .account-tips {
-        width: 240px;
-        padding-left: 20px;
+	.account-tips {
+		width: 240px;
+		padding-left: 20px;
 		padding-right: 20px;
 		height: 40px;
-        line-height: 40px;
+		line-height: 40px;
 		border-radius: 20px;
-        background-color: #05f6ea;
+		background-color: #05f6ea;
 		transition: background-color 0.2s ease 0s, opacity 0.2s ease 0s;
-        overflow: hidden;
+		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
 	}
@@ -419,12 +431,14 @@ export default {
 	justify-content: center;
 	img {
 		display: block;
-		height: 180px;
-		width: 180px;
+		height: 218px;
+		width: 218px;
+		margin-bottom: 20px;
 	}
 }
 .button-container {
-	height: 100px;
+	margin-top: 10px;
+	height: 60px;
 	padding-left: 40px;
 	padding-right: 40px;
 	display: flex;
@@ -468,7 +482,7 @@ export default {
 }
 
 .tips-area {
-	padding: 40px;
+	padding: 20px 40px 40px 40px;
 	.tips-title {
 		height: 22px;
 		line-height: 22px;
@@ -549,9 +563,9 @@ export default {
 		height: 40px;
 		line-height: 40px;
 		background: #02ead0;
-		font-size: 24px;
+		font-size: 18px;
 		font-family: PingFangSC-Regular, PingFang SC;
-		font-weight: 400;
+		font-weight: 500;
 		color: #232323;
 		text-align: center;
 		border-radius: 10px;
@@ -638,16 +652,15 @@ export default {
 			width: 88px;
 			height: 76px;
 			margin: 80px auto 40px auto;
-			background: url("../../assets/image/no-data-new.svg")
-				no-repeat;
+			background: url("../../assets/image/no-data-new.svg") no-repeat;
 			background-size: 100% 100%;
 		}
-        .no-data-text{
-            font-size: 14px;
-            font-family: PingFangSC-Regular, PingFang SC;
-            font-weight: 500;
-            color: #ccc;
-        }
+		.no-data-text {
+			font-size: 14px;
+			font-family: PingFangSC-Regular, PingFang SC;
+			font-weight: 500;
+			color: #ccc;
+		}
 	}
 	.open-submit-button {
 		margin-top: 34px;

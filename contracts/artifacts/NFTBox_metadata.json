@@ -1,6 +1,6 @@
 {
 	"compiler": {
-		"version": "0.6.12+commit.27d51765"
+		"version": "0.7.6+commit.7338295f"
 	},
 	"language": "Solidity",
 	"output": {
@@ -9,31 +9,6 @@
 				"inputs": [],
 				"stateMutability": "nonpayable",
 				"type": "constructor"
-			},
-			{
-				"anonymous": false,
-				"inputs": [
-					{
-						"indexed": true,
-						"internalType": "address",
-						"name": "user",
-						"type": "address"
-					},
-					{
-						"indexed": true,
-						"internalType": "address",
-						"name": "lootboxAddress",
-						"type": "address"
-					},
-					{
-						"indexed": true,
-						"internalType": "uint256",
-						"name": "tokenId",
-						"type": "uint256"
-					}
-				],
-				"name": "ChoosedBox",
-				"type": "event"
 			},
 			{
 				"anonymous": false,
@@ -62,18 +37,19 @@
 						"internalType": "address",
 						"name": "token",
 						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
 					}
 				],
-				"name": "ERC721ControlledCreated",
+				"name": "WithdrewERC20",
 				"type": "event"
 			},
 			{
 				"inputs": [
-					{
-						"internalType": "address",
-						"name": "user",
-						"type": "address"
-					},
 					{
 						"internalType": "contract IERC20Upgradeable[]",
 						"name": "tokens",
@@ -83,88 +59,32 @@
 						"internalType": "uint256[]",
 						"name": "amounts",
 						"type": "uint256[]"
-					}
-				],
-				"name": "chooseBox",
-				"outputs": [
+					},
 					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
+						"internalType": "address",
+						"name": "to",
+						"type": "address"
 					}
 				],
+				"name": "depositERC20",
+				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
 			},
 			{
 				"inputs": [
-					{
-						"internalType": "string",
-						"name": "name",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
-						"name": "symbol",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
-						"name": "baseURI",
-						"type": "string"
-					}
-				],
-				"name": "createERC721Controlled",
-				"outputs": [
-					{
-						"internalType": "contract ERC721Controlled",
-						"name": "",
-						"type": "address"
-					}
-				],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "erc721Controlled",
-				"outputs": [
-					{
-						"internalType": "contract ERC721Controlled",
-						"name": "",
-						"type": "address"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "lootBoxControllerInstance",
-				"outputs": [
-					{
-						"internalType": "contract LootBoxController",
-						"name": "",
-						"type": "address"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "tokenId",
-						"type": "uint256"
-					},
 					{
 						"internalType": "contract IERC20Upgradeable[]",
-						"name": "erc20s",
+						"name": "tokens",
 						"type": "address[]"
+					},
+					{
+						"internalType": "address",
+						"name": "to",
+						"type": "address"
 					}
 				],
-				"name": "openBox",
+				"name": "withdrawERC20",
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
@@ -175,15 +95,16 @@
 			"details": "This contract is intended to be counterfactually instantiated via CREATE2.",
 			"kind": "dev",
 			"methods": {
-				"createERC721Controlled(string,string,string)": {
-					"returns": {
-						"_0": "The address of the newly created ERC721Controlled"
+				"depositERC20(address[],uint256[],address)": {
+					"params": {
+						"to": "The recipient of the transfers",
+						"tokens": "An array of ERC20 tokens to transfer out.  The balance of each will be transferred."
 					}
 				},
-				"openBox(uint256,address[])": {
+				"withdrawERC20(address[],address)": {
 					"params": {
-						"erc20s": "Array of ERC20 token addresses whose entire balance should be transferred",
-						"tokenId": "The address receiving all tokens"
+						"to": "The recipient of the transfers",
+						"tokens": "An array of ERC20 tokens to transfer out.  The balance of each will be transferred."
 					}
 				}
 			},
@@ -195,17 +116,17 @@
 				"DepositERC20(address,uint256)": {
 					"notice": "Emitted when an ERC20 token is deposited"
 				},
-				"ERC721ControlledCreated(address)": {
-					"notice": "Emitted when a ERC721Controlled is created"
+				"WithdrewERC20(address,uint256)": {
+					"notice": "Emitted when an ERC20 token is withdrawn"
 				}
 			},
 			"kind": "user",
 			"methods": {
-				"createERC721Controlled(string,string,string)": {
-					"notice": "Creates an ERC721Controlled contract"
+				"depositERC20(address[],uint256[],address)": {
+					"notice": "Transfers the entire balance of ERC20s to an account"
 				},
-				"openBox(uint256,address[])": {
-					"notice": "Transfers tokens to another account"
+				"withdrawERC20(address[],address)": {
+					"notice": "Transfers the entire balance of ERC20s to an account"
 				}
 			},
 			"notice": "A LootBox allows anyone to withdraw all tokens or execute calls on behalf of the contract.",
@@ -228,116 +149,12 @@
 		"remappings": []
 	},
 	"sources": {
-		"lootbox/contracts/ERC721.sol": {
-			"keccak256": "0x8d794f7adb7801b640036bcd53cd1dbc91b6214e0800cdc564dd146f07adbfd0",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://816b5170a84ff38ed4aac3c18d3bbb460c5ffe059165c56c5a04ac87d45040bf",
-				"dweb:/ipfs/QmZkBRgRrJ2XtzH4kaJnUZtPEn2s1LsK95y4CcdaPqnQX6"
-			]
-		},
-		"lootbox/contracts/ERC721Controlled.sol": {
-			"keccak256": "0xd1a4fe0f0a3285a213f0a2c3a9878b47886d54f023f89bb7cd4f0a6458f0aee3",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://70c55c645b006b24289a03fadb0c6fa009755b8b2275e5fc560d97b714cc3ce5",
-				"dweb:/ipfs/QmY8zUHM2ENgG45E8yBe16jyRnZj4jgHUnK6s1YunQuEvc"
-			]
-		},
-		"lootbox/contracts/ERC721ControlledFactory.sol": {
-			"keccak256": "0x46cda2eae89b015d10c6413d64f106913865a6070f92611019509ee5493b8f80",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://bcaf7716e3de2b4139cde7c5d7b64d75dbdb7431767a6f8e54b23d260de550b8",
-				"dweb:/ipfs/QmPG5JteXGBvaiSMGZ1nkbwEUKCtGFNTFmihABBuwsexGH"
-			]
-		},
-		"lootbox/contracts/LootBox.sol": {
-			"keccak256": "0x3f58972fe3977982248ec0938a7f77cb673390d91d602048a31ced1e77a2e390",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://fb90cab473e1e77a2927e6654003f04b49effc16ee52e1c205513b76ce178a97",
-				"dweb:/ipfs/QmakX4gbqG9of9ZG9CgiGvyFan2yUwWbPG1wmaM1JruGXg"
-			]
-		},
-		"lootbox/contracts/LootBoxController.sol": {
-			"keccak256": "0xbc7ff60bff3c96707a50bc8248e201efe4eab8296d07095543a7339c4bf8cc06",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://048d3065bb94671e2cf65e03bc96c72966e8d484d6c5d4b03c5ad9805c5a9ad0",
-				"dweb:/ipfs/QmUnrz48U5iFabrc3NksWTmaosNMLBnzw8HxtTDfqhxex2"
-			]
-		},
 		"lootbox/contracts/NFTBox.sol": {
-			"keccak256": "0x52f0c942b26072e9bdd7a287ef2aadcbd807b51b44aafdd6863450bc0fa7f029",
+			"keccak256": "0xe1f8d31810ed61c6cd38430bd35e4defcba41cd4b12636ab18112200430130d8",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://1e4c0a547b0921b5391344760c607b10c410498c25aa8f85892bc86c74ce5703",
-				"dweb:/ipfs/QmaLbkRfo5rakTsW2mtRyqMeRNbs6ieRG7dfdEHNcrGu6e"
-			]
-		},
-		"lootbox/contracts/external/pooltogether/MinimalProxyLibrary.sol": {
-			"keccak256": "0x4e3478d45138b064409b3702e2a49c263bae633172b513f6db6f2c39132edda9",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://f89b320d37210d205341d14403e67e97efb6a78735b67789dcb9b5422c05abd7",
-				"dweb:/ipfs/QmNnRFooYAcgAKq2M3zwr5ZkiC1on1LPiXmPwEteMyzcaA"
-			]
-		},
-		"openzeppelin-contracts-upgradeable/contracts/GSN/ContextUpgradeable.sol": {
-			"keccak256": "0xb583dd8f2749c0b20005e3c4337371629690ad0fc9c149fb5fa1a6e8626e8e4c",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://d4a2c91c0abd8d0a3f76ed32d374723ba0746ffda38f81854990af1334c80343",
-				"dweb:/ipfs/QmQQE6tqQJzKMwJMt25shwPmZY9A7MUstuZ3FaAbvCvrbZ"
-			]
-		},
-		"openzeppelin-contracts-upgradeable/contracts/access/AccessControlUpgradeable.sol": {
-			"keccak256": "0xa3c77c9ea6b47301c7ab5bf3addc1d809d13a27a179c4629a1b55308e8633d14",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://77a789173aa9454336023580d52fedfb2d5ef0a1ccb3040ba20f5aa56e300aef",
-				"dweb:/ipfs/Qme3CQYH1AywEH1w3mDV3UT6NhMQmjspNnUA6V8yBg77Ac"
-			]
-		},
-		"openzeppelin-contracts-upgradeable/contracts/introspection/ERC165Upgradeable.sol": {
-			"keccak256": "0xc6dbbc2f50a7c104377798a37b2acd1a41c1242544b0bb7a9a7c863f0520eb50",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://ff3a66f685a49d3750c9b3588770d1ee43ce3cb718e1dc911ac65d8a6d1c1f0d",
-				"dweb:/ipfs/QmVK2mdcbZTZ81YQ1rxWWNbYgy3Gpb3yz3L2qtDPTdx9hu"
-			]
-		},
-		"openzeppelin-contracts-upgradeable/contracts/introspection/IERC165Upgradeable.sol": {
-			"keccak256": "0x4784c3f8a520a739dd25d76f514833a653990902d0e21601aed45bda44c87524",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://359411cc44a4499f37d46562ef3f348db443f9a699138c1797264d20b14697b7",
-				"dweb:/ipfs/QmUmeQNUwve4MFCc1ace6zMnstqa8S9SZe1nXG9THcpQ5v"
-			]
-		},
-		"openzeppelin-contracts-upgradeable/contracts/math/SafeMathUpgradeable.sol": {
-			"keccak256": "0x0dd1e9b19801e3e7d900fbf4182d81e1afd23ad7be39504e33df6bbcba91d724",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://5e30d594df25d0651c2cd6f85d856e5fc9f3dbae68d017e1da33eb3c7e2f1ecc",
-				"dweb:/ipfs/QmPgkV99jZr3Zs9ex8dJ5j22oX4wDuDtMCnXNy67bTwgAB"
-			]
-		},
-		"openzeppelin-contracts-upgradeable/contracts/proxy/Initializable.sol": {
-			"keccak256": "0xd8e4eb08dcc1d1860fb347ba5ffd595242b9a1b66d49a47f2b4cb51c3f35017e",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://7dbc89479d30592e82442edc38053b380f611037a5e6ceafc7bf57a7aa1f0305",
-				"dweb:/ipfs/QmcdYtt56WmjeYvsFjK69FnahnAriw88VzY3XRZwXkQKKN"
-			]
-		},
-		"openzeppelin-contracts-upgradeable/contracts/token/ERC1155/IERC1155Upgradeable.sol": {
-			"keccak256": "0xcbc02d192c55298cf65e5695375c839eac979a597a0fbdc1635195c4d28ca5ac",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://45ee9cb5a548db9a3805b934f995770272583ef6c0abd31aeffb7bd1f4c2f696",
-				"dweb:/ipfs/QmcHGENdTcAzU6NuaoJWgMDA2rH1JdCWJf2EXRnSE967Qw"
+				"bzz-raw://f4f340632a2572053e4966566643d29626678698981077863fcf044966f1ef63",
+				"dweb:/ipfs/QmUazS2ALMUsZmZ4goSofv7VQ3xFHk1DV6y2ssJagqdB8Q"
 			]
 		},
 		"openzeppelin-contracts-upgradeable/contracts/token/ERC20/IERC20Upgradeable.sol": {
@@ -346,70 +163,6 @@
 			"urls": [
 				"bzz-raw://2cbeb499bad52667b96dd7df8e9b1f583e8c07afaba0018a75e5b7ff6e777173",
 				"dweb:/ipfs/QmPLJnuhEcWnpmhMHKsiuVHVxMwb5k6idYyjajbrtZLz5B"
-			]
-		},
-		"openzeppelin-contracts-upgradeable/contracts/token/ERC721/IERC721MetadataUpgradeable.sol": {
-			"keccak256": "0xa981b1f67f60771c18d39e21bad0a2f0f952e2c3faa90b45b982060fc14ee2bd",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://dcf9db2d0bd009e25874ee428267c45455613c967f29895e94358914fd4c879d",
-				"dweb:/ipfs/QmYuwT44WF9imBdokjpuFL27eJVh4jqhmaR8DTdVSG5EhC"
-			]
-		},
-		"openzeppelin-contracts-upgradeable/contracts/token/ERC721/IERC721ReceiverUpgradeable.sol": {
-			"keccak256": "0x53552243cd7de0d57a876cbaee3485d4bdc2b1c7d58ff15447cd623a3ddb5cd0",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://795c6d0e2058529f2b9e190207bb6dbe208cf793e70cf99999d5bb39029a3887",
-				"dweb:/ipfs/QmTDtUmqY2BwMZjqLPEtz4k1c4DLhEt8p2rSAMN9wNJKQd"
-			]
-		},
-		"openzeppelin-contracts-upgradeable/contracts/token/ERC721/IERC721Upgradeable.sol": {
-			"keccak256": "0x3dab19bb4a63bcbda1ee153ca291694f92f9009fad28626126b15a8503b0e5ff",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://ecc8ae8f1f85e11b6f749e147ac298d1d66879f3bfe3d4518b919f7b6151a73b",
-				"dweb:/ipfs/QmYXZfcnCd1N1AaxUTfNQjNHJXAAfVGvae6Bte1SfTCKEz"
-			]
-		},
-		"openzeppelin-contracts-upgradeable/contracts/utils/AddressUpgradeable.sol": {
-			"keccak256": "0xfc5ea91fa9ceb1961023b2a6c978b902888c52b90847ac7813fe3b79524165f6",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://a6b81dcc816857a9d981386f6d8de49198420ee41cdc0ecade366ab412174d03",
-				"dweb:/ipfs/QmV2vznMT6m9qo3pFMAWi3Nz3UDhwesgwFxeXe6Tod3v8A"
-			]
-		},
-		"openzeppelin-contracts-upgradeable/contracts/utils/ContextUpgradeable.sol": {
-			"keccak256": "0xbbf8a21b9a66c48d45ff771b8563c6df19ba451d63dfb8380a865c1e1f29d1a0",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://062688aac76e27ab50157a9d645700cf92e3c0d51d3d860be1d2e1a0c04a87d0",
-				"dweb:/ipfs/QmfXxppWAiSTeH8YNn2EtMPDgzrLeJ5rjRq8knEbje88mX"
-			]
-		},
-		"openzeppelin-contracts-upgradeable/contracts/utils/Create2Upgradeable.sol": {
-			"keccak256": "0xa74666c992a3899fee9ae3b69ef08988e1d2b4f3a2d7f1544e821a3d4107412c",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://6ae50d5a24eac6b0277ead2de7c3ccd85072240c7cffada100a71b71179ce1c1",
-				"dweb:/ipfs/QmebdG3JP4Vj2Qpft9QwP6EuJkvjbX5HCetZKczsZUdxTR"
-			]
-		},
-		"openzeppelin-contracts-upgradeable/contracts/utils/EnumerableSetUpgradeable.sol": {
-			"keccak256": "0x20714cf126a1a984613579156d3cbc726db8025d8400e1db1d2bb714edaba335",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://8d6e8cc57f51f6c73eccd5b2dbaf3d8486a35148fe0e8bea4b002fbf2a78f381",
-				"dweb:/ipfs/QmawvgjwaqMxyfbFnjxfap1FZ1sPwVgGHaEC41whKdP7N4"
-			]
-		},
-		"openzeppelin-contracts-upgradeable/contracts/utils/StringsUpgradeable.sol": {
-			"keccak256": "0x8d1ac29b8a8ed3cfebe5d8774b465441ae8931aaca549f84408e0b29a1191964",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://1ddb2fde1fb47d755362333f64099a63ef37c12f2b4b38f80050cb967952058b",
-				"dweb:/ipfs/QmYD25vdrQ1WyzD8png1nStRRPJBmnkf6fY8FthNrKfmmb"
 			]
 		}
 	},

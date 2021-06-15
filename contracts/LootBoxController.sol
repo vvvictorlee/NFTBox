@@ -27,7 +27,7 @@ contract LootBoxController {
 
   /// @notice Constructs a new controller.
   /// @dev Creates a new LootBox instance and an associated minimal proxy.
-  constructor () public {
+  constructor ()  {
     lootBoxInstance = new LootBox();
     lootBoxInstance.initialize();
     lootBoxBytecode = MinimalProxyLibrary.minimalProxy(address(lootBoxInstance));

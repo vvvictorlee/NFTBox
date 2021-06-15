@@ -1,6 +1,6 @@
 {
 	"compiler": {
-		"version": "0.6.12+commit.27d51765"
+		"version": "0.7.6+commit.7338295f"
 	},
 	"language": "Solidity",
 	"output": {
@@ -267,7 +267,9 @@
 				"computeAddress(address,uint256)": {
 					"notice": "Computes the Loot Box address for a given ERC721 token."
 				},
-				"constructor": "Constructs a new controller.",
+				"constructor": {
+					"notice": "Constructs a new controller."
+				},
 				"executeCalls(address,uint256,(address,uint256,bytes)[])": {
 					"notice": "Allows the owner of an ERC721 to execute abitrary calls on behalf of the associated Loot Box."
 				},
@@ -307,11 +309,11 @@
 			]
 		},
 		"lootbox/contracts/LootBoxController.sol": {
-			"keccak256": "0xbc7ff60bff3c96707a50bc8248e201efe4eab8296d07095543a7339c4bf8cc06",
+			"keccak256": "0xe66bfa620893c036581853f803b936693679669c35db7227afcf17bacc7fbe8e",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://048d3065bb94671e2cf65e03bc96c72966e8d484d6c5d4b03c5ad9805c5a9ad0",
-				"dweb:/ipfs/QmUnrz48U5iFabrc3NksWTmaosNMLBnzw8HxtTDfqhxex2"
+				"bzz-raw://3a1af72cc3c4629e5a2c0442570a05350c70e00b923ddf78bc0e3c341ef28421",
+				"dweb:/ipfs/QmRGA44sUPRb9yXoikAkNJJ4dWKETYHGKhciM74cFkQHBw"
 			]
 		},
 		"lootbox/contracts/external/pooltogether/MinimalProxyLibrary.sol": {

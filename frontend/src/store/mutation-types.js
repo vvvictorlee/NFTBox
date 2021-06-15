@@ -9,3 +9,4 @@ export const BANNER_LIST = "BANNER_LIST";
 export const OPEN_MESSAGE = "OPEN_MESSAGE";
 export const MY_OPEN_BOX = "MY_OPEN_BOX";
 export const OPEN_BOX_INFO = "OPEN_BOX_INFO";
+export const HSC_ADDRESS = "HSC_ADDRESS";

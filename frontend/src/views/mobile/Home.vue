@@ -34,12 +34,11 @@
 					</div>
 				</div>
 			</div>
-			<div class="account-container">
+			<div class="placeholder-container"></div>
+			<div class="account-container" v-if="!!getHscAddress">
 				<div class="account-addr-container">
-					<div class="account-addr" v-if="clientAccount">{{clientAccount | formatAccountMobile}}</div>
-					<div class="account-addr" v-if="!clientAccount" @click="connectWallet">Connect</div>
+					<div class="account-addr">{{getHscAddress | formatAccount}}</div>
 				</div>
-				<div class="account-tips">{{`Balance: ${clientBalance} ${balanceTokenName}`}}</div>
 			</div>
 			<div class="button-container">
 				<div class="check-button" @click="goWinnerList">{{$t('home.test2')}}</div>
@@ -53,9 +52,24 @@
 					<li>{{$t('home.test7')}}</li>
 					<li>{{$t('home.test8')}}</li>
 					<li>{{$t('home.test9')}}</li>
-                    <li>{{$t('home.test39')}}</li>
+					<li>{{$t('home.test39')}}</li>
 				</ul>
 			</div>
+			<!-- login -->
+			<nft-dialog ref="loginDailog">
+				<template slot="dcontent">
+					<div class="receive-nft-box">
+						<div class="receive-title">{{$t('home.test10')}}</div>
+						<div class="receive-addr">
+							<div class="addr-input">
+								<input ref="loginInput" type="text" v-model="loginAddress">
+							</div>
+							<div class="addr-lable">{{$t('home.test11')}}</div>
+						</div>
+						<div class="addr-submit-button" @click="loginSubmit">login</div>
+					</div>
+				</template>
+			</nft-dialog>
 			<!-- 领取盲盒 -->
 			<nft-dialog ref="receiveDailog">
 				<template slot="dcontent">
@@ -64,7 +78,7 @@
 						<div class="receive-addr">
 							<div class="addr-input">
 								<!-- <input type="text" v-model="inputAddr"> -->
-								{{clientAccount | formatAccountMobile}}
+								{{getHscAddress | formatAccountMobile}}
 							</div>
 							<div class="addr-lable">{{$t('home.test11')}}</div>
 						</div>
@@ -135,29 +149,33 @@ export default {
 		this.initBannerList();
 	},
 	mounted() {
-		this.connectWallet();
+		// this.connectWallet();
+
+		if (!this.getHscAddress) {
+			this.$refs['loginDailog'].openDialog();
+		}
 	},
 	methods: {
 		//领取盲盒
 		receiveNftBox() {
 			let that = this;
 			if (!that.isConnected) {
-				that.$Toast('please connect wallet');
-				return;
+				that.$refs['loginDailog'].openDialog();
+			} else {
+				that.$refs['receiveDailog'].openDialog();
 			}
-			that.$refs['receiveDailog'].openDialog();
 		},
 		//我的盲盒
 		clickMyBoxes() {
 			let that = this;
 			if (!that.isConnected) {
-				that.$Toast('please connect wallet');
-				return;
+				that.$refs['loginDailog'].openDialog();
+			} else {
+				//获取我的盲盒list
+				that.handleMyBoxes();
+				//打开弹窗
+				that.$refs['openDailog'].openDialog();
 			}
-			//获取我的盲盒list
-			that.handleMyBoxes();
-			//打开弹窗
-			that.$refs['openDailog'].openDialog();
 		},
 		//切换tab
 		exchangeTab(type) {
@@ -200,24 +218,15 @@ export default {
 			let that = this;
 			that.clickReceive();
 		},
-		// ********************** 链上操作 *********************** //
-		async transfer(fromAccount, to, value) {
+		//登陆
+		loginSubmit() {
 			let that = this;
-			let unsigned = {
-				from: fromAccount,
-				to: to,
-				value: that.web3Client.utils.numberToHex(that.web3Client.utils.toWei(value, 'ether')),
+			if (!that.loginAddress) {
+				that.$refs['loginInput'].focus();
+				return;
 			}
-
-			let signed = await that.web3Client.eth.sendTransaction(unsigned);
-			return signed
-		},
-
-		sendTransaction() {
-			let that = this;
-			console.log(that.clientAccount);
-			let signData = that.transfer('0xf7949...E805AD50....d544d2DB0116C0E31557', '0x187E9C0A52742...690eD1647E130e...16146b08', '0.01');
-			signData.then(res => { console.log(res) });
+			that.setHscAddress(that.loginAddress);
+			that.$refs['loginDailog'].closeDialog();
 		},
 	},
 }
@@ -347,11 +356,11 @@ export default {
 		}
 	}
 }
+.placeholder-container {
+	height: 0.4rem;
+}
 .account-container {
-	// padding-left: 0.76rem;
-	// padding-right: 0.76rem;
-	// width: 4.48rem;
-	margin: 0.8rem auto 0 auto;
+	margin: 0.3rem auto 0 auto;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -399,8 +408,8 @@ export default {
 	justify-content: center;
 	img {
 		display: block;
-		height: 3.8rem;
-		width: 3.8rem;
+		height: 4rem;
+		width: 4rem;
 		margin-right: 1rem;
 	}
 }
@@ -413,7 +422,8 @@ export default {
 	background: rgba(0, 0, 0, 0.1);
 }
 .button-container {
-	height: 1.8rem;
+	margin-top: 0.3rem;
+	height: 1.2rem;
 	padding-left: 0.76rem;
 	padding-right: 0.76rem;
 	display: flex;
@@ -444,7 +454,7 @@ export default {
 	}
 }
 .open-button {
-	margin: 0 auto;
+	margin: 0.4rem auto 0 auto;
 	width: 6rem;
 	height: 1rem;
 	line-height: 1rem;
@@ -512,7 +522,7 @@ export default {
 			font-family: PingFangSC-Medium, PingFang SC;
 			font-weight: 500;
 			color: #c1c1c1;
-            text-align: center;
+			text-align: center;
 		}
 		.addr-input {
 			width: 3.6rem;

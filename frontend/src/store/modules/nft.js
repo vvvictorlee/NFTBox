@@ -13,12 +13,15 @@ const state = {
         level: '',
         tokens: [],
     },
+    //登陆的hsc链上地址
+    hscAddress: '',
 }
 const getters = {
     getNft: state => state.nft,
     getOpenMessage: state => state.openMessage,
     getMyboxList: state => state.myboxList,
     getOpenBoxInfo: state => state.openBoxInfo,
+    getHscAddress: state => state.hscAddress,
 }
 
 const actions = {
@@ -33,6 +36,9 @@ const actions = {
     },
     setOpenBoxInfo({ commit }, status) {
         commit(types.OPEN_BOX_INFO, status)
+    },
+    setHscAddress({commit},status){
+        commit(types.HSC_ADDRESS, status)
     },
 }
 
@@ -49,6 +55,9 @@ const mutations = {
     },
     [types.OPEN_BOX_INFO](state, status) {
         state.openBoxInfo = Object.assign({},state.openBoxInfo,status);
+    },
+    [types.HSC_ADDRESS](state, status) {
+        state.hscAddress = status;
     },
 }
 

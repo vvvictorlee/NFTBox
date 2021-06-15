@@ -19,7 +19,7 @@ contract NFTBox {
   /// @notice Emitted when an ERC20 token is withdrawn
   event WithdrewERC20(address indexed token, uint256 amount);
 
-   constructor () public {
+   constructor ()  {
     _owner = msg.sender;
   }
 

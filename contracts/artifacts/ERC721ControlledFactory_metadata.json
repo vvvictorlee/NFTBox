@@ -1,6 +1,6 @@
 {
 	"compiler": {
-		"version": "0.6.12+commit.27d51765"
+		"version": "0.7.6+commit.7338295f"
 	},
 	"language": "Solidity",
 	"output": {
@@ -102,11 +102,11 @@
 			]
 		},
 		"lootbox/contracts/ERC721Controlled.sol": {
-			"keccak256": "0xd1a4fe0f0a3285a213f0a2c3a9878b47886d54f023f89bb7cd4f0a6458f0aee3",
+			"keccak256": "0x840417a133d855fdc30d5d9e010546cf60f844810fad82bbc050d55397a09063",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://70c55c645b006b24289a03fadb0c6fa009755b8b2275e5fc560d97b714cc3ce5",
-				"dweb:/ipfs/QmY8zUHM2ENgG45E8yBe16jyRnZj4jgHUnK6s1YunQuEvc"
+				"bzz-raw://0fc520792504e0a5e10f35a14acee54924d4084d894d517057c32c8d5472e0cd",
+				"dweb:/ipfs/QmYUQHmK15Fipks1vMLwzzF6Av74T78X3LP8xv9g1X8ysR"
 			]
 		},
 		"lootbox/contracts/ERC721ControlledFactory.sol": {

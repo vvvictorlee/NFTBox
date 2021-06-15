@@ -20,6 +20,8 @@ export default {
 			publicPath: process.env.BASE_URL,
 			current: 0,
 			clientAccount: '',
+            accountAddress: '', //用户链上地址
+            loginAddress: '',
 			clientBalance: 0,
 			web3Client: null,
 			chainId: 170,
@@ -27,27 +29,27 @@ export default {
 			bannerConfig: {
 				"1": {
 					name: this.$t('home.test27'),
-					imgurl: 'image/diamond_box.png',
+					imgurl: 'image/diamond_box.png?v=3',
 					i18Text: 'home.test27',
 				},
 				"2": {
 					name: this.$t('home.test28'),
-					imgurl: 'image/gold_box.png',
+					imgurl: 'image/gold_box.png?v=3',
 					i18Text: 'home.test28',
 				},
 				"3": {
 					name: this.$t('home.test29'),
-					imgurl: 'image/silver_box.png',
+					imgurl: 'image/silver_box.png?v=3',
 					i18Text: 'home.test29',
 				},
 				"4": {
 					name: this.$t('home.test30'),
-					imgurl: 'image/bronze_box.png',
+					imgurl: 'image/bronze_box.png?v=3',
 					i18Text: 'home.test30',
 				},
 				"5": {
 					name: this.$t('home.test31'),
-					imgurl: 'image/platinum_box.png',
+					imgurl: 'image/platinum_box.png?v=3',
 					i18Text: 'home.test31',
 				},
 			},
@@ -61,12 +63,13 @@ export default {
 			getBannerList: "getBannerList",
 			getMyboxList: "getMyboxList",
             getLocaleLang: "getLocaleLang",
+            getHscAddress: "getHscAddress",
 		}),
 		caclCurrent() {
 			return this.current;
 		},
 		isConnected() {
-			let flag = !!this.clientAccount;
+			let flag = !!this.getHscAddress;
 			return flag;
 		},
 		hasBoxList() {
@@ -107,6 +110,7 @@ export default {
 			setOpenMessage: "setOpenMessage",
 			setMyboxList: "setMyboxList",
 			setOpenBoxInfo: "setOpenBoxInfo",
+            setHscAddress: "setHscAddress",
 		}),
 		formatBannerName(level) {
 			// console.log(level)
@@ -150,12 +154,12 @@ export default {
 		//获取我的盲盒列表
 		handleMyBoxes() {
 			let that = this;
-			if (!that.clientAccount) {
+			if (!that.isConnected) {
 				that.$Toast('please connect wallet');
 				return;
 			}
 			let requestParams = {
-				address: that.clientAccount,
+				address: that.getHscAddress,
 			};
 			that.loadingTips = true;
 			//获取我的盲盒list
@@ -215,12 +219,12 @@ export default {
 		//点击领取
 		clickReceive() {
 			let that = this;
-			if (!that.clientAccount) {
+			if (!that.isConnected) {
 				that.$Toast('please connect wallet');
 				return;
 			}
 			let requestParams = {
-				address: that.clientAccount,
+				address: that.getHscAddress,
 			};
 			that.loadingTips = true;
 			handleReceive(requestParams).then(res => {
@@ -470,7 +474,6 @@ export default {
 			console.log(`chain id: ${chainId}`)
 			that.chainId = chainId;
 		},
-
 	}
 }
 </script>
