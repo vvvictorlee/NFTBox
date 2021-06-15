@@ -11,11 +11,25 @@ const putJSON = (fileName, json) => {
     fs.writeFileSync(path.join(__dirname, fileName), JSON.stringify(json));
 }
 
+
+
 const readCSV = (fileName) => {
     const data = fs.readFileSync(path.join(__dirname, fileName));
     const table = ToTable(data);
     // console.log(table);
     return table;
+}
+
+const writeCSV = (fileName, data) => {
+    fs.writeFileSync(path.join(__dirname, fileName), `\ufeff${fromTable(data)}`);
+}
+
+const fromTable = (data) => {
+    let str = "";
+    for (let r of data){   
+        str+= r.join(",")+"\r\n";
+    }
+    return str;
 }
 
 const ToTable = (data) => {
@@ -63,4 +77,4 @@ const ConvertToTable = (data) => {
     return table;
 }
 
-module.exports = { getJSON, putJSON, readCSVToJSON,readCSV }
+module.exports = { getJSON, putJSON, readCSVToJSON,readCSV,writeCSV }

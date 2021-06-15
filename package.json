@@ -16,6 +16,7 @@
     "r": "DEBUG=app node  -r dotenv/config datamgmt.js rand dotenv_config_path=.env.test",
     "one": "DEBUG=app node  -r dotenv/config datamgmt.js one dotenv_config_path=.env",
     "addr": "DEBUG=app node  -r dotenv/config datamgmt.js add dotenv_config_path=.env",
+    "unc": "DEBUG=app node  -r dotenv/config datamgmt.js unc dotenv_config_path=.env",
     "create": "DEBUG=app node  -r dotenv/config actionmgmt.js c dotenv_config_path=.env",
     "receipt": "DEBUG=app node  -r dotenv/config actionmgmt.js r dotenv_config_path=.env",
     "mint:test": "DEBUG=app node  -r dotenv/config actionmgmt.js m dotenv_config_path=.env.test",

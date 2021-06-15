@@ -1,7 +1,7 @@
 const path = require('path')
 
 const fs = require('fs');
-const { getJSON, putJSON, readCSVToJSON,readCSV } = require('./util');
+const { getJSON, putJSON, readCSVToJSON, readCSV,writeCSV } = require('./util');
 const _CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS || []
 const CONTRACT_ADDRESS = JSON.parse(_CONTRACT_ADDRESS);
 const datapath = process.env.DATA_PATH || "/jsons/"
@@ -36,8 +36,8 @@ class DataMgmt {
 
     async checkUserTimes(user) {
         this._users = getJSON(users)
-        let b = Object.keys(this._users).filter(v=>v.toLowerCase()==user.toLowerCase());
-        if (b.length>0)  {
+        let b = Object.keys(this._users).filter(v => v.toLowerCase() == user.toLowerCase());
+        if (b.length > 0) {
             user = b[0];
         }
         if (this._users[user] != undefined && Number(this._users[user]) > 0) {
@@ -49,8 +49,8 @@ class DataMgmt {
 
     async updateUserTimes(user) {
         this._users = getJSON(users)
-        let b = Object.keys(this._users).filter(v=>v.toLowerCase()==user.toLowerCase());
-        if (b.length>0)  {
+        let b = Object.keys(this._users).filter(v => v.toLowerCase() == user.toLowerCase());
+        if (b.length > 0) {
             user = b[0];
         }
         if (this._users[user] != undefined && Number(this._users[user]) > 0) {
@@ -81,8 +81,8 @@ class DataMgmt {
         address = address.toLowerCase();
         this._boxaddresses = getJSON(boxaddresses)
         // //console.log(address,"======getBoxAddresses=====",this._boxaddresses)
-        let b = Object.keys(this._boxaddresses).filter(v=>v.toLowerCase()==address.toLowerCase());
-        if (b.length>0)  {
+        let b = Object.keys(this._boxaddresses).filter(v => v.toLowerCase() == address.toLowerCase());
+        if (b.length > 0) {
             address = b[0];
         }
         if (this._boxaddresses[address] == undefined) {
@@ -355,13 +355,13 @@ class DataMgmt {
         const one = "0x607fe8Ce38097A3e71acBE1FD814bbb0D65C46c3";
         const inone = "0x607fe8Ce38097A3e71acBE1FD814bbb0D65c46c3";
 
-        let b = Object.keys(_users).filter(v=>v.toLowerCase()==inone.toLowerCase());
-        if (b.length>0){
-        addr = b[0];
-}
-        console.log("b",b,"addr",addr);
+        let b = Object.keys(_users).filter(v => v.toLowerCase() == inone.toLowerCase());
+        if (b.length > 0) {
+            addr = b[0];
+        }
+        console.log("b", b, "addr", addr);
         let s = boxaddrs[one].filter(v => openedboxes.indexOf(v.boxAddress) == -1)
-        console.log(boxaddrs[one].length,"unopenboxes length==", s.length)
+        console.log(boxaddrs[one].length, "unopenboxes length==", s.length)
         let oneamounts = new Array(amounts[0].length).fill(0);
         let levelcounts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
         for (let u of boxaddrs[one]) {
@@ -373,9 +373,9 @@ class DataMgmt {
         console.log("oneamounts==", oneamounts)
         for (let l of Object.keys(levelcounts)) {
             // console.log("l==", l)
-            let levelamounts = await this.getLevelAwardAmounts(l-1)
+            let levelamounts = await this.getLevelAwardAmounts(l - 1)
             for (let i = 0; i < levelamounts.length; i++) {
-                oneamounts[i] = Number(oneamounts[i])+Number(levelamounts[i])*Number(levelcounts[l]);
+                oneamounts[i] = Number(oneamounts[i]) + Number(levelamounts[i]) * Number(levelcounts[l]);
             }
         }
         const names = ["PuddingSwap", "Lendoo", "HeshiSwap", "GFC", "LOOT", "Yunge", "SwapXT", "Roolend", "SwapAll"];
@@ -399,18 +399,30 @@ class DataMgmt {
 
     async addAddresses() {
         let addresses = readCSV("/jsons/mainnetdata/12.csv")
-        console.log("========addresses=========",addresses)
-        let emails= getJSON("/jsons/mainnetdata/wrongaddresses.json")
-       console.log("=========emails========",emails)
-        let s={};
-        addresses.map(u => {if (u[0]!=undefined && u[0].length>0){ s[u[0]]=emails[u[1]];}} )
-        console.log("s==",s)
-
-
-
-
+        console.log("========addresses=========", addresses)
+        let emails = getJSON("/jsons/mainnetdata/wrongaddresses.json")
+        console.log("=========emails========", emails)
+        let s = {};
+        addresses.map(u => { if (u[0] != undefined && u[0].length > 0) { s[u[0]] = emails[u[1]]; } })
+        console.log("s==", s)
     }
 
+    async unclaimAddresses() {
+        let addresses12 = readCSV("/jsons/mainnetdata/12.csv")
+        const csvfile = "/jsons/mainnetdata/" + "top10000.csv";
+        let addresses = readCSV(csvfile)
+        let claimedaddresses = getJSON("/jsons/mainnetdata0615/boxaddresses.json")
+        let c = Object.keys(claimedaddresses)
+        let a =  addresses.filter(u=> c.indexOf(u[0])!=-1).map(u => u[2]);
+        let b =  addresses12.filter(u=> c.indexOf(u[0])!=-1).map(u => u[1]);
+        let s = a.concat(b);
+        putJSON("/jsons/mainnetdata0615/unclaimedaddresses.json",s)
+        const allcsvfile = "/jsons/mainnetdata/" + "alltop10000.csv";
+        let alladdresses = readCSV(allcsvfile);
+        let ss =  alladdresses.filter(u=> s.indexOf(u[1])==-1);
+        writeCSV("/jsons/mainnetdata0615/unclaimedaddresses.csv",ss)
+        // console.log("s==", ss)
+    }
 
 }
 const amounts = [
@@ -507,10 +519,15 @@ let handlers = {
         let datamgmt = new DataMgmt()
         await datamgmt.checkUserNumberOne();
     }),
-  "add": (async function () {
+    "add": (async function () {
         console.log("==addAddresses==");
         let datamgmt = new DataMgmt()
         await datamgmt.addAddresses();
+    }),
+  "unc": (async function () {
+        console.log("==unclaimAddresses==");
+        let datamgmt = new DataMgmt()
+        await datamgmt.unclaimAddresses();
     }),
     "default": (async function () {
     })
