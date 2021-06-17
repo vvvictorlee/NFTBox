@@ -58,6 +58,10 @@ class ActionMgmt {
             return [10001, "The address claimed"];
         }
 
+        let totalSupply =    await  this.totalSupply();
+        if (totalSupply>=10000){
+           return [10002, "The badge claimed finished"];
+        }
         tokenId = await this.createBadge(userAddress);
         await datamgmt.saveBadgeDetail(userAddress, tokenId);
 

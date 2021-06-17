@@ -18,7 +18,7 @@ params: {
 
 ```javascript
 {
-    code: 10000, //成功code码 失败： 例如10001等
+    code: 10000, //成功code码 失败：   10001 已领过  10002 领完
     message: 'success', //success fail
     data: {
         tokenid: '1', //开启徽章的地址
@@ -64,12 +64,11 @@ params: {
 
 ```javascript
 {
-    code: 10000, //成功code码 失败： 例如10001等
+    code: 10000, //成功code码 失败： 例如10001等   10001 没有领取过，10002 领过，初转到    10003  领取被转，接收到其他
     message: 'success', //success fail
     data: {
             tokenid: 1 //徽章id,
     }
-
 }
 ```
 
