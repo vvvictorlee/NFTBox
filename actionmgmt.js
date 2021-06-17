@@ -16,7 +16,7 @@ const formula = debug('formula');
 // debug.enable('foo:*,-foo:bar');
 // let namespaces = debug.disable();
 // debug.enable(namespaces);
-const {sendSignedTx} = require("./txmgmt.js");
+const { sendSignedTx } = require("./txmgmt.js");
 
 const DataMgmt = require("./datamgmt.js");
 const datamgmt = new DataMgmt()
@@ -28,95 +28,74 @@ const CONTRACT_ADDRESS = JSON.parse(_CONTRACT_ADDRESS);
 
 const _ABI_FILES = process.env.ABI_FILES || []
 let ABI_FILES = JSON.parse(_ABI_FILES);
-ABI_FILES = ABI_FILES.concat(new Array(CONTRACT_ADDRESS.length - 4).fill(ABI_FILES[ABI_FILES.length - 1]))
 
-const ERC721_ABI_FILE = "ERC721ControlledFactory.json"
-let ERC721_CONTRACT_ADDRESS = "0x71725cb45adc6Fb2962B407EB3824F13030c5430";
-let erc721contract;
+
 let contracts = [];
 let contractobjs = {};
-const NETWORK_ID = process.env.CHAIN_ID || 170;
-const CHAIN_ID = process.env.CHAIN_ID || 170;
+
 const PROVIDER_URL = process.env.PROVIDER_URL || "https://http-testnet.hoosmartchain.com";
 const validators = secrets;//Object.keys(secrets);
-const erc721tokenaddress = CONTRACT_ADDRESS[0]
 const web3 = new Web3(new Web3.providers.HttpProvider(PROVIDER_URL));
 let abi = {};
 let contract = {};
-let candidate = validators[1][0];
-let user = validators[1];
 let proxy = validators[0];
 instanceContract();
-let id;
-let result;
+const index = 0;
+
 class ActionMgmt {
-    async computeBoxAddress(tokenId) {
-        const index = 1;
-        result = await contracts[index].methods.computeAddress(erc721tokenaddress, tokenId).call({ from: proxy[0] });
-        //console.log("box address==", result);
-        return result
-    }
-    async createBox(userAddress) {
+
+    async createBadge(userAddress) {
         const index = 0;
         let encodedabi = await contracts[index].methods.mint(userAddress).encodeABI();
         let id = await sendSignedTx(proxy[0], proxy[1], encodedabi, CONTRACT_ADDRESS[index], true);
         return id;
     }
-    async depositTokensFromContract(boxAddress, tokens) {
-        const index = 2;
-        const amounts = tokens.amounts.map((v) => web3.utils.toHex(web3.utils.toWei(v.toString())));
-        // console.log("depositTokensFromContract===", tokens.ids, amounts, boxAddress)
-        let encodedabi = await contracts[index].methods.depositERC20(
-            tokens.ids,
-            amounts,
-            boxAddress).encodeABI();
-        await sendSignedTx(proxy[0], proxy[1], encodedabi, CONTRACT_ADDRESS[index]);
-    }
 
-    async claimBox(userAddress) {
+    async claimBadge(userAddress) {
         userAddress = userAddress.toLowerCase();
-        let flag = await datamgmt.checkUserTimes(userAddress);
-        if (!flag) {
-            return [-1, "The times must be greater than 0"];
+        let tokenId = await datamgmt.getBadgeDetail(userAddress);
+        if (tokenId!=0) {
+            return [10001, "The address claimed"];
         }
-        const randomNumber = await datamgmt.getRandSeqValue();
-        let [level, tokens] = await datamgmt.getBoxLevelAward(randomNumber);
-        let tokenId = await this.createBox(userAddress);
-        let boxAddress = await this.computeBoxAddress(tokenId);
-        await datamgmt.saveBoxAddresses(userAddress, { "boxAddress": boxAddress, "level": level });
-        await datamgmt.saveBoxDetail(boxAddress, { "tokenId": tokenId, "randomNumber": randomNumber });
-        // await this.depositTokens(boxAddress, tokens);
-        await this.depositTokensFromContract(boxAddress, tokens);
-        let times = await datamgmt.updateUserTimes(userAddress);
 
-        return [0, { "address": boxAddress, "last_times": times, "level": level }];
+        tokenId = await this.createBadge(userAddress);
+        await datamgmt.saveBadgeDetail(userAddress, tokenId);
+
+        return [0, tokenId];
     }
 
-    async openBox(boxAddress) {
-        const flag = await datamgmt.checkOpenedBoxAddress(boxAddress)
-        if (flag) {
-            return [-1, "The box opened"]
+    async getBadge(userAddress) {
+        userAddress = userAddress.toLowerCase();
+        let tokenId = await datamgmt.getBadgeDetail(userAddress);
+        if (tokenId==0) {
+            return [10001, "no tokenid"];
+        }
+        
+        let balance = await this.balanceOf(userAddress);
+        if (balance==0) {
+            return [10002, "the token is transfered on the chain"];
         }
 
-        const index = 1;
-        let detail = await datamgmt.getBoxDetail(boxAddress);
-        let [level, tokens] = await datamgmt.getBoxLevelAward(detail.randomNumber);
-        let encodedabi = await contracts[index].methods.plunder(
-            erc721tokenaddress,
-            detail.tokenId,
-            tokens.ids,
-            [],
-            []
-        ).encodeABI();
-        let receipt = await sendSignedTx(proxy[0], proxy[1], encodedabi, CONTRACT_ADDRESS[index]);
-        if (receipt["status"] != undefined && receipt["status"]) {
-            const boxinfo = await datamgmt.getBoxInfoJson(level);
-            // //console.log(level,boxinfo)
-            await datamgmt.saveOpenedBoxAddress(boxAddress);
-            return [0, boxinfo];
+        let owner = await this.ownerOf(tokenId);
+        if (owner.toLowerCase()!=userAddress.toLowerCase()) {
+            return [10003, "the token is changed on the chain"];
         }
 
-        return [-1, "failed"];
+        return [0, tokenId];
+    }
+
+    async balanceOf(address) {
+        let amount = await contracts[index].methods.balanceOf(address).call({ from: proxy[0] });
+        return amount;
+    }
+
+    async ownerOf(tokenId) {
+        let amount = await contracts[index].methods.ownerOf(tokenId).call({ from: proxy[0] });
+        return amount;
+    }
+    async totalSupply() {
+        let amount = await contracts[index].methods.totalSupply().call({ from: proxy[0] });
+        return amount;
     }
 }
 

@@ -29,10 +29,10 @@ const CONTRACT_ADDRESS = JSON.parse(_CONTRACT_ADDRESS);
 const _ABI_FILES = process.env.ABI_FILES || []
 let ABI_FILES = JSON.parse(_ABI_FILES);
 
-ABI_FILES = ABI_FILES.concat(new Array(CONTRACT_ADDRESS.length - 4).fill(ABI_FILES[ABI_FILES.length - 1]))
+
 
 const ERC721_ABI_FILE = "ERC721ControlledFactory.json"
-let ERC721_CONTRACT_ADDRESS = "0x05e91f6533EF430E78858453F720577C6D5a1015";
+let ERC721_CONTRACT_ADDRESS = "0xf8aB84C0A07F1B4F46DE9d98dCca48CC1517cbf2";
 let erc721contract;
 
 const PROVIDER_URL = process.env.PROVIDER_URL || "https://http-testnet.hoosmartchain.com";
@@ -51,7 +51,7 @@ class FactoryMgmt {
     }
     async createERC721Controlled() {
         //console.log(candidate)
-        let encodedabi = await erc721contract.methods.createERC721Controlled("HOO EX NFTBox", "HOOBOX", "https://hoobox.hoosmartchain.com/box/").encodeABI();
+        let encodedabi = await erc721contract.methods.createERC721Controlled("HOO 3rd Anniversary", "HOOBADGE", "https://badge.hoosmartchain.com/badge/").encodeABI();
         await sendSignedTx(proxy[0], proxy[1], encodedabi, ERC721_CONTRACT_ADDRESS, true);
     }
 }

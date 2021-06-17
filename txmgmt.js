@@ -23,7 +23,7 @@ const CONTRACT_ADDRESS = JSON.parse(_CONTRACT_ADDRESS);
 const _ABI_FILES = process.env.ABI_FILES || []
 let ABI_FILES = JSON.parse(_ABI_FILES);
 
-ABI_FILES = ABI_FILES.concat(new Array(CONTRACT_ADDRESS.length - 4).fill(ABI_FILES[ABI_FILES.length - 1]))
+// 
 
 
 const NETWORK_ID = process.env.CHAIN_ID || 170;
