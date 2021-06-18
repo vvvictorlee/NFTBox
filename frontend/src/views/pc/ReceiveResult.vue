@@ -35,7 +35,6 @@
 						<div class="fail-text-container">
 							<div class="fail-text1">{{$t('home.test24')}}</div>
 							<div class="fail-text2">{{$t('home.test25')}}</div>
-                            <div class="fail-text2">{{$t('home.test37')}}</div>
 						</div>
 					</div>
 					<div class="button-container double-button">
