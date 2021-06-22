@@ -20,9 +20,9 @@
 						<!-- <div class="second-text3">盲盒私钥</div> -->
 						<!-- <div class="second-text4">0x0aade7759446e07ad10cc6456d41e05c80c88bd1</div> -->
 					</div>
-					<div class="button-container double-button">
+					<div class="button-container">
 						<div class="copy-button" @click.stop="goBack">{{$t('home.test23')}}</div>
-                        <div class="copy-button" @click.stop="goHooSpot">{{$t('home.test38')}}</div>
+                        <!-- <div class="copy-button" @click.stop="goHooSpot">{{$t('home.test38')}}</div> -->
 					</div>
 				</div>
 				<div class="content-container" v-if="(pageType == 'fail')">
@@ -35,11 +35,12 @@
 						<div class="fail-text-container">
 							<div class="fail-text1">{{$t('home.test24')}}</div>
 							<div class="fail-text2">{{$t('home.test25')}}</div>
+                            <!-- <div class="fail-text2">{{$t('home.test37')}}</div> -->
 						</div>
 					</div>
-					<div class="button-container double-button">
+					<div class="button-container">
 						<div class="check-button" @click="goWinnerList">{{$t('home.test26')}}</div>
-                        <div class="check-button" @click.stop="goHooSpot">{{$t('home.test38')}}</div>
+                        <!-- <div class="check-button" @click.stop="goHooSpot">{{$t('home.test38')}}</div> -->
 					</div>
 				</div>
 				<div class="tips-area">
@@ -49,6 +50,7 @@
 						<li>{{$t('home.test7')}}</li>
 						<li>{{$t('home.test8')}}</li>
 						<li>{{$t('home.test9')}}</li>
+                        <!-- <li>{{$t('home.test39')}}</li> -->
 					</ul>
 				</div>
 			</div>

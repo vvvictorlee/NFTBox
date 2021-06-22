@@ -208,12 +208,12 @@ export default {
         goWinnerList() {
             let that = this;
             let lang = this.getLocaleLang || 'en';
-            let openUrl = 'https://eapy.com/zh_cn/activity/list';
-            if(lang == 'zh-hans') {
-                openUrl = 'https://eapy.com/zh_cn/activity/list';
-            } else {
-                openUrl = 'https://eapy.com/en/activity/list';
-            }
+            let openUrl = 'https://hoo.co';
+            // if(lang == 'zh-hans') {
+            //     openUrl = 'https://eapy.com/zh_cn/activity/list';
+            // } else {
+            //     openUrl = 'https://eapy.com/en/activity/list';
+            // }
             window.open(openUrl,"_blank");
         },
 		//点击领取
