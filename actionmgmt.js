@@ -64,7 +64,7 @@ class ActionMgmt {
         }
         tokenId = await this.createBadge(userAddress);
         await datamgmt.saveBadgeDetail(userAddress, tokenId);
-
+        tokenId = web3.utils.hexToNumber(tokenId)
         return [0, tokenId];
     }
 
@@ -84,8 +84,8 @@ class ActionMgmt {
         if (owner.toLowerCase()!=userAddress.toLowerCase()) {
             return [10003, "the token is changed on the chain"];
         }
-
-        return [0, web3.utils.hexToNumber(tokenId)];
+        tokenId = web3.utils.hexToNumber(tokenId)
+        return [0, tokenId];
     }
 
     async balanceOf(address) {

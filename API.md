@@ -41,7 +41,7 @@ curl -X POST \
   "code": 10000,
   "message": "success",
   "data": {
-    "tokenid": '1'
+    "tokenId": '1'
   }
 }
 ```
