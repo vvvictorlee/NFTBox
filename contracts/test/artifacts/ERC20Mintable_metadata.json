@@ -1,6 +1,6 @@
 {
 	"compiler": {
-		"version": "0.6.12+commit.27d51765"
+		"version": "0.7.6+commit.7338295f"
 	},
 	"language": "Solidity",
 	"output": {
@@ -378,11 +378,11 @@
 	},
 	"sources": {
 		"lootbox/contracts/test/ERC20Mintable.sol": {
-			"keccak256": "0x79e4cbf0be2f7710af244726cdab60670bc7b428a677d102153d7a8222094862",
+			"keccak256": "0x57e4bf93048c10d8631fd9e5187130c128eb333d4cf44b8fc76ba2e7bc6a54cd",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://874aacc70ecf02fea462e041f2046828029ed3238afcd724ea7dde1602320853",
-				"dweb:/ipfs/QmdA81uuCs1MTjQFszFnBfnTL2vYwuoBGLM6K5MPPJkGBL"
+				"bzz-raw://e9d5aeab0572a8a019100c5c0c59cd668c8b923488223075f808df4b2f59ace4",
+				"dweb:/ipfs/QmcsGxM4tvWhN48dXqsXwb6jXzzi6uParDrcfZHMThvdJJ"
 			]
 		},
 		"openzeppelin-contracts-upgradeable/contracts/math/SafeMathUpgradeable.sol": {

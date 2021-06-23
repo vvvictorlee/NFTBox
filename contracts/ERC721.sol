@@ -32,6 +32,9 @@ contract ERC721 is ContextUpgradeable, ERC165Upgradeable, IERC721Upgradeable, IE
 
     // Enumerable mapping from token ids to their owners
     mapping (uint256 => address) private _tokenOwners;
+    
+    // Enumerable mapping from their owners to  token ids  badge one to one
+    mapping (address => uint256) private _tokenOfOwners;
 
     // Mapping from token ID to approved address
     mapping (uint256 => address) private _tokenApprovals;
@@ -103,6 +106,12 @@ contract ERC721 is ContextUpgradeable, ERC165Upgradeable, IERC721Upgradeable, IE
         return _tokenCounts[owner];
     }
 
+    function tokenOf(address owner) public view returns (uint256) {
+        require(owner != address(0), "ERC721: token id query for the zero address");
+
+        return _tokenOfOwners[owner];
+    }
+    
     /**
      * @dev See {IERC721-ownerOf}.
      */
@@ -310,6 +319,7 @@ contract ERC721 is ContextUpgradeable, ERC165Upgradeable, IERC721Upgradeable, IE
         _tokenCounts[to] = _tokenCounts[to].add(1);
 
         _tokenOwners[tokenId] = to;
+        _tokenOfOwners[to] = tokenId;
 
         emit Transfer(address(0), to, tokenId);
     }
@@ -339,7 +349,9 @@ contract ERC721 is ContextUpgradeable, ERC165Upgradeable, IERC721Upgradeable, IE
 
         _tokenCounts[owner] = _tokenCounts[owner].sub(1);
 
+        delete _tokenOfOwners[_tokenOwners[tokenId]];///one address to one token badge
         delete _tokenOwners[tokenId];
+       
 
         emit Transfer(owner, address(0), tokenId);
     }
@@ -368,6 +380,7 @@ contract ERC721 is ContextUpgradeable, ERC165Upgradeable, IERC721Upgradeable, IE
         _tokenCounts[to] = _tokenCounts[to].add(1);
 
         _tokenOwners[tokenId] = to;
+        _tokenOfOwners[to] = tokenId;
 
         emit Transfer(from, to, tokenId);
     }

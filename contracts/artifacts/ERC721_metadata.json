@@ -1,6 +1,6 @@
 {
 	"compiler": {
-		"version": "0.6.12+commit.27d51765"
+		"version": "0.7.6+commit.7338295f"
 	},
 	"language": "Solidity",
 	"output": {
@@ -309,6 +309,25 @@
 			{
 				"inputs": [
 					{
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					}
+				],
+				"name": "tokenOf",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
 						"internalType": "uint256",
 						"name": "tokenId",
 						"type": "uint256"
@@ -407,7 +426,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"lootbox/contracts/ERC721.sol": "ERC721"
+			"badge/ERC721.sol": "ERC721"
 		},
 		"evmVersion": "istanbul",
 		"libraries": {},
@@ -421,12 +440,12 @@
 		"remappings": []
 	},
 	"sources": {
-		"lootbox/contracts/ERC721.sol": {
-			"keccak256": "0xf18427bcdbb6abac728afccaaf249921b92f59327a010504b29527bd59d931ee",
+		"badge/ERC721.sol": {
+			"keccak256": "0x4c8c8a0f8f8f16830840d3603c6c321ad10f9953ae8d3f853a68c5099ab442cd",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://6a7c6d3c3fc0a9a5e7300efc921d98d51ed917cf9eb77edf04c3aca853df51d6",
-				"dweb:/ipfs/QmcGn3AGAyUjq5fACoKC4dm8XgNArzhzxzipEEsbxYT6CE"
+				"bzz-raw://dcbb15fd00d0fd76022124ac48b532c504ece6002a8d52badb65ffd4a6422aea",
+				"dweb:/ipfs/QmcvgLe5U7cRAhNDbufG8dZAdKKXsduBBmj31VQ2BQSkDW"
 			]
 		},
 		"openzeppelin-contracts-upgradeable/contracts/GSN/ContextUpgradeable.sol": {

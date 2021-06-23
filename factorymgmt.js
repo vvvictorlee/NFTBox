@@ -51,7 +51,7 @@ class FactoryMgmt {
     }
     async createERC721Controlled() {
         //console.log(candidate)
-        let encodedabi = await erc721contract.methods.createERC721Controlled("HOO 3rd Anniversary", "HOOBADGE", "https://badge.hoosmartchain.com/badge/").encodeABI();
+        let encodedabi = await erc721contract.methods.createERC721Controlled("HOO 3rd Anniversary v1", "HOOBADGE", "https://badge.hoosmartchain.com/badge/").encodeABI();
         await sendSignedTx(proxy[0], proxy[1], encodedabi, ERC721_CONTRACT_ADDRESS, true);
     }
 }

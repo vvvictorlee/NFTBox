@@ -86,8 +86,10 @@ class ActionMgmt {
 
         let owner = await this.ownerOf(tokenId);
         if (owner.toLowerCase()!=userAddress.toLowerCase()) {
-            
-            // return [10003, "the token is changed on the chain"];
+            tokenId = await this.tokenOf(userAddress);
+            if (tokenId==0) {
+                 return [10003, "the token is changed on the chain"];
+            }
         }
         tokenId = web3.utils.hexToNumber(tokenId)
         return [0, tokenId];

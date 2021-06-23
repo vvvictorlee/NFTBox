@@ -79,7 +79,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"lootbox/contracts/ERC721ControlledFactory.sol": "ERC721ControlledFactory"
+			"badge/ERC721ControlledFactory.sol": "ERC721ControlledFactory"
 		},
 		"evmVersion": "istanbul",
 		"libraries": {},
@@ -93,15 +93,15 @@
 		"remappings": []
 	},
 	"sources": {
-		"lootbox/contracts/ERC721.sol": {
-			"keccak256": "0x8d794f7adb7801b640036bcd53cd1dbc91b6214e0800cdc564dd146f07adbfd0",
+		"badge/ERC721.sol": {
+			"keccak256": "0x4c8c8a0f8f8f16830840d3603c6c321ad10f9953ae8d3f853a68c5099ab442cd",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://816b5170a84ff38ed4aac3c18d3bbb460c5ffe059165c56c5a04ac87d45040bf",
-				"dweb:/ipfs/QmZkBRgRrJ2XtzH4kaJnUZtPEn2s1LsK95y4CcdaPqnQX6"
+				"bzz-raw://dcbb15fd00d0fd76022124ac48b532c504ece6002a8d52badb65ffd4a6422aea",
+				"dweb:/ipfs/QmcvgLe5U7cRAhNDbufG8dZAdKKXsduBBmj31VQ2BQSkDW"
 			]
 		},
-		"lootbox/contracts/ERC721Controlled.sol": {
+		"badge/ERC721Controlled.sol": {
 			"keccak256": "0x840417a133d855fdc30d5d9e010546cf60f844810fad82bbc050d55397a09063",
 			"license": "MIT",
 			"urls": [
@@ -109,7 +109,7 @@
 				"dweb:/ipfs/QmYUQHmK15Fipks1vMLwzzF6Av74T78X3LP8xv9g1X8ysR"
 			]
 		},
-		"lootbox/contracts/ERC721ControlledFactory.sol": {
+		"badge/ERC721ControlledFactory.sol": {
 			"keccak256": "0x1bbadc33f0f86a93a68b56c31afd2a25b7d3e898db389786690adf2eded431d8",
 			"license": "MIT",
 			"urls": [
