@@ -85,7 +85,7 @@ class ActionMgmt {
             return [10003, "the token is changed on the chain"];
         }
 
-        return [0, tokenId];
+        return [0, web3.utils.hexToNumber(tokenId)];
     }
 
     async balanceOf(address) {
