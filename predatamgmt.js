@@ -10,8 +10,8 @@ const names = JSON.parse(_NAMES);
 
 const _SYMBOLS = process.env.SYMBOLS || []
 const symbols = JSON.parse(_SYMBOLS);
-const _TOTAL_AMOUNTS = process.env.TOTAL_AMOUNTS || []
-const TOTAL_AMOUNTS = JSON.parse(_TOTAL_AMOUNTS);
+const _UPPER_BOUNDS = process.env.UPPER_BOUNDS || []
+const upperbounds = JSON.parse(_UPPER_BOUNDS);
 const _AMOUNTS = process.env.AMOUNTS || []
 const amounts = JSON.parse(_AMOUNTS);
 const _TOTAL_COUNT = process.env.TOTAL_COUNT || []
@@ -91,7 +91,8 @@ class PreDataMgmt {
     }
 
     async genBoxLevelJson() {
-        const upperbounds = [300, 900, 2000, 5000, 15000];
+
+        // const upperbounds = [800, 1800, 3000, 10000, 22000];//[800,1000,2200,7000,11000]
         const addresses = CONTRACT_ADDRESS.slice(3)
          let json = [];
         for (var i = 0; i < upperbounds.length; i++) {
