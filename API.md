@@ -21,7 +21,7 @@ params: {
     code: 10000, //成功code码 失败：   10001 已领过  10002 领完
     message: 'success', //success fail
     data: {
-        tokenid: '1', //开启徽章的地址
+        tokenid: '1', //徽章的地址
     }
 
 }
@@ -81,7 +81,7 @@ params: {
 curl -X POST \
      -H 'Content-Type: application/json' \
      -d '{"jsonrpc":"2.0","id":"id","method":"mybadge","params":{"address":"0x4a79c58CCf9d80353c02357F26D6f7b99fA9991e"}}' \
-     https://box.hoosmartchain.com/api/mybadge
+     https://badge.hoosmartchain.com/api/mybadge
 
 
 ```

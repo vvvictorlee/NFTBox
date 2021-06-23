@@ -26,6 +26,9 @@ const secrets = JSON.parse(secrets_pairs);
 const _CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS || []
 const CONTRACT_ADDRESS = JSON.parse(_CONTRACT_ADDRESS);
 
+const _TOTAL_SUPPLY = process.env.TOTAL_SUPPLY || 10000
+const TOTAL_SUPPLY = JSON.parse(_TOTAL_SUPPLY);
+
 const _ABI_FILES = process.env.ABI_FILES || []
 let ABI_FILES = JSON.parse(_ABI_FILES);
 
@@ -59,7 +62,7 @@ class ActionMgmt {
         }
 
         let totalSupply =    await  this.totalSupply();
-        if (totalSupply>=10000){
+        if (totalSupply>=TOTAL_SUPPLY){
            return [10002, "The badge claimed finished"];
         }
         tokenId = await this.createBadge(userAddress);
@@ -71,7 +74,8 @@ class ActionMgmt {
     async getBadge(userAddress) {
         userAddress = userAddress.toLowerCase();
         let tokenId = await datamgmt.getBadgeDetail(userAddress);
-        if (tokenId==0) {
+        let totalSupply =    await  this.totalSupply();
+        if (tokenId==0 && totalSupply<TOTAL_SUPPLY) {
             return [10001, "no tokenid"];
         }
         
@@ -82,7 +86,8 @@ class ActionMgmt {
 
         let owner = await this.ownerOf(tokenId);
         if (owner.toLowerCase()!=userAddress.toLowerCase()) {
-            return [10003, "the token is changed on the chain"];
+            
+            // return [10003, "the token is changed on the chain"];
         }
         tokenId = web3.utils.hexToNumber(tokenId)
         return [0, tokenId];

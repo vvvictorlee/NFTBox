@@ -24,7 +24,7 @@ exports.claimbadge = async (req, res) => {
     const json = {
         code: 10000,
         message: 'success',
-        data: msg
+        data:  {tokenId:msg}
     }
     res.send(json);
 };
