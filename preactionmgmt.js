@@ -25,7 +25,8 @@ const secrets_pairs = process.env.SECRETS || []
 const secrets = JSON.parse(secrets_pairs);
 const _CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS || []
 const CONTRACT_ADDRESS = JSON.parse(_CONTRACT_ADDRESS);
-
+ const _SYMBOLS = process.env.SYMBOLS || []
+const symbols = JSON.parse(_SYMBOLS);
 
 const _ABI_FILES = process.env.ABI_FILES || []
 let ABI_FILES = JSON.parse(_ABI_FILES);
@@ -74,10 +75,9 @@ class PreActionMgmt {
     }
 
     async balanceOf(tokens, address) {
-        const index = 2;
         for (let i = 0; i < tokens.ids.length; i++) {
             let amount = await contractobjs[tokens.ids[i]].methods.balanceOf(address).call({ from: proxy[0] });
-            console.log(tokens.ids[i], "====", web3.utils.fromWei(amount), "====", amount);
+            console.log(tokens.ids[i], "====", symbols[i],"====",web3.utils.fromWei(amount),amount);
         }
     }
 
@@ -160,7 +160,7 @@ let handlers = {
         console.log("==balanceOf==");
         let actionmgmt = new PreActionMgmt()
         const tokens = await datamgmt.getTOTAL_AMOUNTS();
-        await actionmgmt.balanceOf(tokens, "0x1753783e46a6a7B3d345A92c5265c178f94367cf");
+        await actionmgmt.balanceOf(tokens, "0x8EF0d0E8Af2066FEBABd67a44Ce74997A9aa5949");
     }),
     "bc": (async function () {
         console.log("==balanceOf contract==");

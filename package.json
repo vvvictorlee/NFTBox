@@ -24,7 +24,8 @@
     "nbalance": "DEBUG=app node  -r dotenv/config preactionmgmt.js nb dotenv_config_path=.env",
     "balance:test": "DEBUG=app node  -r dotenv/config preactionmgmt.js b dotenv_config_path=.env.test",
     "cbalance": "DEBUG=app node  -r dotenv/config preactionmgmt.js bc dotenv_config_path=.env",
-    "balance": "DEBUG=app node  -r dotenv/config preactionmgmt.js b dotenv_config_path=.env"
+    "balance": "DEBUG=app node  -r dotenv/config preactionmgmt.js b dotenv_config_path=.env",
+    "p": "DEBUG=app node  -r dotenv/config actionmgmt.js p dotenv_config_path=.env"
   },
   "dependencies": {
     "connect-history-api-fallback": "^1.6.0",

@@ -1,7 +1,7 @@
 const path = require('path')
 
 const fs = require('fs');
-const { getJSON, putJSON, readCSVToJSON, readCSV,writeCSV } = require('./util');
+const { getJSON, putJSON, readCSVToJSON, readCSV, writeCSV } = require('./util');
 const _CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS || []
 const CONTRACT_ADDRESS = JSON.parse(_CONTRACT_ADDRESS);
 
@@ -34,9 +34,9 @@ class PreDataMgmt {
     _boxlevels = null;
     _boxlevelinfo = null;
     _openedboxes = null;
-   
+
     async genrandseq() {
-       
+
         var originalArray = new Array;//原数组 
         //给原数组originalArray赋值 
         for (var i = 0; i < count; i++) {
@@ -94,7 +94,7 @@ class PreDataMgmt {
 
         // const upperbounds = [800, 1800, 3000, 10000, 22000];//[800,1000,2200,7000,11000]
         const addresses = CONTRACT_ADDRESS.slice(3)
-         let json = [];
+        let json = [];
         for (var i = 0; i < upperbounds.length; i++) {
             let obj = {};
             let tokens = [];
@@ -123,7 +123,7 @@ async function test() {
     let r;
 }
 
-        let datamgmt = new PreDataMgmt()
+let datamgmt = new PreDataMgmt()
 let handlers = {
     "t": (async function () {
         test();
@@ -139,13 +139,13 @@ let handlers = {
     }),
     "genlevel": (async function () {
         console.log("==genlevel==");
-        
+
         await datamgmt.genBoxLevelJson();
         await datamgmt.genBoxInfoJson();
     }),
     "readcsv": (async function () {
         console.log("==readcsv==");
-        
+
         await datamgmt.readUserFromCsv();
     }),
     "default": (async function () {

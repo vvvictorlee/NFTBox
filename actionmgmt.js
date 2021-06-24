@@ -16,7 +16,7 @@ const formula = debug('formula');
 // debug.enable('foo:*,-foo:bar');
 // let namespaces = debug.disable();
 // debug.enable(namespaces);
-const {sendSignedTx} = require("./txmgmt.js");
+const { sendSignedTx } = require("./txmgmt.js");
 
 const DataMgmt = require("./datamgmt.js");
 const datamgmt = new DataMgmt()
@@ -25,6 +25,8 @@ const secrets_pairs = process.env.SECRETS || []
 const secrets = JSON.parse(secrets_pairs);
 const _CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS || []
 const CONTRACT_ADDRESS = JSON.parse(_CONTRACT_ADDRESS);
+const _ABNORMAL_PRECISION = process.env.ABNORMAL_PRECISION || {}
+const abnomalPrecision = JSON.parse(_ABNORMAL_PRECISION);
 
 const _ABI_FILES = process.env.ABI_FILES || []
 let ABI_FILES = JSON.parse(_ABI_FILES);
@@ -49,6 +51,15 @@ let proxy = validators[0];
 instanceContract();
 let id;
 let result;
+
+const toWeiByCustom = (v, i) => {
+    if (i in abnomalPrecision) {
+        return (Number(v) * Math.pow(10,Number(abnomalPrecision[i]))).toString();
+    }
+
+    return web3.utils.toWei(v.toString());
+};
+
 class ActionMgmt {
     async computeBoxAddress(tokenId) {
         const index = 1;
@@ -64,8 +75,9 @@ class ActionMgmt {
     }
     async depositTokensFromContract(boxAddress, tokens) {
         const index = 2;
-        const amounts = tokens.amounts.map((v) => web3.utils.toHex(web3.utils.toWei(v.toString())));
-        // console.log("depositTokensFromContract===", tokens.ids, amounts, boxAddress)
+        const amounts = tokens.amounts.map((v,i) => web3.utils.toHex(toWeiByCustom(v.toString(),i)));
+        const tamounts = tokens.amounts.map((v,i) =>(toWeiByCustom(v.toString(),i)));
+        console.log(tamounts,"depositTokensFromContract===", tokens.ids, amounts, boxAddress)
         let encodedabi = await contracts[index].methods.depositERC20(
             tokens.ids,
             amounts,
@@ -135,9 +147,16 @@ function instanceContract() {
 }
 
 let handlers = {
+    "p": (async function () {
+const _TOTAL_AMOUNTS = process.env.TOTAL_AMOUNTS || []
+const amounts = JSON.parse(_TOTAL_AMOUNTS);
+        console.log(amounts);
+        let hamounts = amounts.map((v, i) => web3.utils.toHex(toWeiByCustom(v, i)));
+        // hamounts = amounts.map((v, i) => toWeiByCustom(v, i));
+        console.log(hamounts);
+    }),
     "default": (async function () {
     })
-
 };
 
 // console.log(process.argv);

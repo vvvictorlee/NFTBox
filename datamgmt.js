@@ -4,16 +4,9 @@ const fs = require('fs');
 const { getJSON, putJSON, readCSVToJSON, readCSV,writeCSV } = require('./util');
 const _CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS || []
 const CONTRACT_ADDRESS = JSON.parse(_CONTRACT_ADDRESS);
-
-const _NAMES = process.env.NAMES || []
-const names = JSON.parse(_NAMES);
-
-const _SYMBOLS = process.env.SYMBOLS || []
-const symbols = JSON.parse(_SYMBOLS);
 const _TOTAL_AMOUNTS = process.env.TOTAL_AMOUNTS || []
 const TOTAL_AMOUNTS = JSON.parse(_TOTAL_AMOUNTS);
-const _AMOUNTS = process.env.AMOUNTS || []
-const amounts = JSON.parse(_AMOUNTS);
+
 
 
 const datapath = process.env.DATA_PATH || "/jsons/"

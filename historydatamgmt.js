@@ -1,7 +1,7 @@
 const path = require('path')
 
 const fs = require('fs');
-const { getJSON, putJSON, readCSVToJSON, readCSV,writeCSV } = require('./util');
+const { getJSON, putJSON, readCSVToJSON, readCSV, writeCSV } = require('./util');
 const _CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS || []
 const CONTRACT_ADDRESS = JSON.parse(_CONTRACT_ADDRESS);
 
@@ -10,8 +10,7 @@ const names = JSON.parse(_NAMES);
 
 const _SYMBOLS = process.env.SYMBOLS || []
 const symbols = JSON.parse(_SYMBOLS);
-const _TOTAL_AMOUNTS = process.env.TOTAL_AMOUNTS || []
-const TOTAL_AMOUNTS = JSON.parse(_TOTAL_AMOUNTS);
+
 const _AMOUNTS = process.env.AMOUNTS || []
 const amounts = JSON.parse(_AMOUNTS);
 
@@ -33,7 +32,7 @@ class HistoryDataMgmt {
     _boxlevels = null;
     _boxlevelinfo = null;
     _openedboxes = null;
-   
+
     async checkUserTimesWrong() {
         let boxaddrs = getJSON("jsons/mainnetdata06080642/boxaddresses.json")
         let users = getJSON("jsons/mainnetdata0607/users.json")
@@ -117,7 +116,7 @@ class HistoryDataMgmt {
                 oneamounts[i] = Number(oneamounts[i]) + Number(levelamounts[i]) * Number(levelcounts[l]);
             }
         }
-   
+
         const addresses = CONTRACT_ADDRESS.slice(3)
         console.log("names==", names)
         console.log("symbols==", symbols)
@@ -150,14 +149,14 @@ class HistoryDataMgmt {
         let addresses = readCSV(csvfile)
         let claimedaddresses = getJSON("/jsons/mainnetdata0615/boxaddresses.json")
         let c = Object.keys(claimedaddresses)
-        let a =  addresses.filter(u=> c.indexOf(u[0])!=-1).map(u => u[2]);
-        let b =  addresses12.filter(u=> c.indexOf(u[0])!=-1).map(u => u[1]);
+        let a = addresses.filter(u => c.indexOf(u[0]) != -1).map(u => u[2]);
+        let b = addresses12.filter(u => c.indexOf(u[0]) != -1).map(u => u[1]);
         let s = a.concat(b);
-        putJSON("/jsons/mainnetdata0615/unclaimedaddresses.json",s)
+        putJSON("/jsons/mainnetdata0615/unclaimedaddresses.json", s)
         const allcsvfile = "/jsons/mainnetdata/" + "alltop10000.csv";
         let alladdresses = readCSV(allcsvfile);
-        let ss =  alladdresses.filter(u=> s.indexOf(u[1])==-1);
-        writeCSV("/jsons/mainnetdata0615/unclaimedaddresses.csv",ss)
+        let ss = alladdresses.filter(u => s.indexOf(u[1]) == -1);
+        writeCSV("/jsons/mainnetdata0615/unclaimedaddresses.csv", ss)
         // console.log("s==", ss)
     }
 
@@ -177,27 +176,27 @@ let handlers = {
     }),
     "wrong": (async function () {
         console.log("==checkUserTimesWrong==");
-        
+
         await datamgmt.checkUserTimesWrong();
     }),
     "rand": (async function () {
         console.log("==checkRand==");
-        
+
         await datamgmt.checkRand();
     }),
     "one": (async function () {
         console.log("==checkUserNumberOne==");
-        
+
         await datamgmt.checkUserNumberOne();
     }),
     "add": (async function () {
         console.log("==addAddresses==");
-        
+
         await datamgmt.addAddresses();
     }),
-  "unc": (async function () {
+    "unc": (async function () {
         console.log("==unclaimAddresses==");
-        
+
         await datamgmt.unclaimAddresses();
     }),
     "default": (async function () {
