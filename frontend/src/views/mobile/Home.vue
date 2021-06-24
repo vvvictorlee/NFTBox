@@ -66,7 +66,7 @@
 							</div>
 							<div class="addr-lable">{{$t('home.test11')}}</div>
 						</div>
-						<div class="addr-submit-button" @click="loginSubmit">login</div>
+						<div class="addr-submit-button" @click="loginSubmit">{{$t('home.test40')}}</div>
 					</div>
 				</template>
 			</nft-dialog>
