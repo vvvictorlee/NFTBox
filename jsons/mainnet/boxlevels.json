@@ -1,6 +1,6 @@
 [
   {
-    "upperbound": 800,
+    "upperbound": 100,
     "tokens": {
       "ids": [
         "0x934BB9f12A8E2251C8dce3a120c7395B5e05EC93",
@@ -31,7 +31,7 @@
     }
   },
   {
-    "upperbound": 1800,
+    "upperbound": 250,
     "tokens": {
       "ids": [
         "0x934BB9f12A8E2251C8dce3a120c7395B5e05EC93",
@@ -62,7 +62,7 @@
     }
   },
   {
-    "upperbound": 3000,
+    "upperbound": 500,
     "tokens": {
       "ids": [
         "0x934BB9f12A8E2251C8dce3a120c7395B5e05EC93",
@@ -93,7 +93,7 @@
     }
   },
   {
-    "upperbound": 10000,
+    "upperbound": 5500,
     "tokens": {
       "ids": [
         "0x934BB9f12A8E2251C8dce3a120c7395B5e05EC93",
