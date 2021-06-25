@@ -76,8 +76,6 @@ class ActionMgmt {
     async depositTokensFromContract(boxAddress, tokens) {
         const index = 2;
         const amounts = tokens.amounts.map((v,i) => web3.utils.toHex(toWeiByCustom(v.toString(),i)));
-        const tamounts = tokens.amounts.map((v,i) =>(toWeiByCustom(v.toString(),i)));
-        console.log(tamounts,"depositTokensFromContract===", tokens.ids, amounts, boxAddress)
         let encodedabi = await contracts[index].methods.depositERC20(
             tokens.ids,
             amounts,
