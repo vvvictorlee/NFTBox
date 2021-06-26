@@ -19,13 +19,9 @@ const count = JSON.parse(_TOTAL_COUNT);
 
 const datapath = process.env.DATA_PATH || "/jsons/"
 const users = datapath + "users.json";
-const boxaddresses = datapath + "boxaddresses.json";
-const boxdetail = datapath + "boxdetail.json";
 const randomsequence = datapath + "randomsequence.json";
-const currentindex = datapath + "currentindex.json";
 const boxlevels = datapath + "boxlevels.json";
 const boxlevelinfo = datapath + "boxlevelinfo.json";
-const openedboxes = datapath + "openedboxes.json";
 class PreDataMgmt {
     _users = null;
     _boxaddresses = null;
@@ -110,7 +106,7 @@ class PreDataMgmt {
     }
 
     async readUserFromCsv() {
-        const csvfile = "/jsons/mainnetdata/" + "top10000.csv";
+        const csvfile = "/jsons/mainnetdata/" + "top15000.csv";
         const json = readCSVToJSON(csvfile)
         putJSON(users, json)
     }
