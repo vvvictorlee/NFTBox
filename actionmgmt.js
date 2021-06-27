@@ -156,11 +156,18 @@ class ActionMgmt {
             await sendSignedTx(proxy[0], proxy[1], encodedabi, tokens.ids[i]);
         }
     }
+     async withdrawTokensFromContract(address, tokens) {
+        const index = 2;
+        let encodedabi = await contracts[index].methods.withdrawERC20(
+            tokens.ids,
+            address).encodeABI();
+        await sendSignedTx(proxy[0], proxy[1], encodedabi, CONTRACT_ADDRESS[index]);
+    }
 
     async depositTokensFromContract(boxAddress, tokens) {
         const index = 2;
         const amounts = tokens.amounts.map((v) => web3.utils.toHex(web3.utils.toWei(v.toString())));
-        // console.log("depositTokensFromContract===", tokens.ids, amounts, boxAddress)
+        // console.log("depositTokensFromContract===", tokens.ids, amounts, boxAddress)withdrawERC20
         let encodedabi = await contracts[index].methods.depositERC20(
             tokens.ids,
             amounts,
@@ -315,6 +322,12 @@ let handlers = {
         let actionmgmt = new ActionMgmt()
         const tokens = await datamgmt.getTotalAmounts();
         await actionmgmt.depositTokensToContract(tokens);
+    }),
+    "wd": (async function () {
+        console.log("==withdrawTokensFromContract==");
+        let actionmgmt = new ActionMgmt()
+        const tokens = await datamgmt.getTotalAmounts();
+        await actionmgmt.withdrawTokensFromContract("0x5CF0b511e6dA155C62CA0dE11EfCdaa98f520929",tokens);
     }),
     "m": (async function () {
         console.log("==mintTokensToContract==");

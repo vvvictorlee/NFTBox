@@ -1,7 +1,7 @@
 const path = require('path')
 
 const fs = require('fs');
-const { getJSON, putJSON, readCSVToJSON, readCSV,writeCSV } = require('./util');
+const { getJSON, putJSON, readCSVToJSON, readCSV, writeCSV } = require('./util');
 const _CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS || []
 const CONTRACT_ADDRESS = JSON.parse(_CONTRACT_ADDRESS);
 const datapath = process.env.DATA_PATH || "/jsons/"
@@ -407,23 +407,72 @@ class DataMgmt {
         console.log("s==", s)
     }
 
+    async addAddresses21() {
+        let addresses = readCSV("/jsons/mainnetdata/21.csv")
+        console.log("========addresses=========", addresses)
+        // let emails = getJSON("/jsons/mainnetdata/wrongaddresses.json")
+        // console.log("=========emails========", emails)
+
+        let s = {};
+        addresses.map(u => { if (u[0] != undefined && u[0].length > 0) { s[u[1]] = u[0]; } })
+        // console.log( "s==", s)
+        const allcsvfile = "/jsons/mainnetdata/" + "alltop10000.csv";
+        let alladdresses = readCSV(allcsvfile);
+        let ss = alladdresses.filter(u => Object.keys(s).indexOf(u[1]) != -1);
+        ss = ss.filter(u => s[u[1]] != u[3] && u[3] != '#N/A');
+
+
+        let b = await this.unclaimAddresses21();
+        b = b.map(u => u[1]);
+
+        ss = ss.filter(u => b.indexOf(u[1]) == -1);
+        ss = ss.map(u => { let seds= "-e 's/"+u[3]+"/"+s[u[1]]+"/'"; s[u[1]] = {"new":s[u[1]],"old":u[3]};  return seds;});
+        console.log(ss.join(" "),s)
+    }
     async unclaimAddresses() {
         let addresses12 = readCSV("/jsons/mainnetdata/12.csv")
         const csvfile = "/jsons/mainnetdata/" + "top10000.csv";
         let addresses = readCSV(csvfile)
         let claimedaddresses = getJSON("/jsons/mainnetdata0615/boxaddresses.json")
         let c = Object.keys(claimedaddresses)
-        let a =  addresses.filter(u=> c.indexOf(u[0])!=-1).map(u => u[2]);
-        let b =  addresses12.filter(u=> c.indexOf(u[0])!=-1).map(u => u[1]);
+        let a = addresses.filter(u => c.indexOf(u[0]) != -1).map(u => u[2]);
+        let b = addresses12.filter(u => c.indexOf(u[0]) != -1).map(u => u[1]);
         let s = a.concat(b);
-        putJSON("/jsons/mainnetdata0615/unclaimedaddresses.json",s)
+        putJSON("/jsons/mainnetdata0615/unclaimedaddresses.json", s)
         const allcsvfile = "/jsons/mainnetdata/" + "alltop10000.csv";
         let alladdresses = readCSV(allcsvfile);
-        let ss =  alladdresses.filter(u=> s.indexOf(u[1])==-1);
-        writeCSV("/jsons/mainnetdata0615/unclaimedaddresses.csv",ss)
+        let ss = alladdresses.filter(u => s.indexOf(u[1]) == -1);
+        writeCSV("/jsons/mainnetdata0615/unclaimedaddresses.csv", ss)
         // console.log("s==", ss)
     }
+    async unclaimAddresses21() {
+        // let addresses21 = readCSV("/jsons/mainnetdata/21.csv")
+        // const csvfile = "/jsons/mainnetdata/" + "top10000.csv";
+        // let addresses = readCSV(csvfile)
+        // let claimedaddresses = getJSON("/jsons/data/mainnetdata0621/boxaddresses.json")
+        // let c = Object.keys(claimedaddresses)
+        // let a = addresses.filter(u => c.indexOf(u[0]) != -1).map(u => u[2]);
 
+        // let b = addresses21.filter(u => a.indexOf(u[1]) != -1);
+        // console.log("b==", b)
+        // return b;
+
+        const dp = "/jsons/data/mainnetdata0623/";
+        const csvfile = "/jsons/mainnetdata/" + "top10000.csv";
+        let addresses = readCSV(csvfile)
+        let claimedaddresses = getJSON(dp+"boxaddresses.json")
+        let c = Object.keys(claimedaddresses)
+        let a = addresses.filter(u => c.indexOf(u[0]) != -1).map(u => u[2]);
+        // let b = addresses12.filter(u => c.indexOf(u[0]) != -1).map(u => u[1]);
+        let s = a;//a.concat(b);
+        putJSON(dp+"claimedaddresses.json", s)
+        const allcsvfile = "/jsons/mainnetdata/" + "alltop10000.csv";
+        let alladdresses = readCSV(allcsvfile);
+        let ss = alladdresses.filter(u => s.indexOf(u[1]) == -1);
+        writeCSV(dp+"unclaimedaddresses.csv", ss)
+        let sss = alladdresses.filter(u => s.indexOf(u[1]) != -1);
+        writeCSV(dp+"claimedaddresses.csv", sss)
+    }
 }
 const amounts = [
     ["3.1847", "31.8471", "0.03184", "70.0636", "31.8471", "6.3694", "63.694", "1.5923", "3.1847"],
@@ -524,10 +573,20 @@ let handlers = {
         let datamgmt = new DataMgmt()
         await datamgmt.addAddresses();
     }),
-  "unc": (async function () {
+    "add21": (async function () {
+        console.log("==addAddresses21==");
+        let datamgmt = new DataMgmt()
+        await datamgmt.addAddresses21();
+    }),
+    "unc": (async function () {
         console.log("==unclaimAddresses==");
         let datamgmt = new DataMgmt()
         await datamgmt.unclaimAddresses();
+    }),
+    "unc21": (async function () {
+        console.log("==unclaimAddresses21==");
+        let datamgmt = new DataMgmt()
+        await datamgmt.unclaimAddresses21();
     }),
     "default": (async function () {
     })
