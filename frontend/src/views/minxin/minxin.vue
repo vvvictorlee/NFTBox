@@ -208,7 +208,7 @@ export default {
         goWinnerList() {
             let that = this;
             let lang = this.getLocaleLang || 'en';
-            let openUrl = 'https://hoo.co';
+            let openUrl = 'https://shimo.im/sheets/NJkbEvnKEatDYOqR/MODOC';
             // if(lang == 'zh-hans') {
             //     openUrl = 'https://eapy.com/zh_cn/activity/list';
             // } else {
