@@ -13,7 +13,7 @@ module.exports = (app) => {
     });
     app.get('/badge/*', async function (req, res, next) {
         // const qrcodeName = Date.now() + '-' + Math.random().toString(36).slice(-6);
-        const filePath = path.resolve(__dirname, `./gold_box.png`);
+        const filePath = path.resolve(__dirname, `./flag3_zh-hans.png`);
         // 给客户端返回一个文件流
         res.writeHead(200, { 'Content-Type': 'image/png' });
         //格式必须为 binary，否则会出错
