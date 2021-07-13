@@ -1,0 +1,170 @@
+{
+	"compiler": {
+		"version": "0.7.6+commit.7338295f"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "token",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "DepositERC20",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "token",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "WithdrewERC20",
+				"type": "event"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "contract IERC20Upgradeable[]",
+						"name": "tokens",
+						"type": "address[]"
+					},
+					{
+						"internalType": "uint256[]",
+						"name": "amounts",
+						"type": "uint256[]"
+					},
+					{
+						"internalType": "address",
+						"name": "to",
+						"type": "address"
+					}
+				],
+				"name": "depositERC20",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "contract IERC20Upgradeable[]",
+						"name": "tokens",
+						"type": "address[]"
+					},
+					{
+						"internalType": "address",
+						"name": "to",
+						"type": "address"
+					}
+				],
+				"name": "withdrawERC20",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"author": "Brendan Asselstine",
+			"details": "This contract is intended to be counterfactually instantiated via CREATE2.",
+			"kind": "dev",
+			"methods": {
+				"depositERC20(address[],uint256[],address)": {
+					"params": {
+						"to": "The recipient of the transfers",
+						"tokens": "An array of ERC20 tokens to transfer out.  The balance of each will be transferred."
+					}
+				},
+				"withdrawERC20(address[],address)": {
+					"params": {
+						"to": "The recipient of the transfers",
+						"tokens": "An array of ERC20 tokens to transfer out.  The balance of each will be transferred."
+					}
+				}
+			},
+			"title": "Allows anyone to \"loot\" an address",
+			"version": 1
+		},
+		"userdoc": {
+			"events": {
+				"DepositERC20(address,uint256)": {
+					"notice": "Emitted when an ERC20 token is deposited"
+				},
+				"WithdrewERC20(address,uint256)": {
+					"notice": "Emitted when an ERC20 token is withdrawn"
+				}
+			},
+			"kind": "user",
+			"methods": {
+				"depositERC20(address[],uint256[],address)": {
+					"notice": "Transfers the entire balance of ERC20s to an account"
+				},
+				"withdrawERC20(address[],address)": {
+					"notice": "Transfers the entire balance of ERC20s to an account"
+				}
+			},
+			"notice": "A LootBox allows anyone to withdraw all tokens or execute calls on behalf of the contract.",
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"lootbox/contracts/NFTBox.sol": "NFTBox"
+		},
+		"evmVersion": "istanbul",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"lootbox/contracts/NFTBox.sol": {
+			"keccak256": "0xe1f8d31810ed61c6cd38430bd35e4defcba41cd4b12636ab18112200430130d8",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://f4f340632a2572053e4966566643d29626678698981077863fcf044966f1ef63",
+				"dweb:/ipfs/QmUazS2ALMUsZmZ4goSofv7VQ3xFHk1DV6y2ssJagqdB8Q"
+			]
+		},
+		"openzeppelin-contracts-upgradeable/contracts/token/ERC20/IERC20Upgradeable.sol": {
+			"keccak256": "0xa1931c47a617014f858580db625aa0dcf343796f39acd4b5b51effc092a1f0a9",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://2cbeb499bad52667b96dd7df8e9b1f583e8c07afaba0018a75e5b7ff6e777173",
+				"dweb:/ipfs/QmPLJnuhEcWnpmhMHKsiuVHVxMwb5k6idYyjajbrtZLz5B"
+			]
+		}
+	},
+	"version": 1
+}
