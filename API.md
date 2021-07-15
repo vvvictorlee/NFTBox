@@ -64,7 +64,7 @@ params: {
 
 ```javascript
 {
-    code: 10000, //成功code码 失败： 例如10001等   10001 没有领取过，10002 领过，初转到    10003  领取被转，接收到其他
+    code: 10000, //成功code码 失败： 例如10001等   10001 没有领取过，10002 领过，被转走    10003  领取被转，接收到其他
     message: 'success', //success fail
     data: {
             tokenid: 1 //徽章id,
