@@ -108,7 +108,13 @@ method: Get
 返回：
 
 ```javascript
-true 或 false     true  结束  false 未结束 
+{
+  "code": 10000,
+  "message": "success",
+  "data": {
+    "flag": false    true  结束  false 未结束 
+  }
+}
 
 #### 示例
 
@@ -119,5 +125,11 @@ curl  https://nft.hoosmartchain.com/api/ismaxtotalsupply
 
 * 应答
 ```
-false
+{
+  "code": 10000,
+  "message": "success",
+  "data": {
+    "flag": false
+  }
+}
 ```
