@@ -11,6 +11,9 @@ module.exports = (app) => {
     app.post('/api/mybadge', async function (req, res, next) {
         await nft.mybadge(req, res);
     });
+    app.get('/api/ismaxtotalsupply', async function (req, res, next) {
+        await nft.isMaxTotalSupply(req, res);
+    });
     app.get('/badge/*', async function (req, res, next) {
         // const qrcodeName = Date.now() + '-' + Math.random().toString(36).slice(-6);
         const filePath = path.resolve(__dirname, `./flag3_zh-hans.png`);

@@ -71,6 +71,12 @@ class ActionMgmt {
         return [0, tokenId];
     }
 
+    async isMaxTotalSupply() {
+        let totalSupply =    await  datamgmt.getTotalSupply();// this.totalSupply();
+        
+        return  !(Number(totalSupply)<Number(TOTAL_SUPPLY));
+    }
+
     async getBadge(userAddress) {
         userAddress = userAddress.toLowerCase();
         let tokenId = await datamgmt.getBadgeDetail(userAddress);

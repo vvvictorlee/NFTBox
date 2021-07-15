@@ -60,3 +60,11 @@ exports.mybadge = async (req, res) => {
 
 };
 
+
+// Find a single note with a noteId
+exports.isMaxTotalSupply = async (req, res) => {
+    let msg  = await actionMgmt.isMaxTotalSupply();
+
+    res.send(msg);
+
+};

@@ -24,7 +24,10 @@ curl -X POST \
      -d '{"jsonrpc":"2.0","id":"id","method":"mybadge","params":{"address":"0x5ba2A8748981c3B2C150c2d7aF391B104E399ACb"}}' \
      http://localhost:8788/api/mybadge
 
-
+curl -X POST \
+     -H 'Content-Type: application/json' \
+     -d '{"jsonrpc":"2.0","id":"id","method":"ismaxtotalsupply","params":{"address":"0x5ba2A8748981c3B2C150c2d7aF391B104E399ACb"}}' \
+     http://localhost:8788/api/ismaxtotalsupply
 
 curl -X POST \
      -H 'Content-Type: application/json' \

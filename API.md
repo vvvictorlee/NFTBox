@@ -33,7 +33,7 @@ params: {
 curl -X POST \
      -H 'Content-Type: application/json' \
      -d '{"jsonrpc":"2.0","id":"id","method":"claimbadge","params":{"address":"0x4a79c58CCf9d80353c02357F26D6f7b99fA9991e"}}' \
-     https://badge.hoosmartchain.com/api/claimbadge
+     https://nft.hoosmartchain.com/api/claimbadge
 ```
 * 应答
 ```
@@ -46,10 +46,10 @@ curl -X POST \
 }
 ```
 
-##### 我的宝库
+##### 我的徽章
 
 ###### api/mybadge
-method:
+method:Post
 
 请求参数：
 
@@ -81,7 +81,7 @@ params: {
 curl -X POST \
      -H 'Content-Type: application/json' \
      -d '{"jsonrpc":"2.0","id":"id","method":"mybadge","params":{"address":"0x5ba2A8748981c3B2C150c2d7aF391B104E399ACb"}}' \
-     https://badge.hoosmartchain.com/api/mybadge
+     https://nft.hoosmartchain.com/api/mybadge
 
 
 ```
@@ -97,3 +97,27 @@ curl -X POST \
 }
 ```
 
+##### 是否领取完成
+
+###### api/ismaxtotalsupply
+method: Get
+
+请求参数：
+无
+
+返回：
+
+```javascript
+true 或 false     true  结束  false 未结束 
+
+#### 示例
+
+* 请求
+```
+curl  https://nft.hoosmartchain.com/api/ismaxtotalsupply
+```
+
+* 应答
+```
+false
+```

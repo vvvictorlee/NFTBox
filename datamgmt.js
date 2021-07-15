@@ -24,6 +24,12 @@ class DataMgmt {
 
     }
 
+    async getTotalSupply() {
+        this._badgedetail = getJSON(badgedetail)
+        return Object.keys(this._badgedetail).length ;
+   
+    }
+
     async getBadgeDetail(address) {
         this._badgedetail = getJSON(badgedetail)
 
