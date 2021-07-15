@@ -65,6 +65,14 @@ exports.mybadge = async (req, res) => {
 exports.isMaxTotalSupply = async (req, res) => {
     let msg  = await actionMgmt.isMaxTotalSupply();
 
-    res.send(msg);
+      const json = {
+        code: 10000,
+        message: 'success',
+        data: {
+            flag:msg
+        }
+
+    }
+    res.send(json);
 
 };
