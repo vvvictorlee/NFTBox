@@ -10,6 +10,7 @@ import Vant from 'vant';
 import 'vant/lib/index.css';
 import { Swipe, SwipeItem,Lazyload,Overlay,Field,Empty,Toast} from 'vant';
 import { Image as VanImage } from 'vant';
+require("./views/js/gt.js");
 Vue.use(Swipe);
 Vue.use(SwipeItem);
 Vue.use(Overlay);

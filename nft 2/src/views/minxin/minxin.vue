@@ -36,6 +36,10 @@ export default {
 			let flag = !!this.clientAccount;
 			return flag;
 		},
+        isChinese(){
+            let flag = this.getLocaleLang == 'zh-hans' ? true : false;
+            return flag;
+        },
 	},
 	filters: {
 		formatAccount(account) {

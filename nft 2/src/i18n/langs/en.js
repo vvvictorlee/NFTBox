@@ -5,9 +5,9 @@ const en = {
         test3:'Scene',
         test4:'mine',
 
-        test5:'Mul-chain',
-        test6:'out of',
-        test7:'Creation',
+        test5:'Multi-chain Minner NFT',
+        test6:'Limited',
+        test7:'Genesis',
         test8:'Ended',
         test9:'released',
         test10:'TokenPocket is an essential wallet in the Defi world. It currently supports all mainstream public chains on the market. Defi is the New World, and NFT is the ticket to the New World. ',

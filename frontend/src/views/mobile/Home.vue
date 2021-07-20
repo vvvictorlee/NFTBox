@@ -1,11 +1,11 @@
 <template>
 	<div class="home">
-        <loading-tips v-if="loadingTips"></loading-tips>
+		<loading-tips v-if="loadingTips"></loading-tips>
 		<div class="home-container">
 			<div class="home-card"></div>
 			<div class="card-title">
 				<div class="title-text">{{$t('home.test5')}}</div>
-				<div class="title-flag-container">
+				<div class="title-flag-container" v-if="isChinese">
 					<div class="flag-up">
 						<div class="icon"></div>
 						<div class="text">{{$t('home.test6')}}</div>
@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { handleCheck, handleReceive } from '../../http/home';
+import { handleCheck, handleReceive, getGtParams } from '../../http/home';
 import NftMinxin from '../minxin/minxin.vue';
 export default {
 	name: 'Home',
@@ -39,6 +39,8 @@ export default {
 	},
 	created() {
 		this.checkOver();
+	},
+	mounted() {
 	},
 	methods: {
 		//查询是否领取完
@@ -55,6 +57,19 @@ export default {
 		//点击领取按钮
 		clickReceive() {
 			let that = this;
+			that.gtVerify().then(res => {
+                if (!res.status && res.code == 10002) {
+                    return;
+                }
+                that.requestReceive();
+            }).catch(err => {
+
+            });
+		},
+
+		//请求后端领取
+		requestReceive() {
+			let that = this;
 			// console.log(that.getClientAccount);
 			if (!that.getClientAccount) {
 				that.$Toast('please connect wallet');
@@ -64,22 +79,75 @@ export default {
 				address: that.getClientAccount,
 			};
 			that.loadingTips = true;
-            handleReceive(requestParams).then(res => {
-                that.loadingTips = false;
-                if (res.code == '10000') {	
+			handleReceive(requestParams).then(res => {
+				that.loadingTips = false;
+				if (res.code == '10000') {
 					that.$Toast(that.$t('home.test12'));
-				} else if(res.code == '10001'){
-                    that.$Toast(that.$t('home.test13'));
-                } else if(res.code == '10002') {
-                    that.$Toast(that.$t('home.test14'));
-                } else {
+				} else if (res.code == '10001') {
+					that.$Toast(that.$t('home.test13'));
+				} else if (res.code == '10002') {
+					that.$Toast(that.$t('home.test14'));
+				} else {
 					that.$Toast(that.$t('home.test15'));
 				}
-            }).catch(err => {
-                that.loadingTips = false;
-                that.$Toast(that.$t('home.test15'));
-            });
+			}).catch(err => {
+				that.loadingTips = false;
+				that.$Toast(that.$t('home.test15'));
+			});
+		},
 
+		//极验处理
+		gtVerify() {
+			let that = this;
+			const langObj = {
+				'zh-hans': "zh-cn",
+				'en': "en",
+				'ko': "ko"
+			}
+			return new Promise((resolve, reject) => {
+				getGtParams().then(res => {
+					console.log(res);
+					let data = res && res.data || '';
+					//级验参数
+					let codeParams = {
+						product: 'bind',
+						https: false,
+						success: data.success || '',
+						// offline: true,
+						gt: data.gt || '',
+						challenge: data.challenge || '',
+						new_captcha: data.new_captcha || '',
+						lang: langObj[that.getLocaleLang],
+						width: '4rem'
+					};
+					window.initGeetest(codeParams, function (captchaObj) {
+						console.log(captchaObj);
+						captchaObj.onReady(function () {
+							captchaObj.verify(); //显示验证码
+						}).onSuccess(function () {
+							//通过校验
+							let data = {
+								status: true,
+								code: 10001
+							}
+							resolve(data);
+
+						}).onError(function (err) {
+							console.log(err);
+						})
+						captchaObj.onClose(function () {
+							//关闭
+							let data = {
+								status: false,
+								code: 10002
+							}
+							resolve(data);
+						});
+					});
+				}).catch(err => {
+					console.log(err)
+				});
+			});
 		},
 	},
 }
@@ -124,11 +192,12 @@ export default {
 				font-family: PingFang SC;
 				font-weight: bold;
 				color: #278df5;
+                text-align: left;
 			}
 			.title-flag-container {
 				margin-left: 0.12rem;
 				display: flex;
-				flex-direction: column;
+				// flex-direction: column;
 				align-items: center;
 				justify-content: center;
 				.flag-up {
@@ -162,7 +231,7 @@ export default {
 					}
 				}
 				.flag-down {
-					margin-top: 0.04rem;
+					margin-left: 0.14rem;
 					min-width: 0.6rem;
 					padding-left: 0.12rem;
 					padding-right: 0.12rem;

@@ -32,3 +32,8 @@ export const getMyboxes = (params = {}) => {
     };
     return httpRequest.post(config.mybadge,requestParams);
 }
+
+//极验证
+export const getGtParams = (params = {}) => {
+    return httpRequest.get(config.gtapi,params);
+}
