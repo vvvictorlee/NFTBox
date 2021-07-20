@@ -28,12 +28,8 @@ module.exports = (app) => {
         })
     });
     app.get('/wofans/*', async function (req, res, next) {
-        // const qrcodeName = Date.now() + '-' + Math.random().toString(36).slice(-6);
         const filePath = path.resolve(__dirname, `./wofans.png`);
-        // 给客户端返回一个文件流
         res.writeHead(200, { 'Content-Type': 'image/png' });
-        //格式必须为 binary，否则会出错
-        // 创建文件可读流
         const cs = fs.createReadStream(filePath);
         cs.on("data", chunk => {
             res.write(chunk);
@@ -43,6 +39,17 @@ module.exports = (app) => {
             res.end();
         })
     });
-
+    app.get('/tst/*', async function (req, res, next) {
+        const filePath = path.resolve(__dirname, `./tst.png`);
+        res.writeHead(200, { 'Content-Type': 'image/png' });
+        const cs = fs.createReadStream(filePath);
+        cs.on("data", chunk => {
+            res.write(chunk);
+        })
+        cs.on("end", () => {
+            res.status(200);
+            res.end();
+        })
+    });
 
 }
