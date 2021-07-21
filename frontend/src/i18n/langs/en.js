@@ -11,7 +11,7 @@ const en = {
         test8:'Ended',
         test9:'released',
         test10:'TokenPocket is an essential wallet in the Defi world. It currently supports all mainstream public chains on the market. Defi is the New World, and NFT is the ticket to the New World. ',
-        test11:'I want to receive',
+        test11:'Collect this NFT',
 
         test12:'Received successfully',
         test13:'This address has already been collected',
