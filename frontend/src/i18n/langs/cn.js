@@ -31,6 +31,7 @@ const zh_hans = {
         test24: '已持有',
 
         test25: '暂无持有卡片',
+        test26: '《联名NFT活动参与指南》',
     }
 };
 export default zh_hans;

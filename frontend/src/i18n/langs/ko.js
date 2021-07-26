@@ -31,6 +31,8 @@ const ko = {
         test24: '보류',
 
         test25: '현재 보유하고 있는 카드가 없습니다',
+
+        test26:'공동 NFT 활동 참여 안내',
     }
 };
 export default ko;

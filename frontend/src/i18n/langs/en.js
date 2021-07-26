@@ -31,6 +31,8 @@ const en = {
         test24:'Holded',
 
         test25:'There is no card currently held',
+
+        test26:'Guide to Participating in Joint NFT Activities',
     }
 };
 export default en;

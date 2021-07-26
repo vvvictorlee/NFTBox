@@ -60,7 +60,7 @@ export default {
 			'My': 'my'
 		};
 		this.navActive = nameMap[routerName];
-		
+
 		this.connectWallet();
 	},
 	methods: {
@@ -68,9 +68,9 @@ export default {
 			if (this.navActive == nav) {
 				return;
 			}
-            if(this.navActive == 'my' && !this.getClientAccount) {
-                this.connectWallet();
-            }
+			if (this.navActive == 'my' && !this.getClientAccount) {
+				this.connectWallet();
+			}
 			this.navActive = nav;
 			this.$router.push({
 				name: name
@@ -93,8 +93,8 @@ export default {
 		justify-content: space-between;
 		align-items: center;
 		.token-pocket {
-			height: 0.82rem;
-			width: 3.24rem;
+			height: 0.49rem;
+			width: 1.75rem;
 			background: url("../assets/image/token_pocket.png") no-repeat;
 			background-size: 100% 100%;
 		}

@@ -23,6 +23,7 @@
 			</div>
 			<div class="receive-button" @click="clickReceive">{{$t('home.test11')}}</div>
 		</div>
+		<div class="join-guide" @click="goGuid">{{$t('home.test26')}}</div>
 	</div>
 </template>
 
@@ -43,6 +44,10 @@ export default {
 	mounted() {
 	},
 	methods: {
+        goGuid() {
+            let openUrl = 'https://www.wolai.com/hoosmartchain/7LkfYZ3LvwN6Pruffk12st?theme=light';
+			window.open(openUrl, "_blank");
+		},
 		//查询是否领取完
 		checkOver() {
 			let that = this;
@@ -58,13 +63,13 @@ export default {
 		clickReceive() {
 			let that = this;
 			that.gtVerify().then(res => {
-                if (!res.status && res.code == 10002) {
-                    return;
-                }
-                that.requestReceive();
-            }).catch(err => {
+				if (!res.status && res.code == 10002) {
+					return;
+				}
+				that.requestReceive();
+			}).catch(err => {
 
-            });
+			});
 		},
 
 		//请求后端领取
@@ -160,6 +165,7 @@ export default {
 	width: 100%;
 	display: flex;
 	justify-content: center;
+    flex-direction: column;
 	align-items: center;
 	padding-top: 0.2rem;
 	.home-container {
@@ -192,7 +198,7 @@ export default {
 				font-family: PingFang SC;
 				font-weight: bold;
 				color: #278df5;
-                text-align: left;
+				text-align: left;
 			}
 			.title-flag-container {
 				margin-left: 0.12rem;
@@ -320,6 +326,15 @@ export default {
 			cursor: pointer;
 			text-align: center;
 		}
+	}
+	.join-guide {
+		padding-top: 0.4rem;
+		height: 0.4rem;
+		line-height: 0.4rem;
+		color: #ffffff;
+        cursor: pointer;
+        text-align: center;
+        // text-decoration: underline;
 	}
 }
 </style>
