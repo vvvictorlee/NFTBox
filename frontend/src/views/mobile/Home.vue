@@ -21,7 +21,7 @@
 			<div class="tips-container">
 				<div class="tips-text">{{$t('home.test10')}}</div>
 			</div>
-			<div class="receive-button" @click="clickReceive">{{$t('home.test11')}}</div>
+			<div class="receive-button" @click="requestReceive">{{$t('home.test11')}}</div>
 		</div>
 		<div class="join-guide" @click="goGuid">{{$t('home.test26')}}</div>
 	</div>
