@@ -14,7 +14,7 @@
 							<div class="title-text">{{$t('home.test17')}}</div>
 						</div>
 					</div>
-					<div class="swiper-slide" @click="goSences('https://seekers.xlootcn.com/')">
+					<div class="swiper-slide" @click="goSences('https://hsc.gamedao.io/market')">
 						<img src="../../../public/image/my_card2.png" alt="">
 						<div class="title-container">
 							<div class="title-text">NFT</div>
