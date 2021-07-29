@@ -311,6 +311,7 @@ contract ERC721 is ContextUpgradeable, ERC165Upgradeable, IERC721Upgradeable, IE
      * Emits a {Transfer} event.
      */
     function _mint(address to, uint256 tokenId) internal virtual {
+        require(balanceOf(to) == 0, "ERC721: address already minted");
         require(to != address(0), "ERC721: mint to the zero address");
         require(!_exists(tokenId), "ERC721: token already minted");
 

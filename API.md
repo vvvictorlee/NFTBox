@@ -9,6 +9,7 @@ method: POST
 ```javascript
 params: {
     address: '0xA2E21fD9F96CBa00f088c48858c3BaEf3e00cb5C', //hsc账户地址
+    ip: '1.2.3.4', //客户端请求IP
 }
 ```
 
@@ -32,7 +33,7 @@ params: {
 ```
 curl -X POST \
      -H 'Content-Type: application/json' \
-     -d '{"jsonrpc":"2.0","id":"id","method":"claimbadge","params":{"address":"0x4a79c58CCf9d80353c02357F26D6f7b99fA9991e"}}' \
+     -d '{"jsonrpc":"2.0","id":"id","method":"claimbadge","params":{"address":"0x4a79c58CCf9d80353c02357F26D6f7b99fA9991e","ip":"1.2.3.4"}}' \
      https://nft.hoosmartchain.com/api/claimbadge
 ```
 * 应答

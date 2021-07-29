@@ -44,9 +44,9 @@ let contract = {};
 let proxy = validators[0];
 instanceContract();
 const index = 0;
+const AwaitLock = require('await-lock').default;
 
 class ActionMgmt {
-
     async createBadge(userAddress) {
         const index = 0;
         let encodedabi = await contracts[index].methods.mint(userAddress).encodeABI();
@@ -54,53 +54,67 @@ class ActionMgmt {
         return id;
     }
 
-    async claimBadge(userAddress,ip) {
-        ip = ip.toLowerCase();
-        let ipv = await datamgmt.getIP(ip);
-        if (ipv!=0) {
-            return [10003, "The ip requested"];
-        }
-        await datamgmt.saveIP(ip);
-        userAddress = userAddress.toLowerCase();
-        let tokenId = await datamgmt.getBadgeDetail(userAddress);
-        if (tokenId!=0) {
-            return [10001, "The address claimed"];
+    async claimBadge(userAddress, ip) {
+        let  lock = new AwaitLock();
+        await lock.acquireAsync();
+        try {
+            ip = ip.toLowerCase();
+            let ipv = await datamgmt.getIP(ip);
+            if (ipv != 0) {
+                // return [10003, "The ip requested"];
+            }
+            await datamgmt.saveIP(ip);
+        } finally {
+            lock.release();
         }
 
-        let totalSupply =    await  this.totalSupply();
-        if (totalSupply>=TOTAL_SUPPLY){
-           return [10002, "The badge claimed finished"];
+        lock = new AwaitLock();
+        await lock.acquireAsync();
+        try {
+            userAddress = userAddress.toLowerCase();
+            let tokenId = await datamgmt.getBadgeDetail(userAddress);
+            if (tokenId != 0) {
+                return [10001, "The address claimed"];
+            }
+
+            let totalSupply = await this.totalSupply();
+            if (totalSupply >= TOTAL_SUPPLY) {
+                return [10002, "The badge claimed finished"];
+            }
+            tokenId = await this.createBadge(userAddress);
+            await datamgmt.saveBadgeDetail(userAddress, tokenId);
+            tokenId = web3.utils.hexToNumber(tokenId)
+
+            return [0, tokenId];
+        } finally {
+            lock.release();
         }
-        tokenId = await this.createBadge(userAddress);
-        await datamgmt.saveBadgeDetail(userAddress, tokenId);
-        tokenId = web3.utils.hexToNumber(tokenId)
-        return [0, tokenId];
     }
 
     async isMaxTotalSupply() {
-        let totalSupply =    await  datamgmt.getTotalSupply();// this.totalSupply();
-        
-        return  !(Number(totalSupply)<Number(TOTAL_SUPPLY));
+        let totalSupply = await datamgmt.getTotalSupply();// this.totalSupply();
+
+        return !(Number(totalSupply) < Number(TOTAL_SUPPLY));
     }
 
     async getBadge(userAddress) {
         userAddress = userAddress.toLowerCase();
         let tokenId = await datamgmt.getBadgeDetail(userAddress);
-        let totalSupply =    await  this.totalSupply();
-        if (tokenId==0 && totalSupply<TOTAL_SUPPLY) {
+        let totalSupply = await this.totalSupply();
+        if (tokenId == 0 && totalSupply < TOTAL_SUPPLY) {
             return [10001, "no tokenid"];
         }
-        
+
         let balance = await this.balanceOf(userAddress);
-        if (balance==0) {
+        if (balance == 0) {
             return [10002, "the token is transfered on the chain"];
         }
 
         let owner = await this.ownerOf(tokenId);
-        if (owner.toLowerCase()!=userAddress.toLowerCase()) {
+        if (owner.toLowerCase() != userAddress.toLowerCase()) {
             tokenId = await this.tokenOf(userAddress);
-            if (tokenId==0) {
-                 return [10003, "the token is changed on the chain"];
+            if (tokenId == 0) {
+                return [10003, "the token is changed on the chain"];
             }
         }
         tokenId = web3.utils.hexToNumber(tokenId)

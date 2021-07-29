@@ -25,6 +25,12 @@ contract ERC721Controlled is ERC721, AccessControlUpgradeable {
   /// @dev Records the total supply of tokens
   uint256 internal _totalSupply;
 
+
+mapping (address => uint) k2i;
+mapping (uint => address) i2k;
+uint currentIndex = 0;
+uint constant QUEUE_LEN = 1000;
+
   /// @notice Initializes a newly created contract
   /// @param name The token name
   /// @param symbol The token symbol
