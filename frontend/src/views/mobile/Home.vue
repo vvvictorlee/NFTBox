@@ -21,7 +21,7 @@
 			<div class="tips-container">
 				<div class="tips-text">{{$t('home.test10')}}</div>
 			</div>
-			<div class="receive-button" @click="requestReceive">{{$t('home.test11')}}</div>
+			<div class="receive-button" @click="clickThrottleReceive">{{$t('home.test11')}}</div>
 		</div>
 		<div class="join-guide" @click="goGuid">{{$t('home.test26')}}</div>
 	</div>
@@ -36,16 +36,15 @@ export default {
 	data() {
 		return {
 			overFlag: false, //30万是否领完
+            throttleTimer: null, //timer
 		}
 	},
 	created() {
 		this.checkOver();
 	},
-	mounted() {
-	},
 	methods: {
-        goGuid() {
-            let openUrl = 'https://www.wolai.com/hoosmartchain/7LkfYZ3LvwN6Pruffk12st?theme=light';
+		goGuid() {
+			let openUrl = 'https://www.wolai.com/hoosmartchain/7LkfYZ3LvwN6Pruffk12st?theme=light';
 			window.open(openUrl, "_blank");
 		},
 		//查询是否领取完
@@ -59,11 +58,23 @@ export default {
 				console.log(err);
 			});
 		},
+        //防抖点击按钮
+        clickThrottleReceive() {
+            let that = this;
+            if(that.throttleTimer) {
+                return;
+            }
+            that.throttleTimer = setTimeout(() => {
+                that.throttleTimer = null;
+                window.clearTimeout(that.throttleTimer);
+            },10000);
+            that.clickReceive();
+        },
 		//点击领取按钮
 		clickReceive() {
 			let that = this;
 			that.gtVerify().then(res => {
-				if (!res.status && res.code == 10002) {
+				if (!(res.status && res.code == 10002)) {
 					return;
 				}
 				that.requestReceive();
@@ -165,7 +176,7 @@ export default {
 	width: 100%;
 	display: flex;
 	justify-content: center;
-    flex-direction: column;
+	flex-direction: column;
 	align-items: center;
 	padding-top: 0.2rem;
 	.home-container {
@@ -332,9 +343,9 @@ export default {
 		height: 0.4rem;
 		line-height: 0.4rem;
 		color: #ffffff;
-        cursor: pointer;
-        text-align: center;
-        // text-decoration: underline;
+		cursor: pointer;
+		text-align: center;
+		// text-decoration: underline;
 	}
 }
 </style>
