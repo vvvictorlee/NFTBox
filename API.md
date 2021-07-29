@@ -18,7 +18,7 @@ params: {
 
 ```javascript
 {
-    code: 10000, //成功code码 失败：   10001 已领过  10002 领完
+    code: 10000, //成功code码 失败：   10001 已领过  10002 领完  10003 IP 请求过
     message: 'success', //success fail
     data: {
         tokenid: '1', //徽章的地址

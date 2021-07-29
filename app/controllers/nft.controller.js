@@ -11,7 +11,7 @@ exports.claimbadge = async (req, res) => {
         });
     }
 
-    let [result, msg] = await actionMgmt.claimBadge(req.body.params.address.toLowerCase());
+    let [result, msg] = await actionMgmt.claimBadge(req.body.params.address.toLowerCase(),req.body.params.ip.toLowerCase());
 
     console.log(result, msg)
     if (Number(0) != Number(result)) {

@@ -32,7 +32,7 @@ const en = {
 
         test25:'There is no card currently held',
 
-        test26:'Guide to Participating in Joint NFT Activities',
+        test26:'Guide for Participating in Joint NFT Activities',
     }
 };
 export default en;

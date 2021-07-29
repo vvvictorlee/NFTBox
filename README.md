@@ -49,9 +49,9 @@ curl -X POST \
       https://badge.hoosmartchain.com/api/claimbadge
 
 
-
-
-
+curl  https://nft.hoosmartchain.com/api/ismaxtotalsupply
+curl  http://localhost:7789/api/ismaxtotalsupply
+curl -H "Origin: http://localhost:3000" --head http://localhost:7789/api/ismaxtotalsupply
 ```
 
 

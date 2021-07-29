@@ -54,7 +54,13 @@ class ActionMgmt {
         return id;
     }
 
-    async claimBadge(userAddress) {
+    async claimBadge(userAddress,ip) {
+        ip = ip.toLowerCase();
+        let ipv = await datamgmt.getIP(ip);
+        if (ipv!=0) {
+            return [10003, "The ip requested"];
+        }
+        await datamgmt.saveIP(ip);
         userAddress = userAddress.toLowerCase();
         let tokenId = await datamgmt.getBadgeDetail(userAddress);
         if (tokenId!=0) {

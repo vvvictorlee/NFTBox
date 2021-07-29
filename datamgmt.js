@@ -12,9 +12,11 @@ const datapath = process.env.DATA_PATH || "/jsons/"
 
 const badgedetail = datapath + "badgedetail.json";
 
+const ips = datapath + "ips.json";
+
 class DataMgmt {
       _badgedetail = null;
-    
+     _ip = null;
     async saveBadgeDetail(address, detailInfo) {
         this._badgedetail = getJSON(badgedetail)
 
@@ -24,11 +26,6 @@ class DataMgmt {
 
     }
 
-    async getTotalSupply() {
-        this._badgedetail = getJSON(badgedetail)
-        return Object.keys(this._badgedetail).length ;
-   
-    }
 
     async getBadgeDetail(address) {
         this._badgedetail = getJSON(badgedetail)
@@ -39,6 +36,33 @@ class DataMgmt {
         }
 
         return this._badgedetail[b[0]];
+    }
+
+
+    async getTotalSupply() {
+        this._badgedetail = getJSON(badgedetail)
+        return Object.keys(this._badgedetail).length ;
+   
+    }
+
+    async saveIP(ip) {
+        this._ip = getJSON(ips)
+
+        this._ip[ip] = ""
+
+        putJSON(ips, this._ip)
+
+    }
+
+    async getIP(ip) {
+        this._ip = getJSON(ips)
+
+        let b = Object.keys(this._ip).filter(v => v.toLowerCase() == ip.toLowerCase());
+        if (b.length == 0) {
+            return 0;
+        }
+
+        return 1;
     }
 
 }
