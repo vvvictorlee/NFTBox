@@ -74,7 +74,7 @@ export default {
 		clickReceive() {
 			let that = this;
 			that.gtVerify().then(res => {
-				if ((!res.status || res.code == 10002)) {
+				if (!res.status && res.code == 10002) {
 					return;
 				}
 				that.requestReceive();
