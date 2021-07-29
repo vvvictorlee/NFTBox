@@ -5,7 +5,7 @@ const en = {
         test3:'Scene',
         test4:'mine',
 
-        test5:'Multi-chain Minner NFT',
+        test5:'Multi-chain Miner NFT',
         test6:'Limited',
         test7:'Genesis',
         test8:'Ended',

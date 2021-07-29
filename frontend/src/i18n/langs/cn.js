@@ -10,7 +10,7 @@ const zh_hans = {
         test7: '创世款',
         test8: '已结束',
         test9: '发行中',
-        test10: 'TokenPocket是Defi世界的必备钱包，目前支持市面上所有主流公链。Defi是新大陆，NFT就是就是新大陆的门票。',
+        test10: 'TokenPocket是Defi世界的必备钱包，目前支持市面上所有主流公链。Defi是新大陆，NFT就是新大陆的门票。',
         test11: '我要领取',
 
         test12: '领取成功',

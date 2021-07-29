@@ -74,7 +74,7 @@ export default {
 		clickReceive() {
 			let that = this;
 			that.gtVerify().then(res => {
-				if (!(res.status && res.code == 10002)) {
+				if ((!res.status || res.code == 10002)) {
 					return;
 				}
 				that.requestReceive();
@@ -93,6 +93,7 @@ export default {
 			}
 			let requestParams = {
 				address: that.getClientAccount,
+                ip: window.returnCitySN['cip'],
 			};
 			that.loadingTips = true;
 			handleReceive(requestParams).then(res => {
