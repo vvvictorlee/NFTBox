@@ -124,7 +124,7 @@ export default {
 			return new Promise((resolve, reject) => {
 				getGtParams().then(res => {
 					console.log(res);
-					let data = res && res.data || '';
+					let data = res || '';//res && res.data || '';
 					//级验参数
 					let codeParams = {
 						product: 'bind',

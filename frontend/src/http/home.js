@@ -34,6 +34,6 @@ export const getMyboxes = (params = {}) => {
 }
 
 //极验证
-export const getGtParams = (params = {}) => {
+export const getGtParams = (params = {ts:new Date().getTime()}) => {
     return httpRequest.get(config.gtapi,params);
 }
