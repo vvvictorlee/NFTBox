@@ -37,7 +37,7 @@
 
     Config.prototype = {
         api_server: 'api.geetest.com',
-        protocol: 'https://',
+        protocol: 'http://',
         typePath: '/gettype.php',
         fallback_config: {
             slide: {
