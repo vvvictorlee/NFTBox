@@ -4,7 +4,7 @@ const history = require('connect-history-api-fallback')
 
 const app = express()
 app.all('*', function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "http://localhost:7789");
+    res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Connection, User-Agent, Cookie");
     res.header("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS");
     res.header("X-Powered-By", ' 3.2.1')
