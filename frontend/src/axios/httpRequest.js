@@ -18,6 +18,7 @@ class Http {
         this.timeout = 60000;
         // 开发时和生产时采用不同的前缀发送请求
         this.baseURL = process.env.NODE_ENV == 'development' ? '/' : process.env.VUE_APP_API;
+        // this.baseURL = 'https://safe-client.hoosmartchain.com/';
         // 存放所有的请求队列 
         this.queue = {};
     }

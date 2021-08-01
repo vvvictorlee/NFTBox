@@ -161,16 +161,15 @@ module.exports = {
         https: false,
         hotOnly: false,
         proxy: {
-            '/hoo': {
-                target: 'https://hoo.as',
-                changeOrigin: true,
-                pathRewrite: {
-					"^/hoo": "",
-				},
-            },
+            // '/hoo': {
+            //     target: 'https://hoo.as',
+            //     changeOrigin: true,
+            //     pathRewrite: {
+			// 		"^/hoo": "",
+			// 	},
+            // },
             '/api': {
                 target: process.env.VUE_APP_API || 'http://127.0.0.1:8080',
-                // target: 'http://127.0.0.1:8080',
                 changeOrigin: true,
                 // secure: false,
             },

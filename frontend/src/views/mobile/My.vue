@@ -7,8 +7,9 @@
 					<div class="swiper-wrapper">
 						<div class="swiper-slide">
 							<div class="my-container">
+                                <div class="cart-title">{{$t('home.test23')}}</div>
 								<div class="my-card"></div>
-								<div class="cart-title">{{$t('home.test23')}}</div>
+                                <div class="cart-id" v-show="!!tokenId">No.{{tokenId}}</div>
 								<div class="card-button">{{$t('home.test24')}}</div>
 							</div>
 						</div>
@@ -39,6 +40,7 @@ export default {
 	data() {
 		return {
 			hasNft: false,
+            tokenId: '',
 		};
 	},
 	mixins: [NftMinxin],
@@ -89,6 +91,7 @@ export default {
 				//成功code码 成功: 10000 失败: 例如10001等   10001 没有领取过，10002 领过，被转走    10003  领取被转，接收到其他
 				if (res.code == '10000' || res.code == '10003') {
 					that.hasNft = true;
+                    that.tokenId = res && res.data && res.data.tokenId || '';
 					that.$nextTick(() => {
 						that.initSwiper();
 					});
@@ -154,12 +157,19 @@ export default {
 							background-size: 100% 100%;
 						}
 						.cart-title {
-							margin-top: 0.4rem;
+							margin-bottom: 0.2rem;
 							font-size: 0.48rem;
 							font-family: PingFang SC;
 							font-weight: bold;
 							color: #278df5;
 						}
+                        .cart-id{
+                            margin-top: 0.2rem;
+							font-size: 0.48rem;
+							font-family: PingFang SC;
+							font-weight: bold;
+							color: #278df5;
+                        }
 						.card-button {
 							margin-top: 0.4rem;
 							width: 3.58rem;

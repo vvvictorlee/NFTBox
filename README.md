@@ -5,7 +5,7 @@
 curl -X POST \
      -H 'Content-Type: application/json' \
      -d '{"jsonrpc":"2.0","id":"id","method":"claimbadge","params":{"address":"0x5ba2A8748981c3B2C150c2d7aF391B104E399ACb","ip":"1.2.3.4"}}' \
-     http://localhost:7789/api/claimbadge
+     http://localhost:8777/api/claimbadge
 
 
 curl -X POST \
