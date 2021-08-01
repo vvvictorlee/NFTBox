@@ -5,12 +5,16 @@ const dataMgmt = new DataMgmt();
 // Create and Save a new Note
 exports.claimbadge = async (req, res) => {
     // Validate request
-    if (!req.body.params.address) {
+    if (req.body.params.address==undefined||!req.body.params.address) {
         return res.status(400).send({
             message: "address can not be empty"
         });
     }
-
+    if (req.body.params.ip==undefined||!req.body.params.ip) {
+        return res.status(400).send({
+            message: "ip can not be empty"
+        });
+    }
     let [result, msg] = await actionMgmt.claimBadge(req.body.params.address.toLowerCase(),req.body.params.ip.toLowerCase());
 
     console.log(result, msg)

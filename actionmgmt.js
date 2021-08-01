@@ -81,7 +81,12 @@ class ActionMgmt {
             if (totalSupply >= TOTAL_SUPPLY) {
                 return [10002, "The badge claimed finished"];
             }
+            try{
             tokenId = await this.createBadge(userAddress);
+            }catch(error){
+                console.error(error)
+                return [10001, "The address claimed reverted on chain"];
+            }
             await datamgmt.saveBadgeDetail(userAddress, tokenId);
             tokenId = web3.utils.hexToNumber(tokenId)
 
