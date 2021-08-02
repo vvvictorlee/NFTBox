@@ -1,17 +1,20 @@
 const path = require('path')
 
 const fs = require('fs');
+const authorize = require('../_helpers/authorize')
+
+
 module.exports = (app) => {
     const nft = require('../controllers/nft.controller.js');
 
     // Create a new NFT
-    app.post('/api/claimbadge', async function (req, res, next) {
+    app.post('/api/claimbadge',authorize(), async function (req, res, next) {
         await nft.claimbadge(req, res);
     });
     app.post('/api/mybadge', async function (req, res, next) {
         await nft.mybadge(req, res);
     });
-    app.get('/api/ismaxtotalsupply', async function (req, res, next) {
+    app.post('/api/ismaxtotalsupply', async function (req, res, next) {
         await nft.isMaxTotalSupply(req, res);
     });
     app.get('/joint/*', async function (req, res, next) {

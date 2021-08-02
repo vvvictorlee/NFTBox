@@ -16,6 +16,8 @@
     "dotenv": "^9.0.2",
     "ethereumjs-tx": "^2.1.2",
     "express": "^4.17.1",
+    "express-jwt": "^6.0.0",
+    "jsonwebtoken": "^8.5.1",
     "web3": "^1.2.6"
   },
   "devDependencies": {},
