@@ -15,7 +15,6 @@ module.exports = (app) => {
         await nft.isMaxTotalSupply(req, res);
     });
     app.get('/joint/*', async function (req, res, next) {
-        console.log(req.ip)
         const filePath = path.resolve(__dirname, `./joint.png`);
         res.writeHead(200, { 'Content-Type': 'image/png' });
         const cs = fs.createReadStream(filePath);

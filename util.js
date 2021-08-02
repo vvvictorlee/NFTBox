@@ -19,7 +19,12 @@ const readCSV = (fileName) => {
     // console.log(table);
     return table;
 }
-
+const readUCSV = (fileName) => {
+    const data = fs.readFileSync(path.join(__dirname, fileName));
+    const table = ToUTable(data);
+    // console.log(table);
+    return table;
+}
 const writeCSV = (fileName, data) => {
     fs.writeFileSync(path.join(__dirname, fileName), `\ufeff${fromTable(data)}`);
 }
@@ -43,7 +48,17 @@ const ToTable = (data) => {
 
     return table;
 }
+const ToUTable = (data) => {
+    data = data.toString();
+    var table = new Array();
+    var rows = new Array();
+    rows = data.split("\n");
+    for (var i = 0; i < rows.length; i++) {
+        table.push(rows[i].trim())
+    }
 
+    return table;
+}
 const readCSVToJSON = (fileName) => {
     const data = fs.readFileSync(path.join(__dirname, fileName));
     const table = ConvertToTable(data);
@@ -77,4 +92,4 @@ const ConvertToTable = (data) => {
     return table;
 }
 
-module.exports = { getJSON, putJSON, readCSVToJSON,readCSV,writeCSV }
+module.exports = { getJSON, putJSON, readCSVToJSON,readUCSV,readCSV,writeCSV }

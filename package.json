@@ -4,6 +4,8 @@
   "private": false,
   "scripts": {
     "start": "DEBUG=app node  -r dotenv/config server.js dotenv_config_path=.env",
+    "badd": "DEBUG=app node  -r dotenv/config historydatamgmt.js badd dotenv_config_path=.env",
+    "pm:test": "DEBUG=app node  -r dotenv/config preactionmgmt.js pm dotenv_config_path=.env.test",
     "start:test": "DEBUG=app node  -r dotenv/config server.js dotenv_config_path=.env.test"
   },
   "dependencies": {

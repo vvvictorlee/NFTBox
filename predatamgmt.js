@@ -1,31 +1,16 @@
 const path = require('path')
 
 const fs = require('fs');
-const { getJSON, putJSON, readCSVToJSON, readCSV,writeCSV } = require('./util');
+const { getJSON, putJSON, readCSVToJSON, readCSV,readUCSV } = require('./util');
 const _CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS || []
 const CONTRACT_ADDRESS = JSON.parse(_CONTRACT_ADDRESS);
 
-const _NAMES = process.env.NAMES || []
-const names = JSON.parse(_NAMES);
-
-const _SYMBOLS = process.env.SYMBOLS || []
-const symbols = JSON.parse(_SYMBOLS);
-const _TOTAL_AMOUNTS = process.env.TOTAL_AMOUNTS || []
-const TOTAL_AMOUNTS = JSON.parse(_TOTAL_AMOUNTS);
-const _AMOUNTS = process.env.AMOUNTS || []
-const amounts = JSON.parse(_AMOUNTS);
-const _TOTAL_COUNT = process.env.TOTAL_COUNT || []
-const count = JSON.parse(_TOTAL_COUNT);
-
 const datapath = process.env.DATA_PATH || "/jsons/"
 const users = datapath + "users.json";
-const boxaddresses = datapath + "boxaddresses.json";
-const boxdetail = datapath + "boxdetail.json";
+
 const randomsequence = datapath + "randomsequence.json";
-const currentindex = datapath + "currentindex.json";
 const boxlevels = datapath + "boxlevels.json";
 const boxlevelinfo = datapath + "boxlevelinfo.json";
-const openedboxes = datapath + "openedboxes.json";
 class PreDataMgmt {
     _users = null;
     _boxaddresses = null;
@@ -112,6 +97,10 @@ class PreDataMgmt {
         const csvfile = "/jsons/mainnetdata/" + "top10000.csv";
         const json = readCSVToJSON(csvfile)
         putJSON(users, json)
+    }
+    async premint() {
+        let addresses = readUCSV("/csvs/h.csv")
+        return addresses;
     }
 }
 

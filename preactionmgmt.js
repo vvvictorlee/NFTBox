@@ -16,11 +16,14 @@ const formula = debug('formula');
 // debug.enable('foo:*,-foo:bar');
 // let namespaces = debug.disable();
 // debug.enable(namespaces);
-const {sendSignedTx} = require("./txmgmt.js");
+const { sendSignedTx } = require("./txmgmt.js");
 
 const DataMgmt = require("./datamgmt.js");
 const datamgmt = new DataMgmt()
-
+const PreDataMgmt = require("./predatamgmt.js");
+const predatamgmt = new PreDataMgmt()
+const ActionMgmt = require('./actionmgmt.js');
+const actionMgmt = new ActionMgmt();
 const secrets_pairs = process.env.SECRETS || []
 const secrets = JSON.parse(secrets_pairs);
 const _CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS || []
@@ -31,27 +34,22 @@ const _ABI_FILES = process.env.ABI_FILES || []
 let ABI_FILES = JSON.parse(_ABI_FILES);
 
 
-
-
-const ERC721_ABI_FILE = "ERC721ControlledFactory.json"
-let ERC721_CONTRACT_ADDRESS = "0x71725cb45adc6Fb2962B407EB3824F13030c5430";
-let erc721contract;
 let contracts = [];
 let contractobjs = {};
-const NETWORK_ID = process.env.CHAIN_ID || 170;
-const CHAIN_ID = process.env.CHAIN_ID || 170;
+
 const PROVIDER_URL = process.env.PROVIDER_URL || "https://http-testnet.hoosmartchain.com";
 const validators = secrets;//Object.keys(secrets);
-const erc721tokenaddress = CONTRACT_ADDRESS[0]
 const web3 = new Web3(new Web3.providers.HttpProvider(PROVIDER_URL));
 let abi = {};
 let contract = {};
-let candidate = validators[1][0];
+// let candidate = validators[1][0];
 let user = validators[1];
 let proxy = validators[2];
 instanceContract();
 let id;
 let result;
+
+
 class PreActionMgmt {
     async depositTokens(boxAddress, tokens) {
         for (let i = 0; i < tokens.ids.length; i++) {
@@ -71,6 +69,30 @@ class PreActionMgmt {
         // console.log(address, web3.utils.fromWei(balance), balance)
 
         return true;
+    }
+
+    async checkBalance2(address) {
+        let balance = 0
+        try {
+            balance = await web3.eth.getBalance(address)
+        } catch (error) {
+            console.error(error)
+        }
+        if (web3.utils.fromWei(balance) >= 10) {
+            let b = await web3.eth.getCode(address)
+
+            console.error("check if is contract=", "0x" != b, "  >10 HOO checkBalance2==", address, web3.utils.fromWei(balance), balance)
+        }
+        if (web3.utils.fromWei(balance) >= 23) {
+            let b = await web3.eth.getCode(address)
+
+            console.error("check if is contract=", "0x" != b, "  checkBalance2==", address, web3.utils.fromWei(balance), balance)
+            return true;
+        }
+
+        // console.log(address, web3.utils.fromWei(balance), balance)
+
+        return false;
     }
 
     async balanceOf(tokens, address) {
@@ -113,9 +135,19 @@ class PreActionMgmt {
             await sendSignedTx(proxy[0], proxy[1], encodedabi, tokens.ids[i]);
         }
     }
-}
+    async premint() {
+        const addresses = await predatamgmt.premint()
+        var d1 = new Date().getTime();
 
-let actionMgmt = new PreActionMgmt()
+        for (let a of addresses){
+             console.log(a)
+             let [result, msg] = await actionMgmt.claimBadge(a.toLowerCase(), "1.1.1.1");
+             console.log(result, msg)
+        }
+        var d2 = new Date().getTime();
+        console.log("1000 elapse time" + (d2 - d1));
+    }
+}
 
 function instanceContract() {
     for (let i = 0; i < CONTRACT_ADDRESS.length; i++) {
@@ -134,45 +166,50 @@ function instanceContract() {
 let handlers = {
     "r": (async function () {
         console.log("==getReceipt==");
-        let actionmgmt = new PreActionMgmt()
-        await actionmgmt.getReceipt();
+        let preactionmgmt  = new PreActionMgmt()
+        await preactionmgmt .getReceipt();
     }),
     "d": (async function () {
         console.log("==depositTokensToContract==");
-        let actionmgmt = new PreActionMgmt()
+        let preactionmgmt  = new PreActionMgmt()
         const tokens = await datamgmt.getTOTAL_AMOUNTS();
-        await actionmgmt.depositTokensToContract(tokens);
+        await preactionmgmt .depositTokensToContract(tokens);
     }),
     "m": (async function () {
         console.log("==mintTokensToContract==");
-        let actionmgmt = new PreActionMgmt()
+        let preactionmgmt  = new PreActionMgmt()
         const tokens = await datamgmt.getTOTAL_AMOUNTS();
-        await actionmgmt.mintTokensToContract(tokens);
+        await preactionmgmt .mintTokensToContract(tokens);
     }),
     "nb": (async function () {
         console.log("==checkBalance==");
-        let actionmgmt = new PreActionMgmt()
+        let preactionmgmt  = new PreActionMgmt()
         const tokens = await datamgmt.getTOTAL_AMOUNTS();
-        await actionmgmt.checkBalance("0xE427f4202c3d43Cf2A538E1a3ED5a34B63d07150");
-        await actionmgmt.checkBalance("0x0e1855F9f2e2638cbd9d14e5baDad2baC022AF8d");
+        await preactionmgmt .checkBalance("0xE427f4202c3d43Cf2A538E1a3ED5a34B63d07150");
+        await preactionmgmt .checkBalance("0x0e1855F9f2e2638cbd9d14e5baDad2baC022AF8d");
     }),
     "b": (async function () {
         console.log("==balanceOf==");
-        let actionmgmt = new PreActionMgmt()
+        let preactionmgmt  = new PreActionMgmt()
         const tokens = await datamgmt.getTOTAL_AMOUNTS();
-        await actionmgmt.balanceOf(tokens, "0x1753783e46a6a7B3d345A92c5265c178f94367cf");
+        await preactionmgmt .balanceOf(tokens, "0x1753783e46a6a7B3d345A92c5265c178f94367cf");
     }),
     "bc": (async function () {
         console.log("==balanceOf contract==");
-        let actionmgmt = new PreActionMgmt()
+        let preactionmgmt  = new PreActionMgmt()
         const tokens = await datamgmt.getTOTAL_AMOUNTS();
-        await actionmgmt.balanceOf(tokens, CONTRACT_ADDRESS[2]);
+        await preactionmgmt .balanceOf(tokens, CONTRACT_ADDRESS[2]);
     }),
     "tm": (async function () {
         console.log("==transferTokensToContractFromMainNet==");
-        let actionmgmt = new PreActionMgmt()
+        let preactionmgmt  = new PreActionMgmt()
         const tokens = await datamgmt.getTOTAL_AMOUNTS();
-        await actionmgmt.transferTokensToContractFromMainNet(tokens, user);
+        await preactionmgmt .transferTokensToContractFromMainNet(tokens, user);
+    }),
+    "pm": (async function () {
+        console.log("==premint==");
+        let preactionmgmt  = new PreActionMgmt()
+        await preactionmgmt .premint();
     }),
     "default": (async function () {
     })

@@ -1,19 +1,11 @@
 const path = require('path')
 
 const fs = require('fs');
-const { getJSON, putJSON, readCSVToJSON, readCSV,writeCSV } = require('./util');
+const { getJSON, putJSON, readCSVToJSON, readCSV, writeCSV } = require('./util');
 const _CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS || []
 const CONTRACT_ADDRESS = JSON.parse(_CONTRACT_ADDRESS);
 
-const _NAMES = process.env.NAMES || []
-const names = JSON.parse(_NAMES);
-
-const _SYMBOLS = process.env.SYMBOLS || []
-const symbols = JSON.parse(_SYMBOLS);
-const _TOTAL_AMOUNTS = process.env.TOTAL_AMOUNTS || []
-const TOTAL_AMOUNTS = JSON.parse(_TOTAL_AMOUNTS);
-const _AMOUNTS = process.env.AMOUNTS || []
-const amounts = JSON.parse(_AMOUNTS);
+const PreActionMgmt = require("./preactionmgmt.js");
 
 
 const datapath = process.env.DATA_PATH || "/jsons/"
@@ -33,7 +25,7 @@ class HistoryDataMgmt {
     _boxlevels = null;
     _boxlevelinfo = null;
     _openedboxes = null;
-   
+
     async checkUserTimesWrong() {
         let boxaddrs = getJSON("jsons/mainnetdata06080642/boxaddresses.json")
         let users = getJSON("jsons/mainnetdata0607/users.json")
@@ -117,7 +109,7 @@ class HistoryDataMgmt {
                 oneamounts[i] = Number(oneamounts[i]) + Number(levelamounts[i]) * Number(levelcounts[l]);
             }
         }
-   
+
         const addresses = CONTRACT_ADDRESS.slice(3)
         console.log("names==", names)
         console.log("symbols==", symbols)
@@ -144,20 +136,52 @@ class HistoryDataMgmt {
         console.log("s==", s)
     }
 
+
+    async balAddresses() {
+        let addresses = readCSV("/csvs/acc.csv")
+        // console.log("========addresses=========", addresses)
+        let pam = new PreActionMgmt();
+        let i = 0;
+        let aa ={}
+        let count = 0;
+        let precount = 0;
+        var d1 = new Date().getTime();
+        var dd1 = d1;
+        for (let a of addresses) {
+            let b = await pam.checkBalance2(a[5]);
+            if (b) {
+                aa[a]=""
+                count++;
+            }
+            // for (let j=0;j<1000;j++){
+
+            // }
+            if (++i % 1000 == 0) {
+                 var dd2 = new Date().getTime();
+                console.log("elapse time",(dd2 - dd1),"count ",Object.keys(aa).length,"========count=========", i, count - precount)
+                precount = count
+                dd1 = dd2;
+            }
+        }
+        console.log("=====addresses===end=========", count)
+        var d2 = new Date().getTime();
+        console.log("1000 elapse time" + (d2 - d1));
+    }
+
     async unclaimAddresses() {
         let addresses12 = readCSV("/jsons/mainnetdata/12.csv")
         const csvfile = "/jsons/mainnetdata/" + "top10000.csv";
         let addresses = readCSV(csvfile)
         let claimedaddresses = getJSON("/jsons/mainnetdata0615/boxaddresses.json")
         let c = Object.keys(claimedaddresses)
-        let a =  addresses.filter(u=> c.indexOf(u[0])!=-1).map(u => u[2]);
-        let b =  addresses12.filter(u=> c.indexOf(u[0])!=-1).map(u => u[1]);
+        let a = addresses.filter(u => c.indexOf(u[0]) != -1).map(u => u[2]);
+        let b = addresses12.filter(u => c.indexOf(u[0]) != -1).map(u => u[1]);
         let s = a.concat(b);
-        putJSON("/jsons/mainnetdata0615/unclaimedaddresses.json",s)
+        putJSON("/jsons/mainnetdata0615/unclaimedaddresses.json", s)
         const allcsvfile = "/jsons/mainnetdata/" + "alltop10000.csv";
         let alladdresses = readCSV(allcsvfile);
-        let ss =  alladdresses.filter(u=> s.indexOf(u[1])==-1);
-        writeCSV("/jsons/mainnetdata0615/unclaimedaddresses.csv",ss)
+        let ss = alladdresses.filter(u => s.indexOf(u[1]) == -1);
+        writeCSV("/jsons/mainnetdata0615/unclaimedaddresses.csv", ss)
         // console.log("s==", ss)
     }
 
@@ -177,27 +201,32 @@ let handlers = {
     }),
     "wrong": (async function () {
         console.log("==checkUserTimesWrong==");
-        
+
         await datamgmt.checkUserTimesWrong();
     }),
     "rand": (async function () {
         console.log("==checkRand==");
-        
+
         await datamgmt.checkRand();
     }),
     "one": (async function () {
         console.log("==checkUserNumberOne==");
-        
+
         await datamgmt.checkUserNumberOne();
     }),
     "add": (async function () {
         console.log("==addAddresses==");
-        
+
         await datamgmt.addAddresses();
     }),
-  "unc": (async function () {
+    "badd": (async function () {
+        console.log("==balAddresses==");
+
+        await datamgmt.balAddresses();
+    }),
+    "unc": (async function () {
         console.log("==unclaimAddresses==");
-        
+
         await datamgmt.unclaimAddresses();
     }),
     "default": (async function () {
