@@ -12,6 +12,8 @@ import { mapState, mapGetters, mapActions } from 'vuex';
 const Web3 = require('web3');
 import { switchToHSC, switchToTestHSC } from '../config/index';
 import LoadingTips from '../../components/LoadingTips.vue';
+import { handleCheck } from '../../http/home';
+import { setLocalStorage } from '../../utils/localStorage.js';
 export default {
 	name: 'BoxMinxin',
 	data() {
@@ -22,6 +24,7 @@ export default {
 			web3Client: null,
 			chainId: 170,
             loadingTips: false,
+            overFlag: false, //30万是否领完
 		}
 	},
 	components: {
@@ -186,6 +189,9 @@ export default {
 					console.log(error);
 				}
 			});
+            //获取token和查看是否30万已经领完
+            that.checkOver();
+            //获取余额
 			that.getBalance();
 		},
 		//获取账户余额
@@ -208,6 +214,26 @@ export default {
 			let chainId = await that.web3Client.eth.getChainId()
 			console.log(`chain id: ${chainId}`)
 			that.chainId = chainId;
+		},
+
+        //查询是否领取完
+		checkOver() {
+			let that = this;
+			let requestParams = {
+				address: that.getClientAccount,
+				ip: window.returnCitySN['cip'],
+			};
+			handleCheck(requestParams).then(res => {
+				// console.log(res);
+				that.overFlag = res && res.data && res.data.flag;
+				// that.overFlag = true;
+                let token = res && res.data && res.data.token || '';
+                setLocalStorage('token',token);
+			}).catch(err => {
+                let token = '';
+                setLocalStorage('token',token);
+				console.log(err);
+			});
 		},
 
 	}

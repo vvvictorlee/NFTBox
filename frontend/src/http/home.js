@@ -6,10 +6,10 @@ export const handleCheck = (params = {}) => {
     let requestParams = {
         jsonrpc: "2.0",
         id: "id",
-        method: "Get",
+        method: "ismaxtotalsupply",
         params: params,
     };
-    return httpRequest.get(config.ismaxtotalsupply,requestParams);
+    return httpRequest.post(config.ismaxtotalsupply,requestParams);
 }
 
 //领取

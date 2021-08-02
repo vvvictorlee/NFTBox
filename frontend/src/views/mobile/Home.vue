@@ -28,48 +28,55 @@
 </template>
 
 <script>
-import { handleCheck, handleReceive, getGtParams } from '../../http/home';
+import { handleReceive, getGtParams } from '../../http/home';
 import NftMinxin from '../minxin/minxin.vue';
 export default {
 	name: 'Home',
 	mixins: [NftMinxin],
 	data() {
 		return {
-			overFlag: false, //30万是否领完
-            throttleTimer: null, //timer
+			throttleTimer: null, //timer
 		}
 	},
 	created() {
-		this.checkOver();
+		// this.checkOver();
 	},
 	methods: {
 		goGuid() {
 			let openUrl = 'https://www.wolai.com/hoosmartchain/7LkfYZ3LvwN6Pruffk12st?theme=light';
 			window.open(openUrl, "_blank");
 		},
-		//查询是否领取完
-		checkOver() {
+		// //查询是否领取完
+		// checkOver() {
+		// 	let that = this;
+		// 	let requestParams = {
+		// 		address: that.getClientAccount,
+		// 		ip: window.returnCitySN['cip'],
+		// 	};
+		// 	handleCheck().then(res => {
+		// 		// console.log(res);
+		// 		that.overFlag = res && res.data && res.data.flag;
+		// 		// that.overFlag = true;
+        //         let token = res && res.data && res.data.token || '.....';
+        //         setLocalStorage('token',token);
+		// 	}).catch(err => {
+        //         let token = '';
+        //         setLocalStorage('token',token);
+		// 		console.log(err);
+		// 	});
+		// },
+		//防抖点击按钮
+		clickThrottleReceive() {
 			let that = this;
-			handleCheck().then(res => {
-				// console.log(res);
-				that.overFlag = res && res.data && res.data.flag;
-				// that.overFlag = true;
-			}).catch(err => {
-				console.log(err);
-			});
+			if (that.throttleTimer) {
+				return;
+			}
+			that.throttleTimer = setTimeout(() => {
+				that.throttleTimer = null;
+				window.clearTimeout(that.throttleTimer);
+			}, 10000);
+			that.clickReceive();
 		},
-        //防抖点击按钮
-        clickThrottleReceive() {
-            let that = this;
-            if(that.throttleTimer) {
-                return;
-            }
-            that.throttleTimer = setTimeout(() => {
-                that.throttleTimer = null;
-                window.clearTimeout(that.throttleTimer);
-            },10000);
-            that.clickReceive();
-        },
 		//点击领取按钮
 		clickReceive() {
 			let that = this;
@@ -93,7 +100,7 @@ export default {
 			}
 			let requestParams = {
 				address: that.getClientAccount,
-                ip: window.returnCitySN['cip'],
+				ip: window.returnCitySN['cip'],
 			};
 			that.loadingTips = true;
 			handleReceive(requestParams).then(res => {

@@ -81,6 +81,7 @@ export default {
 			let that = this;
 			if (!that.getClientAccount) {
 				that.$Toast('please connect wallet');
+                that.loadingTips = false;
 				return;
 			}
 			let requestParams = {
