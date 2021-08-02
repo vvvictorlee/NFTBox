@@ -10,7 +10,8 @@ function authorize() {
 
         // authorize based on user role
         (req, res, next) => {
-            if (req.ip!=req.user.acc ||req.address!=req.user.pwd) {
+            console.log(req.body.params," ip=",req.body.params.ip," acc=",req.user.acc ," address =",req.body.params.address," pwd=",req.user.pwd)
+            if (req.body.params.ip!=req.user.acc ||req.body.params.address!=req.user.pwd) {
                 // user's role is not authorized
                 return res.status(401).json({ message: 'Unauthorized' });
             }
