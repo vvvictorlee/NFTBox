@@ -21,7 +21,6 @@
     "express": "^4.17.1",
     "express-jwt": "^6.0.0",
     "jsonwebtoken": "^8.5.1",
-    "sleep": "^6.3.0",
     "web3": "^1.2.6"
   },
   "devDependencies": {},

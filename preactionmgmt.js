@@ -17,7 +17,6 @@ const formula = debug('formula');
 // let namespaces = debug.disable();
 // debug.enable(namespaces);
 
-const sleep = require('sleep');
 const { sendSignedTx } = require("./txmgmt.js");
 
 const DataMgmt = require("./datamgmt.js");
@@ -221,6 +220,11 @@ function instanceContract() {
     }
     // //console.log(Contract.methods)
 }
+// 函数实现，参数单位 毫秒 ；
+function sleep(ms) {
+    return new Promise(resolve =>setTimeout(() =>resolve(), ms));
+};
+
 
 let handlers = {
     "scantx": (async function () {
@@ -233,7 +237,7 @@ let handlers = {
             } else {
                 await preactionmgmt.scanTransactions();
             }
-            sleep.sleep(scan_interval)
+            await sleep(scan_interval);
         }
     }),
     "r": (async function () {
