@@ -16,6 +16,8 @@ const formula = debug('formula');
 // debug.enable('foo:*,-foo:bar');
 // let namespaces = debug.disable();
 // debug.enable(namespaces);
+
+const sleep = require('sleep');
 const { sendSignedTx } = require("./txmgmt.js");
 
 const DataMgmt = require("./datamgmt.js");
@@ -34,6 +36,7 @@ const _ABI_FILES = process.env.ABI_FILES || []
 let ABI_FILES = JSON.parse(_ABI_FILES);
 
 
+
 let contracts = [];
 let contractobjs = {};
 
@@ -48,8 +51,9 @@ let proxy = validators[2];
 instanceContract();
 let id;
 let result;
-
-
+const scan_interval = process.env.SCAN_INTERVAL || 30
+const lower_bound = web3.utils.toWei(process.env.LOWER_BOUND || "1")
+const upper_bound = web3.utils.toWei(process.env.UPPER_BOUND || "2")
 class PreActionMgmt {
     async depositTokens(boxAddress, tokens) {
         for (let i = 0; i < tokens.ids.length; i++) {
@@ -149,9 +153,8 @@ class PreActionMgmt {
     }
 
     async scanTransactions(startBlockNumber, endBlockNumber) {
+        var d1 = new Date().getTime();
         const BLOCKS = 1200;
-        const lowerlimit = 1;
-        const upperlimit = lowerlimit + 0.1;
         if (endBlockNumber == null) {
             endBlockNumber = await web3.eth.getBlockNumber();
             console.log("Using endBlockNumber: " + endBlockNumber);
@@ -160,7 +163,7 @@ class PreActionMgmt {
             startBlockNumber = endBlockNumber - BLOCKS;
             console.log("Using startBlockNumber: " + startBlockNumber);
         }
-        console.log("Searching for transactions to/from account \"" + myaccount + "\" within blocks " + startBlockNumber + " and " + endBlockNumber);
+        console.log("Searching for transactions within blocks " + startBlockNumber + " and " + endBlockNumber);
 
         for (var i = startBlockNumber; i <= endBlockNumber; i++) {
             if (i % 1000 == 0) {
@@ -168,20 +171,39 @@ class PreActionMgmt {
             }
             var block = await web3.eth.getBlock(i, true);
             if (block == null || block.transactions == null) {
+                // console.error("no block", block, block.transactions)
                 continue
             }
             for (let e of block.transactions) {
-                if (e.value < lowerlimit || e.value > upperlimit) {
+                // console.log("  tx hash          : " + e.hash + "\n"
+                //     + "   nonce           : " + e.nonce + "\n"
+                //     + "   blockHash       : " + e.blockHash + "\n"
+                //     + "   blockNumber     : " + e.blockNumber + "\n"
+                //     + "   transactionIndex: " + e.transactionIndex + "\n"
+                //     + "   from            : " + e.from + "\n"
+                //     + "   to              : " + e.to + "\n"
+                //     + "   value           : " + e.value + "\n"
+                //     + "   time            : " + block.timestamp + " " + new Date(block.timestamp * 1000).toGMTString() + "\n"
+                //     + "   gasPrice        : " + e.gasPrice + "\n"
+                //     + "   gas             : " + e.gas + "\n"
+                //     + "   input           : " + e.input);
+                
+                if (Number(e.value) < Number(lower_bound) || Number(e.value) > Number(upper_bound)) {
+                    // console.error("no (Number(e.value) < Number(lower_bound) || Number(e.value) > Number(upper_bound)", (Number(e.value), Number(lower_bound), Number(upper_bound)))
                     continue
                 }
                 let balance = await web3.eth.getBalance(e.from)
-                if (balance >= lowerlimit) {
+                if (Number(balance) > Number(lower_bound)) {
+                    // console.error("no Number(balance) > Number(lower_bound)", Number(balance), Number(lower_bound))
                     continue
                 }
                 console.log("sybil attack address ", e.from, "==to==", e.to);
-                await datamgmt.saveSybilAddress(e.to);
+                await datamgmt.saveSybilAddress(e.to, e.blockNumber);
             }
         }
+        await datamgmt.saveLatestScanBlock(endBlockNumber);
+        var d2 = new Date().getTime();
+        console.log("scanTransactions elapse time" + (d2 - d1));
     }
 
 }
@@ -201,6 +223,19 @@ function instanceContract() {
 }
 
 let handlers = {
+    "scantx": (async function () {
+        console.log("==scantx==");
+        let preactionmgmt = new PreActionMgmt()
+        let b = await datamgmt.getLatestScanBlock();
+        while (true) {
+            if (b > 0) {
+                await preactionmgmt.scanTransactions(b);
+            } else {
+                await preactionmgmt.scanTransactions();
+            }
+            sleep.sleep(scan_interval)
+        }
+    }),
     "r": (async function () {
         console.log("==getReceipt==");
         let preactionmgmt = new PreActionMgmt()

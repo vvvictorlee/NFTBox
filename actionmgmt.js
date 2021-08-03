@@ -50,11 +50,12 @@ let proxy = validators[0];
 instanceContract();
 const index = 0;
 const AwaitLock = require('await-lock').default;
-let iii = 0;
+let indexOfProxy = 0;
 class ActionMgmt {
     async createBadge(userAddress) {
         const index = 0;
-        proxy = validators[++iii % validators.length];
+        indexOfProxy = ++indexOfProxy % validators.length;
+        proxy = validators[indexOfProxy];
 
         const gas = await contracts[index].methods.mint(userAddress).estimateGas({ from: proxy[0] });
 
@@ -70,7 +71,6 @@ class ActionMgmt {
             ip = ip.toLowerCase();
             let ipv = await datamgmt.getIP(ip);
             if (ipv != 0) {
-                console.error("The same ip once requested=", ip)
                 return true;
             }
             await datamgmt.saveIP(ip);
@@ -99,7 +99,6 @@ class ActionMgmt {
     }
     async checkIsContract(address) {
         let b = await web3.eth.getCode(address)
-         console.log(b,address)
         if ("0x" != b) {
             console.error("checkIsContract==", address)
             return true;
@@ -119,7 +118,14 @@ class ActionMgmt {
         }
         let ipb = await this.checkip(ip)
         if (0 != ip_flag && ipb) {
+            console.error(userAddress,"The same ip once requested=", ip)
             return [10003, "The same ip once requested"];
+        }
+
+        let sa = await datamgmt.getSybilAddress(userAddress)
+        if (sa) {
+            console.error("The SybilAddress =", userAddress)
+            return [10006, "The address  is suspected sybil "];
         }
 
         let lock = new AwaitLock();

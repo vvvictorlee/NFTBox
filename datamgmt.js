@@ -12,6 +12,7 @@ const badgedetail = datapath + "badgedetail.json";
 
 const ips = datapath + "ips.json";
 const sybil = datapath + "sybil.json";
+const latestscanblock = datapath + "latestscanblock.json";
 
 class DataMgmt {
       _badgedetail = null;
@@ -65,24 +66,41 @@ class DataMgmt {
     }
 
 
-    async saveSybilAddress(address) {
-        this._sybil = getJSON(sybil)
+    async saveSybilAddress(address,block) {
+        let _sybil = getJSON(sybil)
 
-        this._sybil[address] = ""
+        _sybil[address] = block
 
-        putJSON(sybil, this._sybil)
+        putJSON(sybil, _sybil)
 
     }
 
     async getSybilAddress(address) {
-        this._sybil = getJSON(sybil)
+        let  _sybil = getJSON(sybil)
 
-        let b = Object.keys(this._sybil).filter(v => v.toLowerCase() == address.toLowerCase());
+        let b = Object.keys(_sybil).filter(v => v.toLowerCase() == address.toLowerCase());
         if (b.length == 0) {
             return 0;
         }
 
         return 1;
+    }
+
+    async saveLatestScanBlock(block) {
+       let  _latestscanblock = getJSON(latestscanblock)
+
+        _latestscanblock["latestscanblock"] = block
+
+        putJSON(latestscanblock, _latestscanblock)
+
+    }
+
+    async getLatestScanBlock(block) {
+        let _latestscanblock = getJSON(latestscanblock)
+        if (_latestscanblock["latestscanblock"]==undefined){
+            return 0;
+        }
+        return _latestscanblock["latestscanblock"];
     }
 
 }

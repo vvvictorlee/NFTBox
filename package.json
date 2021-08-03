@@ -5,7 +5,8 @@
   "scripts": {
     "start": "DEBUG=app node  -r dotenv/config server.js dotenv_config_path=.env",
     "badd": "DEBUG=app node  -r dotenv/config historydatamgmt.js badd dotenv_config_path=.env",
-  "t": "DEBUG=app node  -r dotenv/config historydatamgmt.js t dotenv_config_path=.env.test",
+    "t": "DEBUG=app node  -r dotenv/config historydatamgmt.js t dotenv_config_path=.env.test",
+    "scantx:test": "DEBUG=app node  -r dotenv/config preactionmgmt.js scantx dotenv_config_path=.env.test",
     "pm:test": "DEBUG=app node  -r dotenv/config preactionmgmt.js pm dotenv_config_path=.env.test",
     "pm": "DEBUG=app node  -r dotenv/config preactionmgmt.js pm dotenv_config_path=.env",
     "start:test": "DEBUG=app node  -r dotenv/config server.js dotenv_config_path=.env.test"
@@ -19,6 +20,7 @@
     "express": "^4.17.1",
     "express-jwt": "^6.0.0",
     "jsonwebtoken": "^8.5.1",
+    "sleep": "^6.3.0",
     "web3": "^1.2.6"
   },
   "devDependencies": {},
