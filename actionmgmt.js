@@ -31,6 +31,7 @@ const TOTAL_SUPPLY = JSON.parse(_TOTAL_SUPPLY);
 
 const _ABI_FILES = process.env.ABI_FILES || []
 let ABI_FILES = JSON.parse(_ABI_FILES);
+const address_balance_limit = process.env.ADDRESS_BALANCE_LIMIT || 1
 
 
 let contracts = [];
@@ -73,8 +74,23 @@ class ActionMgmt {
         }
         return false;
      }
+    async checkBalance(address) {
+        const balance = await web3.eth.getBalance(address)
+        if (web3.utils.fromWei(balance) < address_balance_limit) {
+            console.error("checkBalance==", address, web3.utils.fromWei(balance), balance)
+            return false;
+        }
 
+        // console.log(address, web3.utils.fromWei(balance), balance)
+
+        return true;
+    }
     async claimBadge(userAddress, ip) {
+      let ab = await this.checkBalance(userAddress)
+       if (!ab) {
+                return [10004, "The address balance limit is 1 HOO  requested"];
+            }
+
         let ipb = await this.checkip(ip)
        if (ipb) {
                 console.error("The same ip once requested")
