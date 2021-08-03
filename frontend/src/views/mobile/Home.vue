@@ -24,6 +24,10 @@
 			<div class="receive-button" @click="clickThrottleReceive">{{$t('home.test11')}}</div>
 		</div>
 		<div class="join-guide" @click="goGuid">{{$t('home.test26')}}</div>
+        <div class="tips-huood">
+            <div class="tips-huood--text">{{$t('home.test27')}}</div>
+            <div class="tips-huood--text">{{$t('home.test28')}}</div>
+        </div>
 	</div>
 </template>
 
@@ -355,5 +359,17 @@ export default {
 		text-align: center;
 		// text-decoration: underline;
 	}
+    .tips-huood{
+        width: 5.9rem;
+        margin-top: .2rem;
+        &--text{
+            margin-top: .2rem;
+            font-size: 0.2rem;
+            font-family: PingFang SC;
+            font-weight: 400;
+            color: #4e4e4e;
+            text-align: justify;
+        }
+    }
 }
 </style>

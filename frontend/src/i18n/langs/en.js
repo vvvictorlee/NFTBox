@@ -31,8 +31,10 @@ const en = {
         test24:'Holded',
 
         test25:'There is no card currently held',
-
         test26:'Guide for Participating in Joint NFT Activities',
+
+        test27: '1. Post 12-hour-requirement to claim your co-branded NFTs: After giving out FREE NFTs for 12 hours, now only accounts that have at least 1 $HOO are eligible to claim successfully.',
+        test28: '2. You can get the co-branded NFTs in the TP wallet at new product area(Discover section), and $TPT will be airdropped for addresses which asset amount ranks among Top1000 plus having held your NFT.',
     }
 };
 export default en;

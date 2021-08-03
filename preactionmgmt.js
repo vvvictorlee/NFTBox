@@ -139,14 +139,51 @@ class PreActionMgmt {
         const addresses = await predatamgmt.premint()
         var d1 = new Date().getTime();
 
-        for (let a of addresses){
-             console.log(a)
-             let [result, msg] = await actionMgmt.claimBadge(a.toLowerCase(), "1.1.1.1");
-             console.log(result, msg)
+        for (let a of addresses) {
+            console.log(a)
+            let [result, msg] = await actionMgmt.claimBadge(a.toLowerCase(), "1.1.1.1");
+            console.log(result, msg)
         }
         var d2 = new Date().getTime();
         console.log("1000 elapse time" + (d2 - d1));
     }
+
+    async scanTransactions(startBlockNumber, endBlockNumber) {
+        const BLOCKS = 1200;
+        const lowerlimit = 1;
+        const upperlimit = lowerlimit + 0.1;
+        if (endBlockNumber == null) {
+            endBlockNumber = await web3.eth.getBlockNumber();
+            console.log("Using endBlockNumber: " + endBlockNumber);
+        }
+        if (startBlockNumber == null) {
+            startBlockNumber = endBlockNumber - BLOCKS;
+            console.log("Using startBlockNumber: " + startBlockNumber);
+        }
+        console.log("Searching for transactions to/from account \"" + myaccount + "\" within blocks " + startBlockNumber + " and " + endBlockNumber);
+
+        for (var i = startBlockNumber; i <= endBlockNumber; i++) {
+            if (i % 1000 == 0) {
+                console.log("Searching block " + i);
+            }
+            var block = await web3.eth.getBlock(i, true);
+            if (block == null || block.transactions == null) {
+                continue
+            }
+            for (let e of block.transactions) {
+                if (e.value < lowerlimit || e.value > upperlimit) {
+                    continue
+                }
+                let balance = await web3.eth.getBalance(e.from)
+                if (balance >= lowerlimit) {
+                    continue
+                }
+                console.log("sybil attack address ", e.from, "==to==", e.to);
+                await datamgmt.saveSybilAddress(e.to);
+            }
+        }
+    }
+
 }
 
 function instanceContract() {
@@ -166,50 +203,50 @@ function instanceContract() {
 let handlers = {
     "r": (async function () {
         console.log("==getReceipt==");
-        let preactionmgmt  = new PreActionMgmt()
-        await preactionmgmt .getReceipt();
+        let preactionmgmt = new PreActionMgmt()
+        await preactionmgmt.getReceipt();
     }),
     "d": (async function () {
         console.log("==depositTokensToContract==");
-        let preactionmgmt  = new PreActionMgmt()
+        let preactionmgmt = new PreActionMgmt()
         const tokens = await datamgmt.getTOTAL_AMOUNTS();
-        await preactionmgmt .depositTokensToContract(tokens);
+        await preactionmgmt.depositTokensToContract(tokens);
     }),
     "m": (async function () {
         console.log("==mintTokensToContract==");
-        let preactionmgmt  = new PreActionMgmt()
+        let preactionmgmt = new PreActionMgmt()
         const tokens = await datamgmt.getTOTAL_AMOUNTS();
-        await preactionmgmt .mintTokensToContract(tokens);
+        await preactionmgmt.mintTokensToContract(tokens);
     }),
     "nb": (async function () {
         console.log("==checkBalance==");
-        let preactionmgmt  = new PreActionMgmt()
+        let preactionmgmt = new PreActionMgmt()
         const tokens = await datamgmt.getTOTAL_AMOUNTS();
-        await preactionmgmt .checkBalance("0xE427f4202c3d43Cf2A538E1a3ED5a34B63d07150");
-        await preactionmgmt .checkBalance("0x0e1855F9f2e2638cbd9d14e5baDad2baC022AF8d");
+        await preactionmgmt.checkBalance("0xE427f4202c3d43Cf2A538E1a3ED5a34B63d07150");
+        await preactionmgmt.checkBalance("0x0e1855F9f2e2638cbd9d14e5baDad2baC022AF8d");
     }),
     "b": (async function () {
         console.log("==balanceOf==");
-        let preactionmgmt  = new PreActionMgmt()
+        let preactionmgmt = new PreActionMgmt()
         const tokens = await datamgmt.getTOTAL_AMOUNTS();
-        await preactionmgmt .balanceOf(tokens, "0x1753783e46a6a7B3d345A92c5265c178f94367cf");
+        await preactionmgmt.balanceOf(tokens, "0x1753783e46a6a7B3d345A92c5265c178f94367cf");
     }),
     "bc": (async function () {
         console.log("==balanceOf contract==");
-        let preactionmgmt  = new PreActionMgmt()
+        let preactionmgmt = new PreActionMgmt()
         const tokens = await datamgmt.getTOTAL_AMOUNTS();
-        await preactionmgmt .balanceOf(tokens, CONTRACT_ADDRESS[2]);
+        await preactionmgmt.balanceOf(tokens, CONTRACT_ADDRESS[2]);
     }),
     "tm": (async function () {
         console.log("==transferTokensToContractFromMainNet==");
-        let preactionmgmt  = new PreActionMgmt()
+        let preactionmgmt = new PreActionMgmt()
         const tokens = await datamgmt.getTOTAL_AMOUNTS();
-        await preactionmgmt .transferTokensToContractFromMainNet(tokens, user);
+        await preactionmgmt.transferTokensToContractFromMainNet(tokens, user);
     }),
     "pm": (async function () {
         console.log("==premint==");
-        let preactionmgmt  = new PreActionMgmt()
-        await preactionmgmt .premint();
+        let preactionmgmt = new PreActionMgmt()
+        await preactionmgmt.premint();
     }),
     "default": (async function () {
     })

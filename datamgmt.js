@@ -11,6 +11,7 @@ const datapath = process.env.DATA_PATH || "/jsons/"
 const badgedetail = datapath + "badgedetail.json";
 
 const ips = datapath + "ips.json";
+const sybil = datapath + "sybil.json";
 
 class DataMgmt {
       _badgedetail = null;
@@ -56,6 +57,27 @@ class DataMgmt {
         this._ip = getJSON(ips)
 
         let b = Object.keys(this._ip).filter(v => v.toLowerCase() == ip.toLowerCase());
+        if (b.length == 0) {
+            return 0;
+        }
+
+        return 1;
+    }
+
+
+    async saveSybilAddress(address) {
+        this._sybil = getJSON(sybil)
+
+        this._sybil[address] = ""
+
+        putJSON(sybil, this._sybil)
+
+    }
+
+    async getSybilAddress(address) {
+        this._sybil = getJSON(sybil)
+
+        let b = Object.keys(this._sybil).filter(v => v.toLowerCase() == address.toLowerCase());
         if (b.length == 0) {
             return 0;
         }

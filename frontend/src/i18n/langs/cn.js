@@ -32,6 +32,9 @@ const zh_hans = {
 
         test25: '暂无持有卡片',
         test26: '《联名NFT活动参与指南》',
+
+        test27: '1. 联名NFT领取门槛: 账户里面有1个Hoo，才能领取成功。',
+        test28: '2. 大家可以在TP钱包新品区领取TP联名NFT，后续会针对持有NFT的Top1000资产地址进行TPT空投！',
     }
 };
 export default zh_hans;
