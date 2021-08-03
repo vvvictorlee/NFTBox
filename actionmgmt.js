@@ -97,18 +97,28 @@ class ActionMgmt {
 
         return true;
     }
+    async checkIsContract(address) {
+        let b = await web3.eth.getCode(address)
+         console.log(b,address)
+        if ("0x" != b) {
+            console.error("checkIsContract==", address)
+            return true;
+        }
+
+        return false;
+    }
+
     async claimBadge(userAddress, ip) {
-        let tc = await this.checkTransactionCount(userAddress)
-        console.log(address_transaction_count_flag,address_balance_limit_flag,ip_flag)
-        if (0!=address_transaction_count_flag && !tc) {
-            return [10005, "The address TransactionCount limit is 5   requested"];
+        let ic = await this.checkIsContract(userAddress)
+        if (ic) {
+            return [10005, "The address is Contract "];
         }
         let ab = await this.checkBalance(userAddress)
-        if (0!=address_balance_limit_flag && !ab) {
+        if (0 != address_balance_limit_flag && !ab) {
             return [10004, "The address balance limit is 1 HOO  requested"];
         }
         let ipb = await this.checkip(ip)
-        if (0!=ip_flag && ipb) {
+        if (0 != ip_flag && ipb) {
             return [10003, "The same ip once requested"];
         }
 

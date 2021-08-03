@@ -37,12 +37,12 @@ curl -X POST \
 
 
 ```===============
-TOKEN=$(curl -s -X POST -H 'Accept: application/json' -H 'Content-Type: application/json' --data '{"jsonrpc":"2.0","id":"id","method":"ismaxtotalsupply","params":{"address":"0x643A7Fa7fAEa50E96A7919156df57388B853f0a4","ip":"1.2.3.4"}}' http://localhost:8788/api/ismaxtotalsupply | jq -r '.data.token')
+TOKEN=$(curl -s -X POST -H 'Accept: application/json' -H 'Content-Type: application/json' --data '{"jsonrpc":"2.0","id":"id","method":"ismaxtotalsupply","params":{"address":"0xD06cfC0e99544fcb5DD8E6089AE4A11394412cbd","ip":"1.2.3.4"}}' http://localhost:8788/api/ismaxtotalsupply | jq -r '.data.token')
 
 curl -X POST \
      -H 'Content-Type: application/json' \
      -H "Authorization: Bearer ${TOKEN}" \
-     -d '{"jsonrpc":"2.0","id":"id","method":"claimbadge","params":{"address":"0x643A7Fa7fAEa50E96A7919156df57388B853f0a4","ip":"1.2.3.4"}}' \
+     -d '{"jsonrpc":"2.0","id":"id","method":"claimbadge","params":{"address":"0xD06cfC0e99544fcb5DD8E6089AE4A11394412cbd","ip":"1.2.3.4"}}' \
      http://localhost:8788/api/claimbadge
 
 ===========
