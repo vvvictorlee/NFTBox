@@ -7,6 +7,7 @@
     "badd": "DEBUG=app node  -r dotenv/config historydatamgmt.js badd dotenv_config_path=.env",
     "t": "DEBUG=app node  -r dotenv/config historydatamgmt.js t dotenv_config_path=.env.test",
     "scantx:test": "DEBUG=app node  -r dotenv/config preactionmgmt.js scantx dotenv_config_path=.env.test",
+    "scantx": "DEBUG=app node  -r dotenv/config preactionmgmt.js scantx dotenv_config_path=.env",
     "pm:test": "DEBUG=app node  -r dotenv/config preactionmgmt.js pm dotenv_config_path=.env.test",
     "pm": "DEBUG=app node  -r dotenv/config preactionmgmt.js pm dotenv_config_path=.env",
     "start:test": "DEBUG=app node  -r dotenv/config server.js dotenv_config_path=.env.test"
