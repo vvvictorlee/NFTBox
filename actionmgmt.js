@@ -32,6 +32,7 @@ const TOTAL_SUPPLY = JSON.parse(_TOTAL_SUPPLY);
 const _ABI_FILES = process.env.ABI_FILES || []
 let ABI_FILES = JSON.parse(_ABI_FILES);
 const address_balance_limit = process.env.ADDRESS_BALANCE_LIMIT || 1
+const address_transaction_count = process.env.ADDRESS_TRANSACTION_COUNT || 5
 
 
 let contracts = [];
@@ -46,26 +47,27 @@ let proxy = validators[0];
 instanceContract();
 const index = 0;
 const AwaitLock = require('await-lock').default;
-let  iii = 0;
+let iii = 0;
 class ActionMgmt {
     async createBadge(userAddress) {
         const index = 0;
-        proxy = validators[++iii%validators.length];
+        proxy = validators[++iii % validators.length];
 
         const gas = await contracts[index].methods.mint(userAddress).estimateGas({ from: proxy[0] });
 
         let encodedabi = await contracts[index].methods.mint(userAddress).encodeABI();
-        let id = await sendSignedTx(gas,proxy[0], proxy[1], encodedabi, CONTRACT_ADDRESS[index], true);
+        let id = await sendSignedTx(gas, proxy[0], proxy[1], encodedabi, CONTRACT_ADDRESS[index], true);
         return id;
     }
 
-  async checkip(ip) {
-        let  lock = new AwaitLock();
+    async checkip(ip) {
+        let lock = new AwaitLock();
         await lock.acquireAsync();
         try {
             ip = ip.toLowerCase();
             let ipv = await datamgmt.getIP(ip);
             if (ipv != 0) {
+                console.error("The same ip once requested=", ip)
                 return true;
             }
             await datamgmt.saveIP(ip);
@@ -73,7 +75,7 @@ class ActionMgmt {
             lock.release();
         }
         return false;
-     }
+    }
     async checkBalance(address) {
         const balance = await web3.eth.getBalance(address)
         if (web3.utils.fromWei(balance) < address_balance_limit) {
@@ -81,23 +83,34 @@ class ActionMgmt {
             return false;
         }
 
-        // console.log(address, web3.utils.fromWei(balance), balance)
+        return true;
+    }
+    async checkTransactionCount(address) {
+        const nonce = await web3.eth.getTransactionCount(address);
+        if (nonce < address_transaction_count) {
+            console.error("checkTransactionCount==", address, nonce)
+            return false;
+        }
 
         return true;
     }
     async claimBadge(userAddress, ip) {
-      let ab = await this.checkBalance(userAddress)
-       if (!ab) {
-                return [10004, "The address balance limit is 1 HOO  requested"];
-            }
 
+        let tc = await this.checkTransactionCount(userAddress)
+        if (!tc) {
+            return [10005, "The address TransactionCount limit is 5   requested"];
+        }
+        let ab = await this.checkBalance(userAddress)
+        if (!ab) {
+            return [10004, "The address balance limit is 1 HOO  requested"];
+        }
         let ipb = await this.checkip(ip)
-       if (ipb) {
-                console.error("The same ip once requested")
-                return [10003, "The same ip once requested"];
-            }
-        let  lock = new AwaitLock();
-        
+        if (ipb) {
+            return [10003, "The same ip once requested"];
+        }
+
+        let lock = new AwaitLock();
+
 
         await lock.acquireAsync();
         try {
@@ -111,9 +124,9 @@ class ActionMgmt {
             if (totalSupply >= TOTAL_SUPPLY) {
                 return [10002, "The badge claimed finished"];
             }
-            try{
-            tokenId = await this.createBadge(userAddress);
-            }catch(error){
+            try {
+                tokenId = await this.createBadge(userAddress);
+            } catch (error) {
                 console.error(error)
                 return [10001, "The address claimed reverted on chain"];
             }

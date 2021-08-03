@@ -6,8 +6,6 @@ const _CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS || []
 const CONTRACT_ADDRESS = JSON.parse(_CONTRACT_ADDRESS);
 
 
-
-
 const datapath = process.env.DATA_PATH || "/jsons/"
 
 const badgedetail = datapath + "badgedetail.json";
