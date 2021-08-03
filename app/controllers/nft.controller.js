@@ -1,6 +1,7 @@
 const ActionMgmt = require('../../actionmgmt.js');
 const actionMgmt = new ActionMgmt();
 const userService = require('../users/user.service');
+const paused = process.env.PAUSED;
 // Create and Save a new Note
 exports.claimbadge = async (req, res) => {
     console.log("headers = " + JSON.stringify(req.headers));// 包含了各种header，包括x-forwarded-for(如果被代理过的话)
@@ -9,6 +10,13 @@ exports.claimbadge = async (req, res) => {
     console.log("remoteAddress = " + req.connection.remoteAddress);// 未发生代理时，请求的ip
     console.log("socketremoteAddress = " + req.socket.remoteAddress);// 未发生代理时，请求的ip
     console.log("ip = " + req.ip);// 同req.connection.remoteAddress, 但是格式要好一些
+
+    // Validate request
+    if (paused) {
+        return res.status(400).send({
+            message: "claim  out of service"
+        });
+    }
 
     // Validate request
     if (req.body.params.address == undefined || !req.body.params.address) {

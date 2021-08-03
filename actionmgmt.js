@@ -45,30 +45,44 @@ let proxy = validators[0];
 instanceContract();
 const index = 0;
 const AwaitLock = require('await-lock').default;
-
+let  iii = 0;
 class ActionMgmt {
     async createBadge(userAddress) {
         const index = 0;
+        proxy = validators[++iii%validators.length];
+
+        const gas = await contracts[index].methods.mint(userAddress).estimateGas({ from: proxy[0] });
+
         let encodedabi = await contracts[index].methods.mint(userAddress).encodeABI();
-        let id = await sendSignedTx(proxy[0], proxy[1], encodedabi, CONTRACT_ADDRESS[index], true);
+        let id = await sendSignedTx(gas,proxy[0], proxy[1], encodedabi, CONTRACT_ADDRESS[index], true);
         return id;
     }
 
-    async claimBadge(userAddress, ip) {
+  async checkip(ip) {
         let  lock = new AwaitLock();
         await lock.acquireAsync();
         try {
             ip = ip.toLowerCase();
             let ipv = await datamgmt.getIP(ip);
             if (ipv != 0) {
-                // return [10003, "The ip requested"];
+                return true;
             }
             await datamgmt.saveIP(ip);
         } finally {
             lock.release();
         }
+        return false;
+     }
 
-        lock = new AwaitLock();
+    async claimBadge(userAddress, ip) {
+        let ipb = await this.checkip(ip)
+       if (ipb) {
+                console.error("The same ip once requested")
+                // return [10003, "The same ip once requested"];
+            }
+        let  lock = new AwaitLock();
+        
+
         await lock.acquireAsync();
         try {
             userAddress = userAddress.toLowerCase();
@@ -134,6 +148,10 @@ class ActionMgmt {
     async ownerOf(tokenId) {
         let amount = await contracts[index].methods.ownerOf(tokenId).call({ from: proxy[0] });
         return amount;
+    }
+    async tokenOf(address) {
+        let tokenId = await contracts[index].methods.ownerOf(address).call({ from: proxy[0] });
+        return tokenId;
     }
     async totalSupply() {
         let amount = await contracts[index].methods.totalSupply().call({ from: proxy[0] });

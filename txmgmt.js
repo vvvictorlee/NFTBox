@@ -38,22 +38,23 @@ let id;
 
 var Tx = require('ethereumjs-tx').Transaction;
 const ethereumjs_common = require('ethereumjs-common').default;
-
-async function sendSignedTx(account, account_secrets, encodedabi, contract_address, isTokenIdOption, msg_value) {
-    var d1 = new Date().getTime();
-
-
+const gas_price_buffer = process.env.GAS_PRICE_BUFFER || 1
+const gas_limit_buffer = process.env.GAS_LIMIT_BUFFER || 1.1
+async function sendSignedTx(gas, account, account_secrets, encodedabi, contract_address, isTokenIdOption, msg_value) {
     let isTokenId = isTokenIdOption || false
     let value = msg_value || 0
     let nonce = await web3.eth.getTransactionCount(account, "pending");
+
+
     var privateKey = Buffer.from(account_secrets, 'hex');
 
-    const gasprice = await web3.eth.getGasPrice();
-
+    let gasprice = await web3.eth.getGasPrice();
+    gasprice = Math.ceil(gasprice * gas_price_buffer);
+    gas = Math.floor(gas * gas_limit_buffer)
     var rawTx = {
         nonce: web3.utils.toHex(nonce),
         gasPrice: web3.utils.toHex(gasprice),
-        gasLimit: web3.utils.toHex(3000000),
+        gasLimit: web3.utils.toHex(gas),
         from: account,
         to: contract_address,
         value: web3.utils.toHex(web3.utils.toWei(value.toString())),//'0x00',//
@@ -86,4 +87,4 @@ async function sendSignedTx(account, account_secrets, encodedabi, contract_addre
 }
 // sendSignedTx();
 
-module.exports = { sendSignedTx}
+module.exports = { sendSignedTx }

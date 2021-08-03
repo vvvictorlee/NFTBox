@@ -142,7 +142,7 @@ class HistoryDataMgmt {
         // console.log("========addresses=========", addresses)
         let pam = new PreActionMgmt();
         let i = 0;
-        let aa ={}
+        let aa = {}
         let count = 0;
         let precount = 0;
         var d1 = new Date().getTime();
@@ -150,22 +150,21 @@ class HistoryDataMgmt {
         for (let a of addresses) {
             let b = await pam.checkBalance2(a[5]);
             if (b) {
-                aa[a]=""
+                aa[a] = ""
                 count++;
             }
             // for (let j=0;j<1000;j++){
 
             // }
             if (++i % 1000 == 0) {
-                 var dd2 = new Date().getTime();
-                console.log("elapse time",(dd2 - dd1),"count ",Object.keys(aa).length,"========count=========", i, count - precount)
+                var dd2 = new Date().getTime();
+                console.log("elapse time", (dd2 - dd1), "count ", Object.keys(aa).length, "========count=========", i, count - precount)
                 precount = count
                 dd1 = dd2;
             }
         }
         console.log("=====addresses===end=========", count)
-        var d2 = new Date().getTime();
-        console.log("1000 elapse time" + (d2 - d1));
+
     }
 
     async unclaimAddresses() {
@@ -194,10 +193,23 @@ async function test() {
 }
 
 let datamgmt = new HistoryDataMgmt()
-
+let seq = 0;
+let nonce = 0;
 let handlers = {
     "t": (async function () {
-        test();
+        if (0 == seq) {
+            seq = nonce;
+        }
+        ++seq;
+        nonce = Math.max(nonce, seq)
+        var d1 = new Date().getTime();
+        for (let j = 0; j < 100000000; j++) {
+            nonce = Math.max(nonce, j)
+        }
+        var d2 = new Date().getTime();
+        console.log("1000 elapse time" + (d2 - d1));
+
+        // test();
     }),
     "wrong": (async function () {
         console.log("==checkUserTimesWrong==");
