@@ -34,6 +34,9 @@ let ABI_FILES = JSON.parse(_ABI_FILES);
 const address_balance_limit = process.env.ADDRESS_BALANCE_LIMIT || 1
 const address_transaction_count = process.env.ADDRESS_TRANSACTION_COUNT || 5
 
+const address_transaction_count_flag = process.env.ADDRESS_TRANSACTION_COUNT_FLAG || 0
+const address_balance_limit_flag = process.env.ADDRESS_BALANCE_LIMIT_FLAG || 1
+const ip_flag = process.env.ADDRESS_TRANSACTION_COUNT_FLAG || 1
 
 let contracts = [];
 let contractobjs = {};
@@ -95,22 +98,21 @@ class ActionMgmt {
         return true;
     }
     async claimBadge(userAddress, ip) {
-
         let tc = await this.checkTransactionCount(userAddress)
-        if (!tc) {
+        console.log(address_transaction_count_flag,address_balance_limit_flag,ip_flag)
+        if (0!=address_transaction_count_flag && !tc) {
             return [10005, "The address TransactionCount limit is 5   requested"];
         }
         let ab = await this.checkBalance(userAddress)
-        if (!ab) {
+        if (0!=address_balance_limit_flag && !ab) {
             return [10004, "The address balance limit is 1 HOO  requested"];
         }
         let ipb = await this.checkip(ip)
-        if (ipb) {
+        if (0!=ip_flag && ipb) {
             return [10003, "The same ip once requested"];
         }
 
         let lock = new AwaitLock();
-
 
         await lock.acquireAsync();
         try {
