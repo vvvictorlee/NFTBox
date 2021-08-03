@@ -94,7 +94,7 @@ class ActionMgmt {
         let ipb = await this.checkip(ip)
        if (ipb) {
                 console.error("The same ip once requested")
-                // return [10003, "The same ip once requested"];
+                return [10003, "The same ip once requested"];
             }
         let  lock = new AwaitLock();
         
