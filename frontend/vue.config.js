@@ -161,15 +161,15 @@ module.exports = {
         https: false,
         hotOnly: false,
         proxy: {
-            // '/hoo': {
-            //     target: 'https://hoo.as',
-            //     changeOrigin: true,
-            //     pathRewrite: {
-			// 		"^/hoo": "",
-			// 	},
-            // },
+            'hoo/api/third/v2/gtcaptcha': {
+                target: 'http://127.0.0.1:3333/register',
+                changeOrigin: true,
+                pathRewrite: {
+					"^/hoo/api/third/v2/gtcaptcha": "",
+				},
+            },
             '/api': {
-                target: process.env.VUE_APP_API || 'http://127.0.0.1:8080',
+                target: process.env.VUE_APP_API || 'http://127.0.0.1:8788',
                 changeOrigin: true,
                 // secure: false,
             },

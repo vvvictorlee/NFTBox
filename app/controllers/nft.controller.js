@@ -2,6 +2,12 @@ const ActionMgmt = require('../../actionmgmt.js');
 const actionMgmt = new ActionMgmt();
 const userService = require('../users/user.service');
 const paused = process.env.PAUSED;
+
+const asyncRedis = require("async-redis");
+const redis_host= process.env.REDIS_HOST||"127.0.0.1"
+const redis_port= process.env.REDIS_PORT||"6399"
+const client = asyncRedis.createClient({"host":redis_host,"port":redis_port});
+
 // Create and Save a new Note
 exports.claimbadge = async (req, res) => {
     console.log("headers = " + JSON.stringify(req.headers));// 包含了各种header，包括x-forwarded-for(如果被代理过的话)
@@ -10,6 +16,14 @@ exports.claimbadge = async (req, res) => {
     console.log("remoteAddress = " + req.connection.remoteAddress);// 未发生代理时，请求的ip
     console.log("socketremoteAddress = " + req.socket.remoteAddress);// 未发生代理时，请求的ip
     console.log("ip = " + req.ip);// 同req.connection.remoteAddress, 但是格式要好一些
+    const ts = await client.get(req.socket.remoteAddress)
+    console.log("=====ts=========",ts)
+    if (ts==undefined||(new Date().getTime()-ts)>60000){
+        console.error("The IP does not via geetest or expired  ",req.ip)
+        // return res.status(400).send({
+        //     message: "The IP does not via geetest or expired "
+        // });
+    }
 
     // Validate request
     if (paused) {

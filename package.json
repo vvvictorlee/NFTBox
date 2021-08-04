@@ -13,6 +13,7 @@
     "start:test": "DEBUG=app node  -r dotenv/config server.js dotenv_config_path=.env.test"
   },
   "dependencies": {
+    "async-redis": "^2.0.0",
     "await-lock": "^2.1.0",
     "connect-history-api-fallback": "^1.6.0",
     "core-js": "^3.6.4",
