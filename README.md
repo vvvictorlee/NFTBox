@@ -39,6 +39,8 @@ curl -X POST \
 ```===============
 TOKEN=$(curl -s -X POST -H 'Accept: application/json' -H 'Content-Type: application/json' --data '{"jsonrpc":"2.0","id":"id","method":"ismaxtotalsupply","params":{"address":"0x302b342e5080841040FF35c5Fc5e7A44502C1085","ip":"1.2.3.4"}}' http://localhost:8788/api/ismaxtotalsupply | jq -r '.data.token')
 
+TOKEN=$(curl -s -X POST -H 'Accept: application/json' -H 'Content-Type: application/json' -H 'referer: 127.0.0.1'  --data '{"jsonrpc":"2.0","id":"id","method":"ismaxtotalsupply","params":{"address":"0x302b342e5080841040FF35c5Fc5e7A44502C1085","ip":"1.2.3.4"}}' http://localhost:8788/api/ismaxtotalsupply | jq -r '.data.token')
+
 curl -X POST \
      -H 'Content-Type: application/json' \
      -H "Authorization: Bearer ${TOKEN}" \
