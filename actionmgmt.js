@@ -34,7 +34,6 @@ let ABI_FILES = JSON.parse(_ABI_FILES);
 const address_balance_limit = process.env.ADDRESS_BALANCE_LIMIT || 1
 const address_transaction_count = process.env.ADDRESS_TRANSACTION_COUNT || 5
 
-const address_transaction_count_flag = process.env.ADDRESS_TRANSACTION_COUNT_FLAG || 0
 const address_balance_limit_flag = process.env.ADDRESS_BALANCE_LIMIT_FLAG || 1
 const ip_flag = process.env.IP_FLAG || 1
 
