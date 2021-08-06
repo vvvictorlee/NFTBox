@@ -112,16 +112,19 @@ class ActionMgmt {
         if (ic) {
             return [10005, "The address is Contract "];
         }
-        let ab = await this.checkBalance(userAddress)
-        if (0 != address_balance_limit_flag && !ab) {
-            return [10004, "The address balance limit is 1 HOO  requested"];
+        if (0 != address_balance_limit_flag) {
+            let ab = await this.checkBalance(userAddress)
+            if (!ab) {
+                return [10004, "The address balance limit is 1 HOO  requested"];
+            }
         }
-        let ipb = await this.checkip(ip)
-        if (0 != ip_flag && ipb) {
-            console.error(userAddress,"The same ip once requested=", ip)
-            return [10003, "The same ip once requested"];
+        if (0 != ip_flag) {
+            let ipb = await this.checkip(ip)
+            if (ipb) {
+                console.error(userAddress, "The same ip once requested=", ip)
+                return [10003, "The same ip once requested"];
+            }
         }
-
         let sa = await datamgmt.getSybilAddress(userAddress)
         if (sa) {
             console.error("The SybilAddress =", userAddress)

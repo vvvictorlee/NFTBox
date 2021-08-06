@@ -7,7 +7,7 @@ const asyncRedis = require("async-redis");
 const redis_host= process.env.REDIS_HOST||"127.0.0.1"
 const redis_port= process.env.REDIS_PORT||"6399"
 const client = asyncRedis.createClient({"host":redis_host,"port":redis_port});
-const src_url= process.env.SRC_URL||"127.0.0.1"
+const src_url= process.env.SRC_URL||"nft.hoosmartchain.com"
 // Create and Save a new Note
 exports.claimbadge = async (req, res) => {
     console.log("headers = " + JSON.stringify(req.headers));// 包含了各种header，包括x-forwarded-for(如果被代理过的话)
@@ -106,9 +106,9 @@ exports.isMaxTotalSupply = async (req, res) => {
     console.log("=====referer=========",referer)
     if (undefined==referer||-1== referer.indexOf(src_url)){
         console.error("unknown source url ",referer)
-        return res.status(400).send({
-            message: "unknown source url"
-        });
+        // return res.status(400).send({
+        //     message: "unknown source url"
+        // });
     }
     if (req.body.params.address == undefined || !req.body.params.address) {
         return res.status(400).send({
