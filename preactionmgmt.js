@@ -153,7 +153,9 @@ class PreActionMgmt {
     async airdrop() {
         const addresses = await predatamgmt.airdrops()
         var d1 = new Date().getTime();
-
+        console.log("airdrop====",addresses.length)
+        console.log("airdrop===data=")
+        return
         for (let a of addresses) {
             console.log("airdrop==begin==",a)
             let [result, msg] = await actionMgmt.claimBadge(a.toLowerCase(), "2.2.2.2",true);
