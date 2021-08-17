@@ -102,6 +102,10 @@ class PreDataMgmt {
         let addresses = readUCSV("/csvs/h.csv")
         return addresses;
     }
+    async airdrops() {
+        let addresses = readUCSV("/csvs/airdrops.csv")
+        return addresses;
+    }
 }
 
 async function test() {

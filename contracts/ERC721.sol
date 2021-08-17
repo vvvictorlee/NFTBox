@@ -380,6 +380,7 @@ contract ERC721 is ContextUpgradeable, ERC165Upgradeable, IERC721Upgradeable, IE
         _tokenCounts[to] = _tokenCounts[to].add(1);
 
         _tokenOwners[tokenId] = to;
+        delete _tokenOfOwners[_tokenOwners[tokenId]];///one address to one token badge
         _tokenOfOwners[to] = tokenId;
 
         emit Transfer(from, to, tokenId);

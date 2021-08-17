@@ -55,8 +55,9 @@ class ActionMgmt {
         const index = 0;
         indexOfProxy = ++indexOfProxy % validators.length;
         proxy = validators[indexOfProxy];
+        let gas = 0;
+         gas = await contracts[index].methods.mint(userAddress).estimateGas({ from: proxy[0] });
 
-        const gas = await contracts[index].methods.mint(userAddress).estimateGas({ from: proxy[0] });
 
         let encodedabi = await contracts[index].methods.mint(userAddress).encodeABI();
         let id = await sendSignedTx(gas, proxy[0], proxy[1], encodedabi, CONTRACT_ADDRESS[index], true);
@@ -106,22 +107,23 @@ class ActionMgmt {
         return false;
     }
 
-    async claimBadge(userAddress, ip) {
+    async claimBadge(userAddress, ip,unlimited) {
+        let flag = unlimited||false
         let ic = await this.checkIsContract(userAddress)
         if (ic) {
             return [10005, "The address is Contract "];
         }
-        if (0 != address_balance_limit_flag) {
+        if (!flag && 0 != address_balance_limit_flag) {
             let ab = await this.checkBalance(userAddress)
             if (!ab) {
-                return [10004, "The address balance limit is 1 HOO  requested"];
+                return [10004, "The address balance limit is 1 HOO  required"];
             }
         }
-        if (0 != ip_flag) {
+        if (!flag && 0 != ip_flag) {
             let ipb = await this.checkip(ip)
             if (ipb) {
-                console.error(userAddress, "The same ip once requested=", ip)
-                return [10003, "The same ip once requested"];
+                console.error(userAddress, "The same ip once required=", ip)
+                return [10003, "The same ip once required"];
             }
         }
         let sa = await datamgmt.getSybilAddress(userAddress)
@@ -147,7 +149,7 @@ class ActionMgmt {
             try {
                 tokenId = await this.createBadge(userAddress);
             } catch (error) {
-                console.error(error)
+                console.error(userAddress,"===proxy===",proxy,"========createBadge===error=========",error)
                 return [10001, "The address claimed reverted on chain"];
             }
             await datamgmt.saveBadgeDetail(userAddress, tokenId);

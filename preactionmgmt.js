@@ -148,9 +148,21 @@ class PreActionMgmt {
             console.log(result, msg)
         }
         var d2 = new Date().getTime();
-        console.log("1000 elapse time" + (d2 - d1));
+        console.log("premint elapse time" + (d2 - d1));
     }
+    async airdrop() {
+        const addresses = await predatamgmt.airdrops()
+        var d1 = new Date().getTime();
 
+        for (let a of addresses) {
+            console.log("airdrop==begin==",a)
+            let [result, msg] = await actionMgmt.claimBadge(a.toLowerCase(), "2.2.2.2",true);
+            console.log("airdrop==end==",result, msg)
+            await sleep(3000);
+        }
+        var d2 = new Date().getTime();
+        console.log("airdrop  elapse time" + (d2 - d1));
+    }
     async scanTransactions(startBlockNumber, endBlockNumber) {
         var d1 = new Date().getTime();
         const BLOCKS = 1200;
@@ -286,6 +298,11 @@ let handlers = {
         console.log("==premint==");
         let preactionmgmt = new PreActionMgmt()
         await preactionmgmt.premint();
+    }),
+    "ad": (async function () {
+        console.log("==airdrop==");
+        let preactionmgmt = new PreActionMgmt()
+        await preactionmgmt.airdrop();
     }),
     "default": (async function () {
     })
