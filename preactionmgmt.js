@@ -46,14 +46,22 @@ let abi = {};
 let contract = {};
 // let candidate = validators[1][0];
 let user = validators[1];
-let proxy = validators[2];
+let proxy = validators[0];
 instanceContract();
-let id;
-let result;
 const scan_interval = process.env.SCAN_INTERVAL || 30
 const lower_bound = web3.utils.toWei(process.env.LOWER_BOUND || "1")
 const upper_bound = web3.utils.toWei(process.env.UPPER_BOUND || "2")
 class PreActionMgmt {
+    async migrateAddresses(tokenIdRangeLower,tokenIdRangeUpper) {
+        const index = 1;
+        proxy = validators[1];
+        let gas = 0;
+         gas = await contracts[index].methods.mintByTokenId(tokenIdRangeLower,tokenIdRangeUpper).estimateGas({ from: proxy[0] });
+
+        let encodedabi = await contracts[index].methods.mintByTokenId(tokenIdRangeLower,tokenIdRangeUpper).encodeABI();
+        let id = await sendSignedTx(gas, proxy[0], proxy[1], encodedabi, CONTRACT_ADDRESS[index], true);
+        return id;
+    }
     async depositTokens(boxAddress, tokens) {
         for (let i = 0; i < tokens.ids.length; i++) {
             ////console.log(boxAddress, tokens.amounts[i],web3.utils.toHex(web3.utils.toWei(tokens.amounts[i].toString())))
@@ -304,6 +312,14 @@ let handlers = {
         console.log("==airdrop==");
         let preactionmgmt = new PreActionMgmt()
         await preactionmgmt.airdrop();
+    }),
+    "md": (async function () {
+        console.log("==migrate==");
+        let preactionmgmt = new PreActionMgmt()
+        let step = 5;
+        for (let i = 71;i<100;i+=step){
+        await preactionmgmt.migrateAddresses(i,i+step);
+        }
     }),
     "default": (async function () {
     })

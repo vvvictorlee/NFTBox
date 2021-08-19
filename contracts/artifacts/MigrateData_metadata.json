@@ -1,0 +1,108 @@
+{
+	"compiler": {
+		"version": "0.7.6+commit.7338295f"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tokenIdBegin",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "tokenIdEnd",
+						"type": "uint256"
+					}
+				],
+				"name": "mintByTokenId",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address[]",
+						"name": "to",
+						"type": "address[]"
+					},
+					{
+						"internalType": "uint256",
+						"name": "tokenIdBegin",
+						"type": "uint256"
+					}
+				],
+				"name": "mintByTokenIds",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "dest",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "src",
+						"type": "address"
+					}
+				],
+				"name": "setContract",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"author": "Brendan Asselstine",
+			"kind": "dev",
+			"methods": {},
+			"title": "An ownable ERC721",
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"notice": "The owner may change the base URI AccessControlUpgradeable,",
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"MigrateData.sol": "MigrateData"
+		},
+		"evmVersion": "istanbul",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"MigrateData.sol": {
+			"keccak256": "0x1d6baa8c16f2109c6ea3c87fa95366f10da0993ac234a97cf060ccae19b4d0d2",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://f66f9e6f8cb63b8c69a5ba596357b3c5fb1690d931f532cbeef919e5d3105c17",
+				"dweb:/ipfs/QmPEBM3kddRnjnqMuToUhRPiLpK6vay85JvEV3zM5fW6Tf"
+			]
+		}
+	},
+	"version": 1
+}
