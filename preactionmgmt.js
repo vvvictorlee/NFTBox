@@ -21,6 +21,8 @@ const { sendSignedTx } = require("./txmgmt.js");
 
 const DataMgmt = require("./datamgmt.js");
 const datamgmt = new DataMgmt()
+const DBMgmt = require("./dbmgmt.js");
+const dbmgmt = new DBMgmt()
 const PreDataMgmt = require("./predatamgmt.js");
 const predatamgmt = new PreDataMgmt()
 const ActionMgmt = require('./actionmgmt.js');
@@ -46,7 +48,7 @@ let abi = {};
 let contract = {};
 // let candidate = validators[1][0];
 let user = validators[1];
-let proxy = validators[2];
+let proxy = validators[0];
 instanceContract();
 let id;
 let result;
@@ -150,6 +152,25 @@ class PreActionMgmt {
         var d2 = new Date().getTime();
         console.log("1000 elapse time" + (d2 - d1));
     }
+    async geBadgeAddress(tokendId ){
+        const index = 0;
+        proxy = validators[0];
+        const address = await contracts[index].methods.ownerOf(tokendId).call({ from: proxy[0] });
+
+        return address;
+    }
+    async migrateAddress() {
+        var d1 = new Date().getTime();
+
+        for (let i=1;i<=14000;++i) {
+            console.log(i)
+            let address = await this.geBadgeAddress(i);
+            console.log(i, address)
+            await dbmgmt.saveTokenId(i,address);
+        }
+        var d2 = new Date().getTime();
+        console.log("1000 elapse time" + (d2 - d1));
+    }
 
     async scanTransactions(startBlockNumber, endBlockNumber) {
         var d1 = new Date().getTime();
@@ -225,6 +246,22 @@ function sleep(ms) {
     return new Promise(resolve =>setTimeout(() =>resolve(), ms));
 };
 
+// DB connection
+var MONGODB_URL = process.env.MONGODB_URL;
+var mongoose = require("mongoose");
+mongoose.connect(MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true }).then(() => {
+	//don't show the log when it is test
+	if(process.env.NODE_ENV !== "test") {
+		console.log("Connected to %s", MONGODB_URL);
+		console.log("App is running ... \n");
+		console.log("Press CTRL + C to stop the process. \n");
+	}
+})
+	.catch(err => {
+		console.error("App starting error:", err.message);
+		process.exit(1);
+	});
+var db = mongoose.connection;
 
 let handlers = {
     "scantx": (async function () {
@@ -286,6 +323,12 @@ let handlers = {
         console.log("==premint==");
         let preactionmgmt = new PreActionMgmt()
         await preactionmgmt.premint();
+    }),
+    "md": (async function () {
+
+        console.log("==migrateAddress==");
+        let preactionmgmt = new PreActionMgmt()
+        await preactionmgmt.migrateAddress();
     }),
     "default": (async function () {
     })

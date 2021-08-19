@@ -2,22 +2,16 @@ const path = require('path')
 
 const fs = require('fs');
 const { getJSON, putJSON, readCSVToJSON, readCSV, writeCSV } = require('./util');
-const _CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS || []
-const CONTRACT_ADDRESS = JSON.parse(_CONTRACT_ADDRESS);
 
 
 const datapath = process.env.DATA_PATH || "/jsons/"
 
-const badgedetail = datapath + "badgedetail.json";
-
-const ips = datapath + "ips.json";
-const sybil = datapath + "sybil.json";
-const latestscanblock = datapath + "latestscanblock.json";
 
 const Badge = require("./models/BadgeModel");
 const IP = require("./models/IPModel");
 const Scan = require("./models/ScanModel");
 const Sybil = require("./models/SybilModel");
+const TokenId = require("./models/TokenIdModel");
 
 var mongoose = require("mongoose");
 mongoose.set("useFindAndModify", false);
@@ -45,6 +39,24 @@ class DBMgmt {
         return 0;
     }
 
+    async saveTokenId(id, address) {
+        var tokenId = new TokenId(
+            {
+                tokenID: id,
+                address: address
+            });
+
+        await tokenId.save();
+    }
+
+    async getTokenId(id) {
+        let tokenId = await TokenId.findOne({ tokenID: id }, "address")
+        if (tokenId != null) {
+            return tokenId.address;
+        }
+
+        return 0;
+    }
 
     async getTotalSupply() {
         let count = await Badge.find().countDocuments();
