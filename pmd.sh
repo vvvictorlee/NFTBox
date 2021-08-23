@@ -4,6 +4,7 @@ sum=0
 
 for ((i=1; i<=100; i+=10))
 do
-    yarn mds:test $i
+    yarn mds:test $i & 
+    sleep 3
 done
 
