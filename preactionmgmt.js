@@ -222,40 +222,7 @@ class PreActionMgmt {
         var d2 = new Date().getTime();
         console.log("scanTransactions elapse time" + (d2 - d1));
     }
-   async migrateToAddressFromContract(tokenIdRangeLower,len) {
-        const index = 1;
-               mindexOfProxy = ++mindexOfProxy % mvalidators.length;
-        proxy = mvalidators[mindexOfProxy];
-        let gas = 0;
-         gas = await contracts[index].methods.mintByTokenIds(tokenIdRangeLower,len).estimateGas({ from: proxy[0] });
-
-        let encodedabi = await contracts[index].methods.mintByTokenIds(tokenIdRangeLower,len).encodeABI();
-        let id = await sendSignedTx(gas, proxy[0], proxy[1], encodedabi, CONTRACT_ADDRESS[index], true);
-        return id;
-    }
-
-    async migrateToAddressesFromContract(tokenIdRangeLower,len,step) {
-       for (let i=0;i<len;i+=step) {
-            await this.migrateToAddress(tokenIdRangeLower+i,step);
-        }
-    }
-
-   async setAdminForMD(address) {
-        const index = 1;
-        proxy = mvalidators[0];
-        let gas = 0;
-         gas = await contracts[index].methods.setAdmin(address).estimateGas({ from: proxy[0] });
-
-        let encodedabi = await contracts[index].methods.setAdmin(address).encodeABI();
-        let id = await sendSignedTx(gas, proxy[0], proxy[1], encodedabi, CONTRACT_ADDRESS[index], true);
-        return id;
-    }
-
-    async setAdminsForMD() {
-       for (let i=1;i<mvalidators.length;i++) {
-            await this.setAdminForMD(mvalidators[i][0]);
-        }
-    }
+  
 
 }
 function instanceContract() {
@@ -305,24 +272,6 @@ let handlers = {
         console.log("==airdrop==");
         let preactionmgmt = new PreActionMgmt()
         await preactionmgmt.airdrop();
-    }),
-    "mdt": (async function () {
-        console.log("==migrate==");
-        let preactionmgmt = new PreActionMgmt()
-        let step = 50;
-        for (let i = 61;i<111;i+=step){
-        await preactionmgmt.migrateToAddress(i,step);
-        }
-    }),
-    "mds": (async function () {
-        console.log("==migrates==");
-        let preactionmgmt = new PreActionMgmt()
-        let step = 50;
-        let len = 1000;
-        let lower = process.argv[4];
-        console.log(lower);
-        // await preactionmgmt.migrateToAddresses(lower,len,step);
-        
     }),
     "default": (async function () {
     })
