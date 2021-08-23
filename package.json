@@ -13,6 +13,7 @@
     "ad:test": "DEBUG=app node  -r dotenv/config preactionmgmt.js ad dotenv_config_path=.env.test",
     "ad": "DEBUG=app node  -r dotenv/config preactionmgmt.js ad dotenv_config_path=.env",
     "md:test": "DEBUG=app node  -r dotenv/config preactionmgmt.js md dotenv_config_path=.env.test",
+    "mds:test": "DEBUG=app node  -r dotenv/config  preactionmgmt.js mds dotenv_config_path=.env.test ",
     "start:test": "DEBUG=app node  -r dotenv/config server.js dotenv_config_path=.env.test"
   },
   "dependencies": {

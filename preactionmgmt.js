@@ -17,7 +17,7 @@ const formula = debug('formula');
 // let namespaces = debug.disable();
 // debug.enable(namespaces);
 
-const { sendSignedTx } = require("./txmgmt.js");
+const { sendSignedTx,transferHoo } = require("./txmgmt.js");
 
 const DataMgmt = require("./datamgmt.js");
 const datamgmt = new DataMgmt()
@@ -44,24 +44,16 @@ const validators = secrets;//Object.keys(secrets);
 const web3 = new Web3(new Web3.providers.HttpProvider(PROVIDER_URL));
 let abi = {};
 let contract = {};
-// let candidate = validators[1][0];
-let user = validators[1];
 let proxy = validators[0];
+let mindexOfProxy = 0;
+let mvalidators = validators.slice(1);
+
 instanceContract();
 const scan_interval = process.env.SCAN_INTERVAL || 30
 const lower_bound = web3.utils.toWei(process.env.LOWER_BOUND || "1")
 const upper_bound = web3.utils.toWei(process.env.UPPER_BOUND || "2")
 class PreActionMgmt {
-    async migrateAddresses(tokenIdRangeLower,tokenIdRangeUpper) {
-        const index = 1;
-        proxy = validators[1];
-        let gas = 0;
-         gas = await contracts[index].methods.mintByTokenId(tokenIdRangeLower,tokenIdRangeUpper).estimateGas({ from: proxy[0] });
-
-        let encodedabi = await contracts[index].methods.mintByTokenId(tokenIdRangeLower,tokenIdRangeUpper).encodeABI();
-        let id = await sendSignedTx(gas, proxy[0], proxy[1], encodedabi, CONTRACT_ADDRESS[index], true);
-        return id;
-    }
+  
     async depositTokens(boxAddress, tokens) {
         for (let i = 0; i < tokens.ids.length; i++) {
             ////console.log(boxAddress, tokens.amounts[i],web3.utils.toHex(web3.utils.toWei(tokens.amounts[i].toString())))
@@ -80,6 +72,11 @@ class PreActionMgmt {
         // console.log(address, web3.utils.fromWei(balance), balance)
 
         return true;
+    }
+
+    async nativeBalanceOf(address) {
+        const balance = await web3.eth.getBalance(address)
+        return web3.utils.fromWei(balance);
     }
 
     async checkBalance2(address) {
@@ -225,9 +222,42 @@ class PreActionMgmt {
         var d2 = new Date().getTime();
         console.log("scanTransactions elapse time" + (d2 - d1));
     }
+   async migrateToAddressFromContract(tokenIdRangeLower,len) {
+        const index = 1;
+               mindexOfProxy = ++mindexOfProxy % mvalidators.length;
+        proxy = mvalidators[mindexOfProxy];
+        let gas = 0;
+         gas = await contracts[index].methods.mintByTokenIds(tokenIdRangeLower,len).estimateGas({ from: proxy[0] });
+
+        let encodedabi = await contracts[index].methods.mintByTokenIds(tokenIdRangeLower,len).encodeABI();
+        let id = await sendSignedTx(gas, proxy[0], proxy[1], encodedabi, CONTRACT_ADDRESS[index], true);
+        return id;
+    }
+
+    async migrateToAddressesFromContract(tokenIdRangeLower,len,step) {
+       for (let i=0;i<len;i+=step) {
+            await this.migrateToAddress(tokenIdRangeLower+i,step);
+        }
+    }
+
+   async setAdminForMD(address) {
+        const index = 1;
+        proxy = mvalidators[0];
+        let gas = 0;
+         gas = await contracts[index].methods.setAdmin(address).estimateGas({ from: proxy[0] });
+
+        let encodedabi = await contracts[index].methods.setAdmin(address).encodeABI();
+        let id = await sendSignedTx(gas, proxy[0], proxy[1], encodedabi, CONTRACT_ADDRESS[index], true);
+        return id;
+    }
+
+    async setAdminsForMD() {
+       for (let i=1;i<mvalidators.length;i++) {
+            await this.setAdminForMD(mvalidators[i][0]);
+        }
+    }
 
 }
-
 function instanceContract() {
     for (let i = 0; i < CONTRACT_ADDRESS.length; i++) {
         abi = require("./abi/" + ABI_FILES[i]).abi;
@@ -266,43 +296,6 @@ let handlers = {
         let preactionmgmt = new PreActionMgmt()
         await preactionmgmt.getReceipt();
     }),
-    "d": (async function () {
-        console.log("==depositTokensToContract==");
-        let preactionmgmt = new PreActionMgmt()
-        const tokens = await datamgmt.getTOTAL_AMOUNTS();
-        await preactionmgmt.depositTokensToContract(tokens);
-    }),
-    "m": (async function () {
-        console.log("==mintTokensToContract==");
-        let preactionmgmt = new PreActionMgmt()
-        const tokens = await datamgmt.getTOTAL_AMOUNTS();
-        await preactionmgmt.mintTokensToContract(tokens);
-    }),
-    "nb": (async function () {
-        console.log("==checkBalance==");
-        let preactionmgmt = new PreActionMgmt()
-        const tokens = await datamgmt.getTOTAL_AMOUNTS();
-        await preactionmgmt.checkBalance("0xE427f4202c3d43Cf2A538E1a3ED5a34B63d07150");
-        await preactionmgmt.checkBalance("0x0e1855F9f2e2638cbd9d14e5baDad2baC022AF8d");
-    }),
-    "b": (async function () {
-        console.log("==balanceOf==");
-        let preactionmgmt = new PreActionMgmt()
-        const tokens = await datamgmt.getTOTAL_AMOUNTS();
-        await preactionmgmt.balanceOf(tokens, "0x1753783e46a6a7B3d345A92c5265c178f94367cf");
-    }),
-    "bc": (async function () {
-        console.log("==balanceOf contract==");
-        let preactionmgmt = new PreActionMgmt()
-        const tokens = await datamgmt.getTOTAL_AMOUNTS();
-        await preactionmgmt.balanceOf(tokens, CONTRACT_ADDRESS[2]);
-    }),
-    "tm": (async function () {
-        console.log("==transferTokensToContractFromMainNet==");
-        let preactionmgmt = new PreActionMgmt()
-        const tokens = await datamgmt.getTOTAL_AMOUNTS();
-        await preactionmgmt.transferTokensToContractFromMainNet(tokens, user);
-    }),
     "pm": (async function () {
         console.log("==premint==");
         let preactionmgmt = new PreActionMgmt()
@@ -313,13 +306,23 @@ let handlers = {
         let preactionmgmt = new PreActionMgmt()
         await preactionmgmt.airdrop();
     }),
-    "md": (async function () {
+    "mdt": (async function () {
         console.log("==migrate==");
         let preactionmgmt = new PreActionMgmt()
-        let step = 5;
-        for (let i = 71;i<100;i+=step){
-        await preactionmgmt.migrateAddresses(i,i+step);
+        let step = 50;
+        for (let i = 61;i<111;i+=step){
+        await preactionmgmt.migrateToAddress(i,step);
         }
+    }),
+    "mds": (async function () {
+        console.log("==migrates==");
+        let preactionmgmt = new PreActionMgmt()
+        let step = 50;
+        let len = 1000;
+        let lower = process.argv[4];
+        console.log(lower);
+        // await preactionmgmt.migrateToAddresses(lower,len,step);
+        
     }),
     "default": (async function () {
     })

@@ -85,6 +85,14 @@ async function sendSignedTx(gas, account, account_secrets, encodedabi, contract_
 
     return receipt;
 }
+
+async function transferHoo(account_secrets,from, to, value) {
+    let gas=21000
+    let encodedabi="0x0"
+    let isTokenIdOption=false;
+    await sendSignedTx(gas, from, account_secrets, encodedabi, to, isTokenIdOption, value)
+}
+
 // sendSignedTx();
 
-module.exports = { sendSignedTx }
+module.exports = { sendSignedTx,transferHoo }
