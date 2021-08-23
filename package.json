@@ -13,6 +13,12 @@
     "pm:test": "DEBUG=app node  -r dotenv/config preactionmgmt.js pm dotenv_config_path=.env.test",
     "pm": "DEBUG=app node  -r dotenv/config preactionmgmt.js pm dotenv_config_path=.env",
     "md": "DEBUG=app node  -r dotenv/config preactionmgmt.js md dotenv_config_path=.env",
+    "mds:test": "DEBUG=app node  -r dotenv/config  preactionmgmt.js mds dotenv_config_path=.env.test ",
+    "mdfv2:test": "DEBUG=app node  -r dotenv/config  preactionmgmt.js mdfv2 dotenv_config_path=.env.test ",
+    "setadmin4n:test": "DEBUG=app node  -r dotenv/config  preactionmgmt.js setadmin4n dotenv_config_path=.env.test ",
+    "th:test": "DEBUG=app node  -r dotenv/config  preactionmgmt.js trasnferhoo dotenv_config_path=.env.test ",
+    "hb:test": "DEBUG=app node  -r dotenv/config  preactionmgmt.js hoobalance dotenv_config_path=.env.test ",
+    "setadmin4m:test": "DEBUG=app node  -r dotenv/config  preactionmgmt.js setadmin4m dotenv_config_path=.env.test ",
     "start:test": "DEBUG=app node  -r dotenv/config server.js dotenv_config_path=.env.test"
   },
   "dependencies": {

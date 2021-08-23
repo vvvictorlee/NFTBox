@@ -54,7 +54,9 @@ const ToUTable = (data) => {
     var rows = new Array();
     rows = data.split("\n");
     for (var i = 0; i < rows.length; i++) {
-        table.push(rows[i].trim())
+        if (rows[i].trim().length>0){
+         table.push(rows[i].trim())
+        }
     }
 
     return table;

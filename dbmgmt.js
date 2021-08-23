@@ -58,6 +58,16 @@ class DBMgmt {
         return 0;
     }
 
+    async getAdddressesBySkipLimit(skip,limit) {
+        console.log(skip,limit)
+        let tokenId = await TokenId.find({  }, "address").skip(Number(skip)).limit(Number(limit))
+        if (tokenId != null) {
+            return tokenId.map(v=> v.address);
+        }
+
+        return 0;
+    }
+
     async getTotalSupply() {
         let count = await Badge.find().countDocuments();
         return count;

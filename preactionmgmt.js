@@ -17,7 +17,7 @@ const formula = debug('formula');
 // let namespaces = debug.disable();
 // debug.enable(namespaces);
 
-const { sendSignedTx } = require("./txmgmt.js");
+const { sendSignedTx, transferHoo } = require("./txmgmt.js");
 
 const DataMgmt = require("./datamgmt.js");
 const datamgmt = new DataMgmt()
@@ -46,9 +46,9 @@ const validators = secrets;//Object.keys(secrets);
 const web3 = new Web3(new Web3.providers.HttpProvider(PROVIDER_URL));
 let abi = {};
 let contract = {};
-// let candidate = validators[1][0];
-let user = validators[1];
 let proxy = validators[0];
+let mindexOfProxy = 0;
+let mvalidators = validators.slice(1);
 instanceContract();
 let id;
 let result;
@@ -74,6 +74,11 @@ class PreActionMgmt {
         // console.log(address, web3.utils.fromWei(balance), balance)
 
         return true;
+    }
+
+    async nativeBalanceOf(address) {
+        const balance = await web3.eth.getBalance(address)
+        return web3.utils.fromWei(balance);
     }
 
     async checkBalance2(address) {
@@ -150,28 +155,22 @@ class PreActionMgmt {
             console.log(result, msg)
         }
         var d2 = new Date().getTime();
-        console.log("1000 elapse time" + (d2 - d1));
+        console.log("premint elapse time" + (d2 - d1));
     }
-    async geBadgeAddress(tokendId ){
-        const index = 0;
-        proxy = validators[0];
-        const address = await contracts[index].methods.ownerOf(tokendId).call({ from: proxy[0] });
-
-        return address;
-    }
-    async migrateAddress() {
+    async airdrop() {
+        const addresses = await predatamgmt.airdrops()
         var d1 = new Date().getTime();
-
-        for (let i=1;i<=14000;++i) {
-            console.log(i)
-            let address = await this.geBadgeAddress(i);
-            console.log(i, address)
-            await dbmgmt.saveTokenId(i,address);
+        console.log("airdrop====", addresses.length)
+        console.log("airdrop===data=")
+        for (let a of addresses) {
+            console.log("airdrop==begin==", a)
+            let [result, msg] = await actionMgmt.claimBadge(a.toLowerCase(), "2.2.2.2", true);
+            console.log("airdrop==end==", result, msg)
+            await sleep(3000);
         }
         var d2 = new Date().getTime();
-        console.log("1000 elapse time" + (d2 - d1));
+        console.log("airdrop  elapse time" + (d2 - d1));
     }
-
     async scanTransactions(startBlockNumber, endBlockNumber) {
         var d1 = new Date().getTime();
         const BLOCKS = 1200;
@@ -207,7 +206,7 @@ class PreActionMgmt {
                 //     + "   gasPrice        : " + e.gasPrice + "\n"
                 //     + "   gas             : " + e.gas + "\n"
                 //     + "   input           : " + e.input);
-                
+
                 if (Number(e.value) < Number(lower_bound) || Number(e.value) > Number(upper_bound)) {
                     // console.error("no (Number(e.value) < Number(lower_bound) || Number(e.value) > Number(upper_bound)", (Number(e.value), Number(lower_bound), Number(upper_bound)))
                     continue
@@ -225,6 +224,152 @@ class PreActionMgmt {
         var d2 = new Date().getTime();
         console.log("scanTransactions elapse time" + (d2 - d1));
     }
+    async geBadgeAddress(tokendId) {
+        const index = 0;
+        proxy = validators[0];
+        const address = await contracts[index].methods.ownerOf(tokendId).call({ from: proxy[0] });
+
+        return address;
+    }
+    async migrateFromAddress(tokenIdLower, len) {
+        var d1 = new Date().getTime();
+
+        for (let i = 0; i < len; ++i) {
+            let tid = tokenIdLower + i
+            let address = await this.geBadgeAddress(tid);
+            if (address == "0x0000000000000000000000000000000000000000") {
+                break;
+            }
+            if (i % 1000 == 0) {
+                console.log(tid, address)
+            }
+            await dbmgmt.saveTokenId(tid, address);
+        }
+        var d2 = new Date().getTime();
+        console.log("1000 elapse time" + (d2 - d1));
+    }
+    async geBadgeAddressv2(tokendId) {
+        const index = 1;
+        proxy = validators[0];
+        // console.log("ownerOf(======", tokendId)
+
+        let address = "0x0000000000000000000000000000000000000000";
+        // try {
+        address = await contracts[index].methods.ownerOf(tokendId).call({ from: proxy[0] });
+        // } catch (error) {
+        //     console.error(error)
+        // }
+        return address;
+    }
+    async migrateFromAddressv2(tokenIdLower, len) {
+        console.log(tokenIdLower, len)
+
+        var d1 = new Date().getTime();
+
+        for (let i = 0; i < len; ++i) {
+            let tid = Number(tokenIdLower) + Number(i)
+            let address = await this.geBadgeAddressv2(tid);
+            if (address == "0x0000000000000000000000000000000000000000") {
+                console.log(",tid==", tid, ",")
+            }
+            if (i % 1000 == 0) {
+                console.log(tid, address)
+            }
+            // await dbmgmt.saveTokenId(tid, address);
+        }
+        var d2 = new Date().getTime();
+        console.log("migrateFromAddressv2 elapse time" + (d2 - d1));
+    }
+    async migrateToAddressFromContract(tokenIdRangeLower, len) {
+        const index = 1;
+        mindexOfProxy = ++mindexOfProxy % mvalidators.length;
+        proxy = mvalidators[mindexOfProxy];
+        let gas = 0;
+        gas = await contracts[index].methods.mintByTokenIds(tokenIdRangeLower, len).estimateGas({ from: proxy[0] });
+
+        let encodedabi = await contracts[index].methods.mintByTokenIds(tokenIdRangeLower, len).encodeABI();
+        let id = await sendSignedTx(gas, proxy[0], proxy[1], encodedabi, CONTRACT_ADDRESS[index], true);
+        return id;
+    }
+
+    async migrateToAddressesFromContract(tokenIdRangeLower, len, step) {
+        for (let i = 0; i < len; i += step) {
+            await this.migrateToAddressFromContract(Number(tokenIdRangeLower) + Number(i), step);
+        }
+    }
+    async migrateToAddress(tokenIdRangeLower, len) {
+        console.log(tokenIdRangeLower, "====tokenIdRangeLower====");
+
+        const index = 1;
+        mindexOfProxy = ++mindexOfProxy % mvalidators.length;
+        proxy = mvalidators[mindexOfProxy];
+        const addresses = await dbmgmt.getAdddressesBySkipLimit(tokenIdRangeLower, len)
+        if (addresses.length == 0) {
+            console.log(tokenIdRangeLower, "====addresses= is empty===", addresses, "========");
+            return 0;
+        }
+        let gas = 0;
+        let id = 0;
+        // console.log(tokenIdRangeLower, "====addresses= ===", addresses, "========");
+
+        // try {
+
+        gas = await contracts[index].methods.mintByTokenIds(addresses, tokenIdRangeLower).estimateGas({ from: proxy[0] });
+        let encodedabi = await contracts[index].methods.mintByTokenIds(addresses, tokenIdRangeLower).encodeABI();
+        id = await sendSignedTx(gas, proxy[0], proxy[1], encodedabi, CONTRACT_ADDRESS[index], true);
+
+        // } catch (error) {
+        //     console.error(error)
+        // }
+        return id;
+    }
+    async migrateToAddresses(tokenIdRangeLower, len, step) {
+        for (let i = 0; i <= len; i += step) {
+            await this.migrateToAddress(Number(tokenIdRangeLower) + Number(i), step);
+        }
+    }
+    async transferHooToProxy() {
+        for (let i = 1; i < mvalidators.length; i++) {
+            await transferHoo(mvalidators[0][1], mvalidators[0][0], mvalidators[i][0], 1.5);
+        }
+    }
+    async hooBalanceOfProxy() {
+        for (let i = 1; i < mvalidators.length; i++) {
+            let b = await this.nativeBalanceOf(mvalidators[i][0]);
+            console.log("==addr==", mvalidators[i][0], "==bal===", b)
+        }
+    }
+    async setAdminForNFT(address) {
+        const index = 1;
+        proxy = mvalidators[0];
+        console.log("setadmin=proxy==", proxy[0])
+        let gas = 0;
+        gas = await contracts[index].methods.setAdmin(address).estimateGas({ from: proxy[0] });
+
+        let encodedabi = await contracts[index].methods.setAdmin(address).encodeABI();
+        let id = await sendSignedTx(gas, proxy[0], proxy[1], encodedabi, CONTRACT_ADDRESS[index], true);
+        return id;
+    }
+    async setAdminsForNFT() {
+        for (let i = 1; i < mvalidators.length; i++) {
+            console.log(i, "==", mvalidators[i][0])
+            await this.setAdminForNFT(mvalidators[i][0]);
+        }
+    }
+    async setAdminForMD(addresses) {
+        const index = 2;
+        proxy = mvalidators[0];
+        let gas = 0;
+        gas = await contracts[index].methods.setAdmin(addresses).estimateGas({ from: proxy[0] });
+
+        let encodedabi = await contracts[index].methods.setAdmin(addresses).encodeABI();
+        let id = await sendSignedTx(gas, proxy[0], proxy[1], encodedabi, CONTRACT_ADDRESS[index], true);
+        return id;
+    }
+
+    async setAdminsForMD() {
+        await this.setAdminForMD(mvalidators.map(v => v[0]));
+    }
 
 }
 
@@ -232,6 +377,8 @@ function instanceContract() {
     for (let i = 0; i < CONTRACT_ADDRESS.length; i++) {
         abi = require("./abi/" + ABI_FILES[i]).abi;
         contract = new web3.eth.Contract(abi, CONTRACT_ADDRESS[i]);
+        // console.log(i, "CONTRACT_ADDRESS[i]==", CONTRACT_ADDRESS[i]);
+
         if (undefined == contract) {
             //console.log("un");
             return;
@@ -243,24 +390,24 @@ function instanceContract() {
 }
 // 函数实现，参数单位 毫秒 ；
 function sleep(ms) {
-    return new Promise(resolve =>setTimeout(() =>resolve(), ms));
+    return new Promise(resolve => setTimeout(() => resolve(), ms));
 };
 
 // DB connection
 var MONGODB_URL = process.env.MONGODB_URL;
 var mongoose = require("mongoose");
 mongoose.connect(MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true }).then(() => {
-	//don't show the log when it is test
-	if(process.env.NODE_ENV !== "test") {
-		console.log("Connected to %s", MONGODB_URL);
-		console.log("App is running ... \n");
-		console.log("Press CTRL + C to stop the process. \n");
-	}
+    //don't show the log when it is test
+    if (process.env.NODE_ENV !== "test") {
+        console.log("Connected to %s", MONGODB_URL);
+        console.log("App is running ... \n");
+        console.log("Press CTRL + C to stop the process. \n");
+    }
 })
-	.catch(err => {
-		console.error("App starting error:", err.message);
-		process.exit(1);
-	});
+    .catch(err => {
+        console.error("App starting error:", err.message);
+        process.exit(1);
+    });
 var db = mongoose.connection;
 
 let handlers = {
@@ -282,53 +429,71 @@ let handlers = {
         let preactionmgmt = new PreActionMgmt()
         await preactionmgmt.getReceipt();
     }),
-    "d": (async function () {
-        console.log("==depositTokensToContract==");
-        let preactionmgmt = new PreActionMgmt()
-        const tokens = await datamgmt.getTOTAL_AMOUNTS();
-        await preactionmgmt.depositTokensToContract(tokens);
-    }),
-    "m": (async function () {
-        console.log("==mintTokensToContract==");
-        let preactionmgmt = new PreActionMgmt()
-        const tokens = await datamgmt.getTOTAL_AMOUNTS();
-        await preactionmgmt.mintTokensToContract(tokens);
-    }),
-    "nb": (async function () {
-        console.log("==checkBalance==");
-        let preactionmgmt = new PreActionMgmt()
-        const tokens = await datamgmt.getTOTAL_AMOUNTS();
-        await preactionmgmt.checkBalance("0xE427f4202c3d43Cf2A538E1a3ED5a34B63d07150");
-        await preactionmgmt.checkBalance("0x0e1855F9f2e2638cbd9d14e5baDad2baC022AF8d");
-    }),
-    "b": (async function () {
-        console.log("==balanceOf==");
-        let preactionmgmt = new PreActionMgmt()
-        const tokens = await datamgmt.getTOTAL_AMOUNTS();
-        await preactionmgmt.balanceOf(tokens, "0x1753783e46a6a7B3d345A92c5265c178f94367cf");
-    }),
-    "bc": (async function () {
-        console.log("==balanceOf contract==");
-        let preactionmgmt = new PreActionMgmt()
-        const tokens = await datamgmt.getTOTAL_AMOUNTS();
-        await preactionmgmt.balanceOf(tokens, CONTRACT_ADDRESS[2]);
-    }),
-    "tm": (async function () {
-        console.log("==transferTokensToContractFromMainNet==");
-        let preactionmgmt = new PreActionMgmt()
-        const tokens = await datamgmt.getTOTAL_AMOUNTS();
-        await preactionmgmt.transferTokensToContractFromMainNet(tokens, user);
-    }),
     "pm": (async function () {
         console.log("==premint==");
         let preactionmgmt = new PreActionMgmt()
         await preactionmgmt.premint();
     }),
-    "md": (async function () {
-
-        console.log("==migrateAddress==");
+    "ad": (async function () {
+        console.log("==airdrop==");
         let preactionmgmt = new PreActionMgmt()
-        await preactionmgmt.migrateAddress();
+        await preactionmgmt.airdrop();
+    }),
+    "mdf": (async function () {
+        console.log("==migrateFromAddress==");
+        let preactionmgmt = new PreActionMgmt()
+        await preactionmgmt.migrateFromAddress();
+    }),
+   "mdfv2": (async function () {
+        console.log("==migrateFromAddressv2==");
+        let preactionmgmt = new PreActionMgmt()
+        let step = 50;
+        let len = 140000;
+        let lower = process.argv[4];
+        console.log(lower);
+        await preactionmgmt.migrateFromAddressv2(lower, len, step);
+
+    }),
+    "mds": (async function () {
+        console.log("==migrateToAddresses==");
+        let preactionmgmt = new PreActionMgmt()
+        let step = 50;
+        let len = process.argv[5];//1100-1999
+        let lower = process.argv[4];//12559-11000
+        if (lower == undefined) {
+            console.error("=====ERROR======len parameter is empty")
+            return;
+        }
+        lower = Number(lower);
+        if (len == undefined) {
+            console.error("=====ERROR======len parameter is empty")
+            return;
+        }
+        len = Number(len);
+        console.log(lower,len,step);
+        await preactionmgmt.migrateToAddresses(lower, len, step);
+
+    }),
+    "setadmin4n": (async function () {
+        console.log("==setAdminForNFT==");
+        let preactionmgmt = new PreActionMgmt()
+        await preactionmgmt.setAdminsForNFT();
+    }),
+    "trasnferhoo": (async function () {
+        console.log("==setAdminForNFT==");
+        let preactionmgmt = new PreActionMgmt()
+        await preactionmgmt.transferHooToProxy();
+        await preactionmgmt.hooBalanceOfProxy();
+    }),
+    "hoobalance": (async function () {
+        console.log("==setAdminForNFT==");
+        let preactionmgmt = new PreActionMgmt()
+        await preactionmgmt.hooBalanceOfProxy();
+    }),
+    "setadmin4m": (async function () {
+        console.log("==setAdminsForMD==");
+        let preactionmgmt = new PreActionMgmt()
+        await preactionmgmt.setAdminsForMD();
     }),
     "default": (async function () {
     })

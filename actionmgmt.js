@@ -34,9 +34,8 @@ let ABI_FILES = JSON.parse(_ABI_FILES);
 const address_balance_limit = process.env.ADDRESS_BALANCE_LIMIT || 1
 const address_transaction_count = process.env.ADDRESS_TRANSACTION_COUNT || 5
 
-const address_transaction_count_flag = process.env.ADDRESS_TRANSACTION_COUNT_FLAG || 0
 const address_balance_limit_flag = process.env.ADDRESS_BALANCE_LIMIT_FLAG || 1
-const ip_flag = process.env.ADDRESS_TRANSACTION_COUNT_FLAG || 1
+const ip_flag = process.env.IP_FLAG || 1
 
 let contracts = [];
 let contractobjs = {};
@@ -56,8 +55,9 @@ class ActionMgmt {
         const index = 0;
         indexOfProxy = ++indexOfProxy % validators.length;
         proxy = validators[indexOfProxy];
+        let gas = 0;
+         gas = await contracts[index].methods.mint(userAddress).estimateGas({ from: proxy[0] });
 
-        const gas = await contracts[index].methods.mint(userAddress).estimateGas({ from: proxy[0] });
 
         let encodedabi = await contracts[index].methods.mint(userAddress).encodeABI();
         let id = await sendSignedTx(gas, proxy[0], proxy[1], encodedabi, CONTRACT_ADDRESS[index], true);
@@ -107,21 +107,25 @@ class ActionMgmt {
         return false;
     }
 
-    async claimBadge(userAddress, ip) {
+    async claimBadge(userAddress, ip,unlimited) {
+        let flag = unlimited||false
         let ic = await this.checkIsContract(userAddress)
         if (ic) {
             return [10005, "The address is Contract "];
         }
-        let ab = await this.checkBalance(userAddress)
-        if (0 != address_balance_limit_flag && !ab) {
-            return [10004, "The address balance limit is 1 HOO  requested"];
+        if (!flag && 0 != address_balance_limit_flag) {
+            let ab = await this.checkBalance(userAddress)
+            if (!ab) {
+                return [10004, "The address balance limit is 1 HOO  required"];
+            }
         }
-        let ipb = await this.checkip(ip)
-        if (0 != ip_flag && ipb) {
-            console.error(userAddress,"The same ip once requested=", ip)
-            return [10003, "The same ip once requested"];
+        if (!flag && 0 != ip_flag) {
+            let ipb = await this.checkip(ip)
+            if (ipb) {
+                console.error(userAddress, "The same ip once required=", ip)
+                return [10003, "The same ip once required"];
+            }
         }
-
         let sa = await datamgmt.getSybilAddress(userAddress)
         if (sa) {
             console.error("The SybilAddress =", userAddress)
@@ -145,7 +149,7 @@ class ActionMgmt {
             try {
                 tokenId = await this.createBadge(userAddress);
             } catch (error) {
-                console.error(error)
+                console.error(userAddress,"===proxy===",proxy,"========createBadge===error=========",error)
                 return [10001, "The address claimed reverted on chain"];
             }
             await datamgmt.saveBadgeDetail(userAddress, tokenId);

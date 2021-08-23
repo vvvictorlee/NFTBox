@@ -71,11 +71,18 @@ async function sendSignedTx(gas, account, account_secrets, encodedabi, contract_
     let receipt = await web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'));
     console.log(JSON.stringify(receipt))
     if (isTokenId) {
-        id = receipt["logs"][0]["topics"][3];
-        //console.log("=====id====", id, web3.utils.hexToNumber(id))
-        // var d2 = new Date().getTime();
-        // console.log("elapse time" + (d2 - d1));
-        return id;
+        if (receipt != undefined && Array.isArray(receipt["logs"])
+            && receipt["logs"].length > 0
+            && receipt["logs"][0] != undefined
+            && receipt["logs"][0]["topics"] != undefined
+            && Array.isArray(receipt["logs"][0]["topics"]) && receipt["logs"][0]["topics"].length > 3) {
+            id = receipt["logs"][0]["topics"][3];
+            //console.log("=====id====", id, web3.utils.hexToNumber(id))
+            // var d2 = new Date().getTime();
+            // console.log("elapse time" + (d2 - d1));
+            return id;
+        }
+        return 0;
     }
 
     // var d2 = new Date().getTime();
@@ -85,6 +92,14 @@ async function sendSignedTx(gas, account, account_secrets, encodedabi, contract_
 
     return receipt;
 }
+
+async function transferHoo(account_secrets, from, to, value) {
+    let gas = 21000
+    let encodedabi = "0x0"
+    let isTokenIdOption = false;
+    await sendSignedTx(gas, from, account_secrets, encodedabi, to, isTokenIdOption, value)
+}
+
 // sendSignedTx();
 
-module.exports = { sendSignedTx }
+module.exports = { sendSignedTx, transferHoo }
