@@ -15,9 +15,26 @@ const TokenId = require("./models/TokenIdModel");
 
 var mongoose = require("mongoose");
 mongoose.set("useFindAndModify", false);
-mongoose.set('useCreateIndex', true) //加上这个
+mongoose.set('useCreateIndex', true) //加上这个 
 
 class DBMgmt {
+    async init() {
+        // DB connection
+        var MONGODB_URL = process.env.MONGODB_URL;
+        var mongoose = require("mongoose");
+        mongoose.connect(MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true }).then(() => {
+            //don't show the log when it is test
+            if (process.env.NODE_ENV !== "test") {
+                console.log("Connected to %s", MONGODB_URL);
+                console.log("App is running ... \n");
+                console.log("Press CTRL + C to stop the process. \n");
+            }
+        }).catch(err => {
+                console.error("App starting error:", err.message);
+                process.exit(1);
+            });
+        var db = mongoose.connection;
+    }
     _badgedetail = null;
     _ip = null;
     async saveBadgeDetail(address, detailInfo) {
@@ -58,11 +75,11 @@ class DBMgmt {
         return 0;
     }
 
-    async getAdddressesBySkipLimit(skip,limit) {
-        console.log(skip,limit)
-        let tokenId = await TokenId.find({  }, "address").skip(Number(skip)).limit(Number(limit))
+    async getAdddressesBySkipLimit(skip, limit) {
+        console.log(skip, limit)
+        let tokenId = await TokenId.find({}, "address").skip(Number(skip)).limit(Number(limit))
         if (tokenId != null) {
-            return tokenId.map(v=> v.address);
+            return tokenId.map(v => v.address);
         }
 
         return 0;

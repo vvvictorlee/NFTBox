@@ -1,6 +1,6 @@
 #!/bin/bash
-sum=10000
-for ((i=1; i<=140000; i+=sum))
+sum=2000
+for ((i=103151; i<=123000; i+=sum))
 do
     yarn mdfv2:test $i  $sum &
     sleep 3

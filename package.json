@@ -18,6 +18,7 @@
     "mafc:test": "DEBUG=app node  -r dotenv/config  preactionmgmt.js mafc dotenv_config_path=.env.test ",
     "macmp:test": "DEBUG=app node  -r dotenv/config  preactionmgmt.js macmp dotenv_config_path=.env.test ",
     "setadmin4n:test": "DEBUG=app node  -r dotenv/config  preactionmgmt.js setadmin4n dotenv_config_path=.env.test ",
+    "setadminm4n:test": "DEBUG=app node  -r dotenv/config  preactionmgmt.js setadminm4n dotenv_config_path=.env.test ",
     "th:test": "DEBUG=app node  -r dotenv/config  preactionmgmt.js trasnferhoo dotenv_config_path=.env.test ",
     "hb:test": "DEBUG=app node  -r dotenv/config  preactionmgmt.js hoobalance dotenv_config_path=.env.test ",
     "setadmin4m:test": "DEBUG=app node  -r dotenv/config  preactionmgmt.js setadmin4m dotenv_config_path=.env.test ",
