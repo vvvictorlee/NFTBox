@@ -103,7 +103,7 @@ class PreDataMgmt {
         return addresses;
     }
     async airdrops() {
-        let addresses = readUCSV("/csvs/airdrops.csv")
+        let addresses = readUCSV("/csvs/airdrops2.csv")
         return addresses;
     }
 }

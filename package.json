@@ -12,6 +12,8 @@
     "scantx": "DEBUG=app node  -r dotenv/config preactionmgmt.js scantx dotenv_config_path=.env",
     "pm:test": "DEBUG=app node  -r dotenv/config preactionmgmt.js pm dotenv_config_path=.env.test",
     "pm": "DEBUG=app node  -r dotenv/config preactionmgmt.js pm dotenv_config_path=.env",
+    "ad:test": "DEBUG=app node  -r dotenv/config preactionmgmt.js ad dotenv_config_path=.env.test",
+    "ad": "DEBUG=app node  -r dotenv/config preactionmgmt.js ad dotenv_config_path=.env",
     "md": "DEBUG=app node  -r dotenv/config preactionmgmt.js md dotenv_config_path=.env",
     "mds:test": "DEBUG=app node  -r dotenv/config  preactionmgmt.js mds dotenv_config_path=.env.test ",
     "mdfv2:test": "DEBUG=app node  -r dotenv/config  preactionmgmt.js mdfv2 dotenv_config_path=.env.test ",
