@@ -575,7 +575,7 @@ let handlers = {
        if (step == undefined) {
             console.error("=====WARN======step parameter is empty")
         }
-        lestepn = Number(step);
+        step = Number(step);
         console.log(lower, len, step);
         await preactionmgmt.migrateToAddresses(lower, len, step);
 
