@@ -32,6 +32,7 @@
     "hb": "DEBUG=app node  -r dotenv/config  preactionmgmt.js hoobalance dotenv_config_path=.env",
     "mafc": "DEBUG=app node  -r dotenv/config  preactionmgmt.js mafc dotenv_config_path=.env",
     "macmp": "DEBUG=app node  -r dotenv/config  preactionmgmt.js macmp dotenv_config_path=.env",
+    "mdfv2": "DEBUG=app node  -r dotenv/config  preactionmgmt.js mdfv2 dotenv_config_path=.env ",
     "start:test": "DEBUG=app node  -r dotenv/config server.js dotenv_config_path=.env.test"
   },
   "dependencies": {
