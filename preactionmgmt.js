@@ -558,7 +558,7 @@ let handlers = {
     "mds": (async function () {
         console.log("==migrateToAddresses==");
         let preactionmgmt = new PreActionMgmt()
-        let step = 50;
+        let step = process.argv[6];
         let len = process.argv[5];//1100-1999
         let lower = process.argv[4];//12559-11000
         if (lower == undefined) {
@@ -571,6 +571,11 @@ let handlers = {
             return;
         }
         len = Number(len);
+
+       if (step == undefined) {
+            console.error("=====WARN======step parameter is empty")
+        }
+        lestepn = Number(step);
         console.log(lower, len, step);
         await preactionmgmt.migrateToAddresses(lower, len, step);
 
