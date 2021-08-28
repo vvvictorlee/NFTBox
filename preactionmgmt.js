@@ -352,11 +352,11 @@ class PreActionMgmt {
             let destAddress = await this.geBadgeAddressFromDest(tid);
             if (destAddress == "0x0000000000000000000000000000000000000000") {
                 console.log(tokenIdLower, ",dest tid==", tid, ",")
-                break;
+                // break;
             }
             if (address != destAddress) {
                 console.log(tokenIdLower, ",diff dest tid==", tid, ",address==", address, ",dest address==", destAddress)
-                break;
+                // break;
             }
             if (i % 1000 == 0) {
                 console.log(tid, address)
