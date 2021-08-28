@@ -259,13 +259,7 @@ class PreActionMgmt {
             }
         }
     }
-    async geBadgeAddress(tokendId) {
-        const index = 0;
-        proxy = validators[0];
-        const address = await contracts[index].methods.ownerOf(tokendId).call({ from: proxy[0] });
 
-        return address;
-    }
     async geTotalSupply() {
         const index = 0;
         proxy = validators[0];
@@ -292,19 +286,6 @@ class PreActionMgmt {
     }
 
     async geBadgeAddressv2(tokendId) {
-        const index = 0;
-        proxy = validators[0];
-        // console.log("ownerOf(======", tokendId)
-
-        let address = "0x0000000000000000000000000000000000000000";
-        try {
-            address = await contracts[index].methods.ownerOf(tokendId).call({ from: proxy[0] });
-        } catch (error) {
-            console.error("====geBadgeAddressv2==error=tokendId==", tokendId, "====")//,//error)
-        }
-        return address;
-    }
-    async geBadgeAddressFromDest(tokendId) {
         const index = 1;
         proxy = validators[0];
         // console.log("ownerOf(======", tokendId)
@@ -313,7 +294,7 @@ class PreActionMgmt {
         try {
             address = await contracts[index].methods.ownerOf(tokendId).call({ from: proxy[0] });
         } catch (error) {
-            console.error("=geBadgeAddressFromDest=tokendId==",tokendId,"====");//,error)
+            console.error("====geBadgeAddressv2==error=tokendId==", tokendId, "====")//,//error)
         }
         return address;
     }
@@ -337,6 +318,29 @@ class PreActionMgmt {
         var d2 = new Date().getTime();
         console.log(tokenIdLower, "migrateFromAddressv2 elapse time" + (d2 - d1));
     }
+
+    async geBadgeAddress(tokendId) {
+        const index = 0;
+        proxy = validators[0];
+        const address = await contracts[index].methods.ownerOf(tokendId).call({ from: proxy[0] });
+
+        return address;
+    }
+
+    async geBadgeAddressFromDest(tokendId) {
+        const index = 1;
+        proxy = validators[0];
+        // console.log("ownerOf(======", tokendId)
+
+        let address = "0x0000000000000000000000000000000000000000";
+        try {
+            address = await contracts[index].methods.ownerOf(tokendId).call({ from: proxy[0] });
+        } catch (error) {
+            console.error("=geBadgeAddressFromDest=tokendId==", tokendId, "====");//,error)
+        }
+        return address;
+    }
+
     async migrateAddressCMP(tokenIdLower, len) {
         console.log(tokenIdLower, len)
 
@@ -344,7 +348,7 @@ class PreActionMgmt {
 
         for (let i = 0; i < len; ++i) {
             let tid = Number(tokenIdLower) + Number(i)
-            let address = await this.geBadgeAddressv2(tid);
+            let address = await this.geBadgeAddress(tid);
             if (address == "0x0000000000000000000000000000000000000000") {
                 console.log(tokenIdLower, ",tid==", tid, ",")
                 break;
