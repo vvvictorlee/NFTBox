@@ -292,7 +292,7 @@ class PreActionMgmt {
     }
 
     async geBadgeAddressv2(tokendId) {
-        const index = 1;
+        const index = 0;
         proxy = validators[0];
         // console.log("ownerOf(======", tokendId)
 
