@@ -1,5 +1,5 @@
 #!/bin/bash
-sum=2000
+sum=20000
 for ((i=1; i<=140000; i+=sum))
 do
     yarn mafc:test $i  $sum &
