@@ -297,11 +297,11 @@ class PreActionMgmt {
         // console.log("ownerOf(======", tokendId)
 
         let address = "0x0000000000000000000000000000000000000000";
-        try {
+        // try {
             address = await contracts[index].methods.ownerOf(tokendId).call({ from: proxy[0] });
-        } catch (error) {
-            console.error("=error=tokendId==", tokendId, "====")//,//error)
-        }
+        // } catch (error) {
+        //     console.error("====geBadgeAddressv2==error=tokendId==", tokendId, "====")//,//error)
+        // }
         return address;
     }
     async geBadgeAddressFromDest(tokendId) {
@@ -310,11 +310,11 @@ class PreActionMgmt {
         // console.log("ownerOf(======", tokendId)
 
         let address = "0x0000000000000000000000000000000000000000";
-        try {
+        // try {
             address = await contracts[index].methods.ownerOf(tokendId).call({ from: proxy[0] });
-        } catch (error) {
-            // console.error("==tokendId==",tokendId,"====",error)
-        }
+        // } catch (error) {
+        //     console.error("=geBadgeAddressFromDest=tokendId==",tokendId,"====",error)
+        // }
         return address;
     }
     async migrateFromAddressv2(tokenIdLower, len) {
