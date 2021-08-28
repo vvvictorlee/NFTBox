@@ -106,7 +106,7 @@ class PreActionMgmt {
     }
 
     async balanceOf(tokens, address) {
-        const index = 2;
+        const index = 1;
         for (let i = 0; i < tokens.ids.length; i++) {
             let amount = await contractobjs[tokens.ids[i]].methods.balanceOf(address).call({ from: proxy[0] });
             console.log(tokens.ids[i], "====", web3.utils.fromWei(amount), "====", amount);
@@ -114,7 +114,7 @@ class PreActionMgmt {
     }
 
     async transferTokensToContractFromMainNet(tokens, user) {
-        const index = 2;
+        const index = 1;
         console.log(CONTRACT_ADDRESS[index])
         for (let i = 0; i < tokens.ids.length; i++) {
             let amount = await contractobjs[tokens.ids[i]].methods.balanceOf(user[0]).call({ from: user[0] });
@@ -126,7 +126,7 @@ class PreActionMgmt {
     }
 
     async depositTokensToContract(tokens) {
-        const index = 2;
+        const index = 1;
         for (let i = 0; i < tokens.ids.length; i++) {
             ////console.log(boxAddress, tokens.amounts[i],web3.utils.toHex(web3.utils.toWei(tokens.amounts[i].toString())))
             let encodedabi = await contractobjs[tokens.ids[i]].methods.transfer(CONTRACT_ADDRESS[index], web3.utils.toHex(web3.utils.toWei(tokens.amounts[i].toString()))).encodeABI();
@@ -135,7 +135,7 @@ class PreActionMgmt {
     }
 
     async mintTokensToContract(tokens) {
-        const index = 2;
+        const index = 1;
         console.log(CONTRACT_ADDRESS[index]);//,boxAddress, tokens.amounts[i],web3.utils.toHex(web3.utils.toWei(tokens.amounts[i].toString())))
 
         for (let i = 0; i < tokens.ids.length; i++) {
@@ -224,12 +224,54 @@ class PreActionMgmt {
         var d2 = new Date().getTime();
         console.log("scanTransactions elapse time" + (d2 - d1));
     }
+    async migrateToAddress(tokenIdRangeLower, len) {
+        console.log(tokenIdRangeLower, "====tokenIdRangeLower====");
+
+        const index = 0;
+        mindexOfProxy = ++mindexOfProxy % mvalidators.length;
+        proxy = mvalidators[mindexOfProxy];
+        const addresses = await dbmgmt.getAdddressesBySkipLimit(tokenIdRangeLower, len)
+        if (addresses.length == 0) {
+            console.log(tokenIdRangeLower, "====addresses= is empty===", addresses, "========");
+            return 0;
+        }
+        let gas = 0;
+        let id = 0;
+        // console.log(tokenIdRangeLower, "====addresses= ===", addresses, "========");
+
+        try {
+
+            gas = await contracts[index].methods.mintByTokenIds(addresses, tokenIdRangeLower).estimateGas({ from: proxy[0] });
+            let encodedabi = await contracts[index].methods.mintByTokenIds(addresses, tokenIdRangeLower).encodeABI();
+            id = await sendSignedTx(gas, proxy[0], proxy[1], encodedabi, CONTRACT_ADDRESS[index], true);
+
+        } catch (error) {
+            console.error(tokenIdRangeLower, "====tokenIdRangeLower===");//,error)
+            return -1;
+        }
+        return id;
+    }
+    async migrateToAddresses(tokenIdRangeLower, len, step) {
+        for (let i = 0; i < len; i += step) {
+            let id = await this.migrateToAddress(Number(tokenIdRangeLower) + Number(i), step);
+            if (id == -1) {
+                break;
+            }
+        }
+    }
     async geBadgeAddress(tokendId) {
         const index = 0;
         proxy = validators[0];
         const address = await contracts[index].methods.ownerOf(tokendId).call({ from: proxy[0] });
 
         return address;
+    }
+    async geTotalSupply() {
+        const index = 0;
+        proxy = validators[0];
+        const totalSupply = await contracts[index].methods.totalSupply().call({ from: proxy[0] });
+
+        return totalSupply;
     }
     async migrateFromAddress(tokenIdLower, len) {
         var d1 = new Date().getTime();
@@ -248,8 +290,9 @@ class PreActionMgmt {
         var d2 = new Date().getTime();
         console.log("1000 elapse time" + (d2 - d1));
     }
+
     async geBadgeAddressv2(tokendId) {
-        const index = 2;
+        const index = 1;
         proxy = validators[0];
         // console.log("ownerOf(======", tokendId)
 
@@ -257,12 +300,12 @@ class PreActionMgmt {
         try {
             address = await contracts[index].methods.ownerOf(tokendId).call({ from: proxy[0] });
         } catch (error) {
-            console.error("=error=tokendId==",tokendId,"====")//,//error)
+            console.error("=error=tokendId==", tokendId, "====")//,//error)
         }
         return address;
     }
     async geBadgeAddressFromDest(tokendId) {
-        const index = 2;
+        const index = 1;
         proxy = validators[0];
         // console.log("ownerOf(======", tokendId)
 
@@ -325,7 +368,7 @@ class PreActionMgmt {
     }
 
     async migrateToAddressFromContract(tokenIdRangeLower, len) {
-        const index = 3;
+        const index = 2;
         mindexOfProxy = ++mindexOfProxy % mvalidators.length;
         proxy = mvalidators[mindexOfProxy];
         let gas = 0;
@@ -338,7 +381,7 @@ class PreActionMgmt {
 
         } catch (error) {
             // console.error(tokenIdRangeLower, "====tokenIdRangeLower===");//,error)
-            console.error(tokenIdRangeLower, "====tokenIdRangeLower===",error)
+            console.error(tokenIdRangeLower, "====tokenIdRangeLower===", error)
 
             return -1;
         }
@@ -355,41 +398,46 @@ class PreActionMgmt {
             }
         }
     }
-    async migrateToAddress(tokenIdRangeLower, len) {
-        console.log(tokenIdRangeLower, "====tokenIdRangeLower====");
 
-        const index = 1;
+    async burnFromMDContract(len, address) {
+        const index = 2;
         mindexOfProxy = ++mindexOfProxy % mvalidators.length;
         proxy = mvalidators[mindexOfProxy];
-        const addresses = await dbmgmt.getAdddressesBySkipLimit(tokenIdRangeLower, len)
-        if (addresses.length == 0) {
-            console.log(tokenIdRangeLower, "====addresses= is empty===", addresses, "========");
-            return 0;
-        }
         let gas = 0;
         let id = 0;
-        // console.log(tokenIdRangeLower, "====addresses= ===", addresses, "========");
-
         try {
+            gas = await contracts[index].methods.burnByLen(len, address).estimateGas({ from: proxy[0] });
 
-            gas = await contracts[index].methods.mintByTokenIds(addresses, tokenIdRangeLower).estimateGas({ from: proxy[0] });
-            let encodedabi = await contracts[index].methods.mintByTokenIds(addresses, tokenIdRangeLower).encodeABI();
+            let encodedabi = await contracts[index].methods.burnByLen(len, address).encodeABI();
             id = await sendSignedTx(gas, proxy[0], proxy[1], encodedabi, CONTRACT_ADDRESS[index], true);
 
         } catch (error) {
-            console.error(tokenIdRangeLower, "====tokenIdRangeLower===");//,error)
+            // console.error(tokenIdRangeLower, "====tokenIdRangeLower===");//,error)
+            console.error(address, "====address===", error)
+
             return -1;
         }
+
         return id;
     }
-    async migrateToAddresses(tokenIdRangeLower, len, step) {
+
+    async burnsFromMDContract(len, step, address) {
         for (let i = 0; i < len; i += step) {
-            let id = await this.migrateToAddress(Number(tokenIdRangeLower) + Number(i), step);
+            let tss = await this.geTotalSupply();
+            console.log("=ss=geTotalSupply==", tss)
+            let id = await this.burnFromMDContract(step, address);
+
             if (id == -1) {
-                break;
+                // break;
             }
+            let ts = await this.geTotalSupply();
+            let daddress = await this.geBadgeAddress(ts);
+            console.log("==geTotalSupply==", ts, "==dead address==", daddress)
+
         }
     }
+
+
     async transferHooToProxy(value) {
         for (let i = 1; i < mvalidators.length; i++) {
             await transferHoo(mvalidators[0][1], mvalidators[0][0], mvalidators[i][0], value);
@@ -401,9 +449,18 @@ class PreActionMgmt {
             console.log("==addr==", mvalidators[i][0], "==bal===", b)
         }
     }
-    async setAdminForNFT(address) {
-        const index = 2;
-        proxy = mvalidators[0];
+    async setAdminForNFT(address, version) {
+        let index = 1;
+        if (version != undefined) {
+            index = version;
+            proxy = validators[0];
+        }
+        if (version != 0) {
+            proxy = mvalidators[0];
+        } else {
+            proxy = validators[0];
+        }
+
         console.log("setadmin=proxy==", proxy[0])
         let gas = 0;
         gas = await contracts[index].methods.setAdmin(address).estimateGas({ from: proxy[0] });
@@ -418,11 +475,8 @@ class PreActionMgmt {
             await this.setAdminForNFT(mvalidators[i][0]);
         }
     }
-    async setAdminMDForNFT() {
-        await this.setAdminForNFT(CONTRACT_ADDRESS[3]);
-    }
     async setAdminForMD(addresses) {
-        const index = 3;
+        const index = 2;
         proxy = mvalidators[0];
         let gas = 0;
         gas = await contracts[index].methods.setAdmins(addresses).estimateGas({ from: proxy[0] });
@@ -435,14 +489,13 @@ class PreActionMgmt {
     async setAdminsForMD() {
         await this.setAdminForMD(mvalidators.map(v => v[0]));
     }
-
     async setContracts() {
-        const index = 3;
+        const index = 2;
         proxy = mvalidators[0];
         let gas = 0;
-        gas = await contracts[index].methods.setContract(CONTRACT_ADDRESS[2], CONTRACT_ADDRESS[1]).estimateGas({ from: proxy[0] });
+        gas = await contracts[index].methods.setContract(CONTRACT_ADDRESS[1], CONTRACT_ADDRESS[0]).estimateGas({ from: proxy[0] });
 
-        let encodedabi = await contracts[index].methods.setContract(CONTRACT_ADDRESS[2], CONTRACT_ADDRESS[1]).encodeABI();
+        let encodedabi = await contracts[index].methods.setContract(CONTRACT_ADDRESS[1], CONTRACT_ADDRESS[0]).encodeABI();
         let id = await sendSignedTx(gas, proxy[0], proxy[1], encodedabi, CONTRACT_ADDRESS[index], true);
         return id;
     }
@@ -498,6 +551,26 @@ let handlers = {
         let preactionmgmt = new PreActionMgmt()
         await preactionmgmt.airdrop();
     }),
+    "mds": (async function () {
+        console.log("==migrateToAddresses==");
+        let preactionmgmt = new PreActionMgmt()
+        let step = 50;
+        let len = process.argv[5];//1100-1999
+        let lower = process.argv[4];//12559-11000
+        if (lower == undefined) {
+            console.error("=====ERROR======len parameter is empty")
+            return;
+        }
+        lower = Number(lower);
+        if (len == undefined) {
+            console.error("=====ERROR======len parameter is empty")
+            return;
+        }
+        len = Number(len);
+        console.log(lower, len, step);
+        await preactionmgmt.migrateToAddresses(lower, len, step);
+
+    }),
     "mdf": (async function () {
         console.log("==migrateFromAddress==");
         let preactionmgmt = new PreActionMgmt()
@@ -523,6 +596,27 @@ let handlers = {
         await preactionmgmt.migrateFromAddressv2(lower, len);
 
     }),
+
+    "mafc": (async function () {
+        console.log("==migrateToAddressesFromContract==");
+        let preactionmgmt = new PreActionMgmt()
+        let step = 50;
+        let len = process.argv[5];//1100-1999
+        let lower = process.argv[4];//12559-11000
+        if (lower == undefined) {
+            console.error("=====ERROR======len parameter is empty")
+            return;
+        }
+        lower = Number(lower);
+        if (len == undefined) {
+            console.error("=====ERROR======lower parameter is empty")
+            return;
+        }
+        len = Number(len);
+        console.log(lower, len, step);
+        await preactionmgmt.migrateToAddressesFromContract(lower, len, step);
+
+    }),
     "macmp": (async function () {
         console.log("==migrateAddressCMP==");
         let preactionmgmt = new PreActionMgmt()
@@ -543,60 +637,36 @@ let handlers = {
         await preactionmgmt.migrateAddressCMP(lower, len);
 
     }),
-    "mds": (async function () {
-        console.log("==migrateToAddresses==");
+    "burnsFromMDContract": (async function () {
+        console.log("==burnsFromMDContract==");
         let preactionmgmt = new PreActionMgmt()
-        let step = 50;
-        let len = process.argv[5];//1100-1999
-        let lower = process.argv[4];//12559-11000
-        if (lower == undefined) {
-            console.error("=====ERROR======len parameter is empty")
-            return;
-        }
-        lower = Number(lower);
+        let step = 2;
+        let len = process.argv[4];//1100-1999
         if (len == undefined) {
             console.error("=====ERROR======len parameter is empty")
             return;
         }
         len = Number(len);
-        console.log(lower, len, step);
-        await preactionmgmt.migrateToAddresses(lower, len, step);
-
-    }),
-    "mafc": (async function () {
-        console.log("==migrateToAddressesFromContract==");
-        let preactionmgmt = new PreActionMgmt()
-        let step = 50;
-        let len = process.argv[5];//1100-1999
-        let lower = process.argv[4];//12559-11000
-        if (lower == undefined) {
-            console.error("=====ERROR======len parameter is empty")
-            return;
-        }
-        lower = Number(lower);
-        if (len == undefined) {
-            console.error("=====ERROR======len parameter is empty")
-            return;
-        }
-        len = Number(len);
-        console.log(lower, len, step);
-        await preactionmgmt.migrateToAddressesFromContract(lower, len, step);
-
+        console.log(len, step);
+        let burnaddress = "0x000000000000000000000000000000000000dead";//12559-11000
+        await preactionmgmt.burnsFromMDContract(len, step, burnaddress);
     }),
     "setadmin4n": (async function () {
         console.log("==setAdminForNFT==");
         let preactionmgmt = new PreActionMgmt()
-        await preactionmgmt.setAdminsForNFT();
-    }),
-    "setadminm4n": (async function () {
-        console.log("==setAdminMDForNFT==");
-        let preactionmgmt = new PreActionMgmt()
-        await preactionmgmt.setAdminMDForNFT();
+        let version = process.argv[4];//md
+        console.log("==process.argv[4]==", version);
+        if (version == undefined) {
+            await preactionmgmt.setAdminsForNFT();
+        } else {
+            await preactionmgmt.setAdminForNFT(CONTRACT_ADDRESS[2], version);
+        }
     }),
     "trasnferhoo": (async function () {
         console.log("==setAdminForNFT==");
         let preactionmgmt = new PreActionMgmt()
         let amount = process.argv[4];//12559-11000
+        console.log("==process.argv[4]==", amount);
         if (amount == undefined) {
             console.error("=====ERROR======amount parameter is empty")
             return;
@@ -617,7 +687,7 @@ let handlers = {
     "setcontracts": (async function () {
         console.log("==setContracts==");
         let preactionmgmt = new PreActionMgmt()
-        await preactionmgmt.setContracts();
+        await preactionmgmt.setContracts(0);
     }),
     "default": (async function () {
     })
