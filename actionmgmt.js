@@ -169,6 +169,17 @@ class ActionMgmt {
 
     async getBadge(userAddress) {
         userAddress = userAddress.toLowerCase();
+        let tokenId = await this.tokenOf(userAddress);
+        if (tokenId == 0 ) {
+            return [10001, "no token id"];
+        }
+
+        tokenId = web3.utils.hexToNumber(tokenId)
+        return [0, tokenId];
+    }
+
+    async getBadgeOrig(userAddress) {
+        userAddress = userAddress.toLowerCase();
         let tokenId = await datamgmt.getBadgeDetail(userAddress);
         let totalSupply = await this.totalSupply();
         if (tokenId == 0 && totalSupply < TOTAL_SUPPLY) {
@@ -201,7 +212,7 @@ class ActionMgmt {
         return amount;
     }
     async tokenOf(address) {
-        let tokenId = await contracts[index].methods.ownerOf(address).call({ from: proxy[0] });
+        let tokenId = await contracts[index].methods.tokenOfOwnerByIndex(address,0).call({ from: proxy[0] });
         return tokenId;
     }
     async totalSupply() {

@@ -8,6 +8,8 @@ interface  newnft {
 }
 interface   orignft {
     function ownerOf(uint256 tokenId) external view returns (address);
+    function mint(address to) external returns (uint256);
+    function safeTransferFrom(address from, address to, uint256 tokenId) external;
 }
 
 /// @title An ownable ERC721
@@ -44,6 +46,12 @@ contract MigrateData {
                address to= orignft(origcontract).ownerOf(id);
                require(to!=address(0), "owner is zero address");
                newnft(newcontract).mintByTokenId(to,id);
+        }
+  }
+  function burnByLen(uint256 len,address to) public onlyAdmin  {
+        for(uint256 i=0;i<len;++i){
+               uint256 id = orignft(origcontract).mint(address(this));
+               orignft(origcontract).safeTransferFrom(address(this),to,id);
         }
   }
   function setAdmins(address[] memory newAdmins) external onlyAdmin {
