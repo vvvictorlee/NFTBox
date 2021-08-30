@@ -56,7 +56,7 @@ class ActionMgmt {
         indexOfProxy = ++indexOfProxy % validators.length;
         proxy = validators[indexOfProxy];
         let gas = 0;
-         gas = await contracts[index].methods.mint(userAddress).estimateGas({ from: proxy[0] });
+        gas = await contracts[index].methods.mint(userAddress).estimateGas({ from: proxy[0] });
 
 
         let encodedabi = await contracts[index].methods.mint(userAddress).encodeABI();
@@ -107,8 +107,8 @@ class ActionMgmt {
         return false;
     }
 
-    async claimBadge(userAddress, ip,unlimited) {
-        let flag = unlimited||false
+    async claimBadge(userAddress, ip, unlimited) {
+        let flag = unlimited || false
         let ic = await this.checkIsContract(userAddress)
         if (ic) {
             return [10005, "The address is Contract "];
@@ -149,7 +149,7 @@ class ActionMgmt {
             try {
                 tokenId = await this.createBadge(userAddress);
             } catch (error) {
-                console.error(userAddress,"===proxy===",proxy,"========createBadge===error=========",error)
+                console.error(userAddress, "===proxy===", proxy, "========createBadge===error=========", error)
                 return [10001, "The address claimed reverted on chain"];
             }
             await datamgmt.saveBadgeDetail(userAddress, tokenId);
@@ -168,6 +168,15 @@ class ActionMgmt {
     }
 
     async getBadge(userAddress) {
+        userAddress = userAddress.toLowerCase();
+        let tokenId = await this.tokenOf(userAddress);
+        if (tokenId == 0) {
+            return [10001, "no token id"];
+        }
+        return [0, tokenId];
+    }
+
+    async getBadgeOrig(userAddress) {
         userAddress = userAddress.toLowerCase();
         let tokenId = await datamgmt.getBadgeDetail(userAddress);
         let totalSupply = await this.totalSupply();
@@ -201,7 +210,12 @@ class ActionMgmt {
         return amount;
     }
     async tokenOf(address) {
-        let tokenId = await contracts[index].methods.ownerOf(address).call({ from: proxy[0] });
+        let tokenId = 0;
+        try {
+            tokenId = await contracts[index].methods.tokenOfOwnerByIndex(address, 0).call({ from: proxy[0] });
+        } catch (error) {
+            console.log(error)
+        }
         return tokenId;
     }
     async totalSupply() {
