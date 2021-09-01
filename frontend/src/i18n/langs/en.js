@@ -28,7 +28,7 @@ const en = {
         test22:'A Trilogy of Encrypted World Explorers: DeFi, NFT and DAO',
 
         test23:'Multi-chain miner',
-        test24:'Holded',
+        test24:'Held',
 
         test25:'There is no card currently held',
         test26:'Guide for Participating in Joint NFT Activities',
