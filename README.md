@@ -60,14 +60,14 @@ curl -X POST \
 
 curl -X POST \
      -H 'Content-Type: application/json' \
-     -d '{"jsonrpc":"2.0","id":"id","method":"mybadge","params":{"address":"0x4a79c58CCf9d80353c02357F26D6f7b99fA9991e"}}' \
-    https://testbadge.hoosmartchain.com/api/mybadge
+     -d '{"jsonrpc":"2.0","id":"id","method":"mybadge","params":{"address":"0xf669a68af28f5E67AF5024C399590104B513743e"}}' \
+    https://nft.hoosmartchain.com/api/mybadge
 
 
 
 curl -X POST \
      -H 'Content-Type: application/json' \
-     -d '{"jsonrpc":"2.0","id":"id","method":"claimbadge","params":{"address":"0x5ba2A8748981c3B2C150c2d7aF391B104E399ACb"}}' \
+     -d '{"jsonrpc":"2.0","id":"id","method":"claimbadge","params":{"address":"0xf669a68af28f5E67AF5024C399590104B513743e"}}' \
       https://badge.hoosmartchain.com/api/claimbadge
 
 
