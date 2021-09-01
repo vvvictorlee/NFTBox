@@ -1,0 +1,32 @@
+{
+  "badge": {
+    "name": "Hoo 3rd Anniversary",
+    "image": "https://badge.hoosmartchain.com/images/",
+    "description": ""
+  },
+  "joint": {
+    "name": "Deprecated Multi-chain Miner",
+    "image": "https://badge.hoosmartchain.com/images/",
+    "description": ""
+  },
+  "miner": {
+    "name": "Deprecated Multi-chain Miner ",
+    "image": "https://badge.hoosmartchain.com/images/",
+    "description": ""
+  },
+  "minerv2": {
+    "name": "Multi-chain Miner v2",
+    "image": "https://badge.hoosmartchain.com/images/",
+    "description": ""
+  },
+  "tst": {
+    "name": "Tiger Style",
+    "image": "https://badge.hoosmartchain.com/images/",
+    "description": ""
+  },
+  "wofans": {
+    "name": "William Original Fans",
+    "image": "https://badge.hoosmartchain.com/images/",
+    "description": ""
+  }
+}
