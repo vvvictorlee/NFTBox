@@ -5,7 +5,7 @@
   "scripts": {
     "start": "DEBUG=app node  -r dotenv/config server.js dotenv_config_path=.env",
     "badd": "DEBUG=app node  -r dotenv/config historydatamgmt.js badd dotenv_config_path=.env",
-    "t": "DEBUG=app node  -r dotenv/config historydatamgmt.js t dotenv_config_path=.env.test",
+    "t": "DEBUG=app node  -r dotenv/config scanapi.mjs t dotenv_config_path=.env.test",
     "cov": "export NODE_ENV=test && nyc _mocha --timeout 10000 --exit --report lcovonly -- -R spec",
     "test": "DEBUG=app mocha  --timeout 10000  -r dotenv/config test/badge.js dotenv_config_path=.env.test",
     "scantx:test": "DEBUG=app node  -r dotenv/config preactionmgmt.js scantx dotenv_config_path=.env.test",
@@ -46,9 +46,11 @@
     "ethereumjs-tx": "^2.1.2",
     "express": "^4.17.1",
     "express-jwt": "^6.0.0",
+    "http-proxy-agent": "^5.0.0",
     "jsonwebtoken": "^8.5.1",
     "mocha": "^9.0.3",
     "mongoose": "^5.13.5",
+    "node-fetch": "^3.1.0",
     "web3": "^1.2.6"
   },
   "devDependencies": {
