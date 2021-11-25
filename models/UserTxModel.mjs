@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 
 var Schema = mongoose.Schema;
 
-var TxSchema = new Schema(
+var UserTxSchema = new Schema(
   {
     blockNumber: { type: String, required: true },
     timeStamp: { type: String, required: true },
@@ -29,4 +29,4 @@ var TxSchema = new Schema(
   { timestamps: false }
 );
 
-export default  mongoose.model("Tx", TxSchema);
+export default  mongoose.model("UserTx", UserTxSchema);

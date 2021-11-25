@@ -2,6 +2,8 @@ import nodeFetch from "node-fetch";
 import Tx from "./models/TxModel.mjs";
 import TokenTx from "./models/TokenTxModel.mjs";
 import BlockLogs from "./models/BlockLogsModel.mjs";
+import EventSignature from "./models/EventSignatureModel.mjs";
+import Contract from "./models/ContractModel.mjs";
 import mongoose from "mongoose";
 mongoose.set("useFindAndModify", false);
 mongoose.set("useCreateIndex", true);
@@ -37,13 +39,98 @@ class APIDBMgmt {
   async saveBlockLogs(blockLogs) {
     BlockLogs.insertMany(blockLogs);
   }
-  async getTx() {
+  async saveEventSignature(eventSignatures) {
+    EventSignature.insertMany(eventSignatures);
+  }
+  async saveContract(contract) {
+    Contract.insertMany(contract);
+  }
+  async getTxGasedTotalByAccount(address) {
+    // const reg = new RegExp(address, "i"); //ignorecase{ $regex: reg }
     let s = await Tx.aggregate([
-      { $group: { _id: "$from", gased: { $sum: { $toDouble: "$gasUsed" } } } },
+      {
+        $match: {
+          from: address,
+        },
+      },
+      {
+        $group: {
+          _id: "$from",
+          gasedhoo: {
+            $sum: {
+              $multiply: [
+                { $toDouble: "$gasPrice" },
+                { $toDouble: "$gasUsed" },
+                0.000000000000000001,
+              ],
+            },
+          },
+        },
+      },
     ]);
     console.log(s);
+    return s;
+  }
+
+  async getTxGasedTotalByAccountAndContract(address) {
+    let s = await Tx.aggregate([
+      {
+        $match: {
+          from: address,
+        },
+      },
+      {
+        $group: {
+          _id: "$to",
+          gased: {
+            $sum: {
+              $multiply: [
+                { $toDouble: "$gasPrice" },
+                { $toDouble: "$gasUsed" },
+                0.000000000000000001,
+              ],
+            },
+          },
+        },
+      },
+    ]);
+    console.log(s);
+    return s;
+  }
+
+  async getTokenTransferInByAccount(address) {
+    let s = await TokenTx.aggregate([
+      {
+        $match: {
+          to: address,
+        }},
+        {$group: {
+          _id: "$contractAddress",
+          tokenName:{$min:"$tokenName"},
+          tokenSymbol:{$min:"$tokenSymbol"},
+          tokenDecimal:{$min:"$tokenDecimal"},
+          amount: {
+            $sum: {
+              $divide: [{ $toDecimal: "$value" },{ $toDecimal: {$pow:[10,{$toDouble:"$tokenDecimal"}]}} ],
+            },
+          },
+         amounts: {
+            $sum: {
+               $toDecimal: "$value" 
+            },
+          },
+        },
+      },
+    { $addFields : {
+        amountstr: {"$toString" : "$amount"},
+    amountstrs: {"$toString" : "$amounts"},
+    }},
+    ]);
+    console.log(s);
+    return s;
   }
 }
+
 const fetch = (url, init) =>
   import("node-fetch").then(({ default: fetch }) => nodeFetch(url, init));
 import HttpProxyAgent from "http-proxy-agent";
@@ -157,13 +244,93 @@ async function testtokentx() {
   }
 }
 
+async function testlogs(raddress) {
+  const address = raddress || "0xc953e0ce3c498A04e5c3C1CA0D7BA365326f734d";
+  let apidbmgmt = new APIDBMgmt();
+  await apidbmgmt.init();
+  try {
+    const url =
+      "http://api.hooscan.com/api?module=logs&action=getLogs&fromBlock=0&toBlock=latest&address=" +
+      address +
+      "&apikey=YourApiKeyToken";
+    console.log(url);
+    const res = await fetch(url);
+    const headerDate =
+      res.headers && res.headers.get("date")
+        ? res.headers.get("date")
+        : "no response date";
+    console.log("Status Code:", res.status);
+    console.log("Date in Response header:", headerDate);
+    const json = await res.json();
+    console.log(json.result);
+    const logs = json.result;
+    const eventsig2name = await testabi(address);
+    const t = logs.map((a) => {
+      a["eventName"] =
+        eventsig2name[a.topics[0]] == undefined
+          ? a.topics[0]
+          : eventsig2name[a.topics[0]];
+      return {
+        transactionHash: a.transactionHash,
+        timeStamp: web3.utils.hexToNumber(a.timeStamp),
+        gasPrice: web3.utils.hexToNumber(a.gasPrice),
+        gasUsed: web3.utils.hexToNumber(a.gasUsed),
+        eventName: a.eventName,
+      };
+    });
+    console.log(t);
+    // apidbmgmt.saveBlockLogs(json.result);
+  } catch (err) {
+    console.log(err.message); //can be console.error
+  }
+}
 
-async function testlogs() {
+async function testcode(raddress) {
+  const address = raddress || "0xc953e0ce3c498A04e5c3C1CA0D7BA365326f734d";
+  let code = web3.eth.getCode(address);
+  return code != "0x";
+  //   let apidbmgmt = new APIDBMgmt();
+  //   await apidbmgmt.init();
+  //   try {
+  //     const res = await fetch(
+  //       "http://api.hooscan.com/api?module=proxy&action=eth_getCode&address=" +
+  //         address +
+  //         "&tag=latest&apikey=YourApiKeyToken"
+  //     );
+  //     const headerDate =
+  //       res.headers && res.headers.get("date")
+  //         ? res.headers.get("date")
+  //         : "no response date";
+  //     console.log("Status Code:", res.status);
+  //     console.log("Date in Response header:", headerDate);
+
+  //     const json = await res.json();
+  //     console.log(json);
+  //     const code = JSON.parse(json.result);
+  //     // for(user of users) {
+  //     //   console.log(`Got user with id: ${user.id}, name: ${user.name}`);
+  //     // }
+  //   } catch (err) {
+  //     console.log(err.message); //can be console.error
+  //   }
+}
+
+import Web3 from "web3";
+const PROVIDER_URL =
+  process.env.PROVIDER_URL || "https://http-testnet.hoosmartchain.com";
+
+const web3 = new Web3(new Web3.providers.HttpProvider(PROVIDER_URL));
+
+async function testabi(rcontractAddress) {
+  const contractAddress =
+    rcontractAddress || "0xc953e0ce3c498A04e5c3C1CA0D7BA365326f734d";
   let apidbmgmt = new APIDBMgmt();
   await apidbmgmt.init();
   try {
     const res = await fetch(
-      "http://api.hooscan.com/api?module=logs&action=getLogs&fromBlock=0&toBlock=latest&address=0xc953e0ce3c498A04e5c3C1CA0D7BA365326f734d&apikey=YourApiKeyToken"
+      "http://api.hooscan.com/api?module=contract&action=getabi&address=" +
+        contractAddress +
+        "&apikey=YourApiKeyToken"
     );
     const headerDate =
       res.headers && res.headers.get("date")
@@ -172,17 +339,40 @@ async function testlogs() {
     console.log("Status Code:", res.status);
     console.log("Date in Response header:", headerDate);
 
-    const users = await res.json();
-    apidbmgmt.saveBlockLogs(users.result);
-    console.log(users);
+    const re = await res.json();
+    const abi = JSON.parse(re.result);
+    // console.log(abi);
+    //
+    const events = abi
+      .filter((a) => a.type == "event")
+      .map((a) => {
+        return {
+          contractAddress: contractAddress,
+          eventName: a.name,
+          eventSignature: web3.eth.abi.encodeEventSignature(a),
+        };
+      });
+    console.log(events);
+    try {
+      apidbmgmt.saveEventSignature(events);
+      apidbmgmt.saveContract([contractAddress]);
+    } catch (error) {
+      console.error(error);
+    }
+
+    const es = events.reduce((s, a) => {
+      s[a.eventSignature] = a.eventName;
+      return s;
+    }, {});
+    console.log(es);
     // for(user of users) {
     //   console.log(`Got user with id: ${user.id}, name: ${user.name}`);
     // }
+    return es;
   } catch (err) {
     console.log(err.message); //can be console.error
   }
 }
-
 
 async function testinternal() {
   let apidbmgmt = new APIDBMgmt();
@@ -208,97 +398,52 @@ async function testinternal() {
     console.log(err.message); //can be console.error
   }
 }
-
-async function testcode() {
-  let apidbmgmt = new APIDBMgmt();
-  await apidbmgmt.init();
-  try {
-    const res = await fetch(
-      "http://api.hooscan.com/api?module=proxy&action=eth_getCode&address=0xbe8d16084841875a1f398e6c3ec00bbfcbfa571b&tag=latest&apikey=YourApiKeyToken"
-    );
-    const headerDate =
-      res.headers && res.headers.get("date")
-        ? res.headers.get("date")
-        : "no response date";
-    console.log("Status Code:", res.status);
-    console.log("Date in Response header:", headerDate);
-
-    const users = await res.json();
-    // apidbmgmt.saveTx(users.result);
-    console.log(users);
-    // for(user of users) {
-    //   console.log(`Got user with id: ${user.id}, name: ${user.name}`);
-    // }
-  } catch (err) {
-    console.log(err.message); //can be console.error
-  }
-}
-
-
-// var Web3 = require('web3');
-// var web3 = new Web3(new Web3.providers.HttpProvider());
-// var version = web3.version.api;
-
-// $.getJSON('http://api.etherscan.io/api?module=contract&action=getabi&address=0xfb6916095ca1df60bb79ce92ce3ea74c37c5d359', function (data) {
-//     var contractABI = "";
-//     contractABI = JSON.parse(data.result);
-//     if (contractABI != ''){
-//         var MyContract = web3.eth.contract(contractABI);
-//         var myContractInstance = MyContract.at("0xfb6916095ca1df60bb79ce92ce3ea74c37c5d359");
-//         var result = myContractInstance.memberId("0xfe8ad7dd2f564a877cc23feea6c0a9cc2e783715");
-//         console.log("result1 : " + result);            
-//         var result = myContractInstance.members(1);
-//         console.log("result2 : " + result);
-//     } else {
-//         console.log("Error" );
-//     }            
-// });
-
-async function testabi() {
-  let apidbmgmt = new APIDBMgmt();
-  await apidbmgmt.init();
-  try {
-    const res = await fetch(
-      "http://api.hooscan.com/api?module=contract&action=getabi&address=0xc953e0ce3c498A04e5c3C1CA0D7BA365326f734d&apikey=YourApiKeyToken"
-    );
-    const headerDate =
-      res.headers && res.headers.get("date")
-        ? res.headers.get("date")
-        : "no response date";
-    console.log("Status Code:", res.status);
-    console.log("Date in Response header:", headerDate);
-
-    const users = await res.json();
-    // apidbmgmt.saveTx(users.result);
-    console.log(users);
-    // for(user of users) {
-    //   console.log(`Got user with id: ${user.id}, name: ${user.name}`);
-    // }
-  } catch (err) {
-    console.log(err.message); //can be console.error
-  }
-}
-
 async function testsum() {
   let apidbmgmt = new APIDBMgmt();
   await apidbmgmt.init();
   apidbmgmt.getTx();
 }
+async function testtxtotal(address) {
+  let apidbmgmt = new APIDBMgmt();
+  await apidbmgmt.init();
+  apidbmgmt.getTxGasedTotalByAccount(address);
+}
+
+async function testtxcontract(address) {
+  let apidbmgmt = new APIDBMgmt();
+  await apidbmgmt.init();
+  apidbmgmt.getTxGasedTotalByAccountAndContract(address);
+}
+async function testtokenin(address) {
+  let apidbmgmt = new APIDBMgmt();
+  await apidbmgmt.init();
+  apidbmgmt.getTokenTransferInByAccount(address);
+}
+const testaddress = "0xc19d04e8fe2d28609866e80356c027924f23b1a5";
 let handlers = {
   t: async function () {
-    // test();
+    test();
     // testsum();
     // testinternal();
     // testtokentx();
     // testtokenbalance();
     // testcode();
-testlogs();
-// testabi();
+    // testlogs();
+    // testabi();
   },
-
+  tt: async function () {
+    testtxtotal(testaddress);
+  },
+  tc: async function () {
+    testtxcontract(testaddress);
+  },
+  ti: async function () {
+    const testaddress="0xea54eaf095d66c6bfca2845de895b2cad65f6716";
+    testtokenin(testaddress);
+  },
   default: async function () {},
 };
 
 // console.log(process.argv);
-const f = handlers[process.argv[2]] || handlers["default"];
+const f = handlers[process.argv[3]] || handlers["default"];
 f();

@@ -8,7 +8,7 @@ var TokenTxSchema = new Schema(
     timeStamp: { type: String, required: true },
     hash: {
       type: String,
-      required: true,
+      required: true,unique:true,dropDups: true
     },
     nonce: { type: String, required: true },
     blockHash: { type: String, required: true },
