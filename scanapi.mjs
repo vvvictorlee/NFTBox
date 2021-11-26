@@ -103,28 +103,114 @@ class APIDBMgmt {
       {
         $match: {
           to: address,
-        }},
-        {$group: {
+        },
+      },
+      {
+        $group: {
           _id: "$contractAddress",
-          tokenName:{$min:"$tokenName"},
-          tokenSymbol:{$min:"$tokenSymbol"},
-          tokenDecimal:{$min:"$tokenDecimal"},
+          tokenName: { $min: "$tokenName" },
+          tokenSymbol: { $min: "$tokenSymbol" },
+          tokenDecimal: { $min: "$tokenDecimal" },
           amount: {
             $sum: {
-              $divide: [{ $toDecimal: "$value" },{ $toDecimal: {$pow:[10,{$toDouble:"$tokenDecimal"}]}} ],
+              $divide: [
+                { $toDecimal: "$value" },
+                { $toDecimal: { $pow: [10, { $toDouble: "$tokenDecimal" }] } },
+              ],
             },
           },
-         amounts: {
+          amounts: {
             $sum: {
-               $toDecimal: "$value" 
+              $toDecimal: "$value",
             },
           },
         },
       },
-    { $addFields : {
-        amountstr: {"$toString" : "$amount"},
-    amountstrs: {"$toString" : "$amounts"},
-    }},
+      {
+        $addFields: {
+          amountstr: { $toString: "$amount" },
+          amountstrs: { $toString: "$amounts" },
+        },
+      },
+    ]);
+    console.log(s);
+    return s;
+  }
+
+  async getTokenTransferInByAccountAndMonth(address, starttm, endtm) {
+    let s = await TokenTx.aggregate([
+      {
+        $project: {
+          to: "$to",
+          value: "$value",
+          contractAddress: "$contractAddress",
+          tokenName: "$tokenName",
+          tokenSymbol: "$tokenSymbol",
+          tokenDecimal: "$tokenDecimal",
+          timeStamp: { $toDouble: "$timeStamp" },
+        },
+      },
+      {
+        $match: {
+          $and: [
+            {
+              to: address,
+            },
+            { timeStamp: { $gte: starttm, $lt: endtm } },
+          ],
+        },
+      },
+      {
+        $group: {
+          _id: [
+            "$contractAddress",
+            {
+              $month: {
+                $toDate: {
+                  $multiply: [
+                    { $add: [{ $toDouble: "$timeStamp" }, 28800] },
+                    1000,
+                  ],
+                },
+              },
+            },
+          ],
+          tokenName: { $last: "$tokenName" },
+          tokenSymbol: { $last: "$tokenSymbol" },
+          tokenDecimal: { $last: "$tokenDecimal" },
+          month: {
+            $min: {
+              $month: {
+                $toDate: {
+                  $multiply: [
+                    { $add: [{ $toDouble: "$timeStamp" }, 28800] },
+                    1000,
+                  ],
+                },
+              },
+            },
+          },
+          amount: {
+            $sum: {
+              $divide: [
+                { $toDecimal: "$value" },
+                { $toDecimal: { $pow: [10, { $toDouble: "$tokenDecimal" }] } },
+              ],
+            },
+          },
+          amounts: {
+            $sum: {
+              $toDecimal: "$value",
+            },
+          },
+        },
+      },
+      {
+        $addFields: {
+          amountstr: { $toString: "$amount" },
+          amountstrs: { $toString: "$amounts" },
+        },
+      },
     ]);
     console.log(s);
     return s;
@@ -419,6 +505,21 @@ async function testtokenin(address) {
   await apidbmgmt.init();
   apidbmgmt.getTokenTransferInByAccount(address);
 }
+async function testtokeninm(address, year) {
+  let apidbmgmt = new APIDBMgmt();
+  await apidbmgmt.init();
+  let nextyear = Number(year) + 1;
+  let startdt = new Date(year + "-01-01 00:00:00.000");
+  let enddt = new Date(nextyear + "-01-01 00:00:00.000");
+  let starttm = Date.parse(startdt) / 1000;
+  let endtm = Date.parse(enddt) / 1000;
+  console.log(starttm, endtm);
+  //1623484787
+  //1609430400000
+  // 1609430400
+  // 1640966400
+  apidbmgmt.getTokenTransferInByAccountAndMonth(address, starttm, endtm);
+}
 const testaddress = "0xc19d04e8fe2d28609866e80356c027924f23b1a5";
 let handlers = {
   t: async function () {
@@ -438,8 +539,12 @@ let handlers = {
     testtxcontract(testaddress);
   },
   ti: async function () {
-    const testaddress="0xea54eaf095d66c6bfca2845de895b2cad65f6716";
+    const testaddress = "0xea54eaf095d66c6bfca2845de895b2cad65f6716";
     testtokenin(testaddress);
+  },
+  tm: async function () {
+    const testaddress = "0xea54eaf095d66c6bfca2845de895b2cad65f6716";
+    testtokeninm(testaddress, 2021);
   },
   default: async function () {},
 };
