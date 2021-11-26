@@ -4,6 +4,8 @@ import TokenTx from "./models/TokenTxModel.mjs";
 import BlockLogs from "./models/BlockLogsModel.mjs";
 import EventSignature from "./models/EventSignatureModel.mjs";
 import Contract from "./models/ContractModel.mjs";
+import ContractInfo from "./models/ContractInfoModel.mjs";
+import AccountAddress from "./models/AccountAddressModel.mjs";
 import mongoose from "mongoose";
 mongoose.set("useFindAndModify", false);
 mongoose.set("useCreateIndex", true);
@@ -45,6 +47,49 @@ class APIDBMgmt {
   async saveContract(contract) {
     Contract.insertMany(contract);
   }
+  async saveContractInfo(contractinfo) {
+    ContractInfo.insertMany(contractinfo);
+  }
+  async saveAccountAddress(accounts) {
+    AccountAddress.insertMany(accounts);
+  }
+  async getTxToByAccount(address) {
+    // const reg = new RegExp(address, "i"); //ignorecase{ $regex: reg }
+    // let s = await Tx.find({ from: address }).distinct("to");
+    let s = await Tx.aggregate([
+      {
+        $match: {
+          from: address,
+        },
+      },
+      {
+        $lookup: {
+          from: "accountaddresses",
+          localField: "to",
+          foreignField: "accountAddress",
+          as: "accounts",
+        },
+      },
+      { $match: { accounts: [] } },
+      {
+        $lookup: {
+          from: "contractaddresses",
+          localField: "to",
+          foreignField: "contractAddress",
+          as: "contracts",
+        },
+      },
+      { $match: { contracts: [] } },
+      {
+        $group: {
+          _id: "$to",
+        },
+      },
+    ]);
+    console.log(s);
+    return s;
+  }
+
   async getTxGasedTotalByAccount(address) {
     // const reg = new RegExp(address, "i"); //ignorecase{ $regex: reg }
     let s = await Tx.aggregate([
@@ -269,16 +314,14 @@ async function test() {
     console.log("Status Code:", res.status);
     console.log("Date in Response header:", headerDate);
 
-    const users = await res.json();
-    apidbmgmt.saveTx(users.result);
-    console.log(users);
-    // for(user of users) {
-    //   console.log(`Got user with id: ${user.id}, name: ${user.name}`);
-    // }
+    const json = await res.json();
+    apidbmgmt.saveTx(json.result);
+    console.log(json);
   } catch (err) {
     console.log(err.message); //can be console.error
   }
 }
+
 // new Date(block.timestamp * 1000).toGMTString()
 async function testtokenbalance() {
   let apidbmgmt = new APIDBMgmt();
@@ -441,7 +484,6 @@ async function testabi(rcontractAddress) {
     console.log(events);
     try {
       apidbmgmt.saveEventSignature(events);
-      apidbmgmt.saveContract([contractAddress]);
     } catch (error) {
       console.error(error);
     }
@@ -489,6 +531,32 @@ async function testsum() {
   await apidbmgmt.init();
   apidbmgmt.getTx();
 }
+
+async function testtxto(address) {
+  let apidbmgmt = new APIDBMgmt();
+  await apidbmgmt.init();
+  let toes = apidbmgmt.getTxToByAccount(address);
+  let accounts = [];
+  let contracts = [];
+  for (to of toes) {
+    let flag = await testcode(to._id);
+    if (flag) {
+      let res = await testabi(to._id);
+      if (!res.is_empty()) {
+        contracts.push({ contractAddress: to._id });
+      }
+    } else {
+      accounts.push({ accountAddress: to._id });
+    }
+  }
+  if (!contracts.is_empty()) {
+    apidbmgmt.saveContract(contracts);
+  }
+  if (!accounts.is_empty()) {
+    apidbmgmt.saveAccountAddress(accounts);
+  }
+}
+
 async function testtxtotal(address) {
   let apidbmgmt = new APIDBMgmt();
   await apidbmgmt.init();
@@ -514,10 +582,6 @@ async function testtokeninm(address, year) {
   let starttm = Date.parse(startdt) / 1000;
   let endtm = Date.parse(enddt) / 1000;
   console.log(starttm, endtm);
-  //1623484787
-  //1609430400000
-  // 1609430400
-  // 1640966400
   apidbmgmt.getTokenTransferInByAccountAndMonth(address, starttm, endtm);
 }
 const testaddress = "0xc19d04e8fe2d28609866e80356c027924f23b1a5";
@@ -531,6 +595,9 @@ let handlers = {
     // testcode();
     // testlogs();
     // testabi();
+  },
+  to: async function () {
+    testtxto(testaddress);
   },
   tt: async function () {
     testtxtotal(testaddress);
