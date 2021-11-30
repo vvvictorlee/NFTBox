@@ -6,6 +6,8 @@ var ContractInfoSchema = new Schema(
   {
     contractAddress: { type: String ,required: true,unique:true,dropDups: true},
     contractName: { type: String },
+    appName: { type: String },
+    appType: { type: String },
 },
   { timestamps: false }
 );

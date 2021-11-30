@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": false,
   "scripts": {
-     "api": "DEBUG=app node  -r dotenv/config scanapi.mjs  dotenv_config_path=.env"
+ "start": "DEBUG=app node   -r dotenv/config server.mjs  dotenv_config_path=.env",
+    "api": "DEBUG=app node  -r dotenv/config scanapi.mjs  dotenv_config_path=.env",
+    "test": "mocha -r dotenv/config --recursive './test/**/*.mjs' dotenv_config_path=.env " 
   },
   "dependencies": {
     "async-redis": "^2.0.0",
@@ -13,6 +15,7 @@
     "connect-history-api-fallback": "^1.6.0",
     "core-js": "^3.6.4",
     "dotenv": "^9.0.2",
+    "esm": "^3.2.25",
     "ethereumjs-tx": "^2.1.2",
     "express": "^4.17.1",
     "express-jwt": "^6.0.0",
