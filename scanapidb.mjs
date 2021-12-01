@@ -52,7 +52,7 @@ export class APIDBMgmt {
   async saveAccountAddress(accounts) {
     AccountAddress.insertMany(accounts);
   }
-  async getTxToByAccount(address) {
+ async getTxToByAccount(address) {
     // const reg = new RegExp(address, "i"); //ignorecase{ $regex: reg }
     // let s = await Tx.find({ from: address }).distinct("to");
     let s = await Tx.aggregate([
@@ -161,7 +161,7 @@ export class APIDBMgmt {
   async getEarliestAndLatestTxByAccount(address) {
     let el = await this.getEarliestAndLatestTxHashByAccount(address);
     console.log(el);
-    if (el.is_empty()) {
+    if (el.length==0) {
       return [];
     }
     let filter = {
@@ -185,7 +185,7 @@ export class APIDBMgmt {
     return s;
   }
 
-  async getTxCountByAccount(address) {
+  async getTxCountByAccount(address,year) {
     let s = await Tx.find({
       from: address,
     }).count();
