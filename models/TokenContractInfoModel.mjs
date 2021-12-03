@@ -15,7 +15,7 @@ var TokenContractInfoSchema = new Schema(
     priceSourceType: { type: String },
     lastUpdateTime: { type: String },
   },
-  { timestamps: false }
+  { timestamps: false,versionKey:false }
 );
 
 export default mongoose.model("TokenContractInfo", TokenContractInfoSchema);

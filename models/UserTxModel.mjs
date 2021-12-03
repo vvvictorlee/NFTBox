@@ -26,7 +26,7 @@ var UserTxSchema = new Schema(
     gasUsed: { type: String, required: true },
     confirmations: { type: String, required: true },
   },
-  { timestamps: false }
+  { timestamps: false,versionKey:false }
 );
 
 export default  mongoose.model("UserTx", UserTxSchema);

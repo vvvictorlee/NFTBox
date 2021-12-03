@@ -18,7 +18,7 @@ var BlockLogsSchema = new Schema(
     },
     transactionIndex: { type: String, required: true },
   },
-  { timestamps: false }
+  { timestamps: false,versionKey:false }
 );
 
 export default mongoose.model("BlockLogs", BlockLogsSchema);

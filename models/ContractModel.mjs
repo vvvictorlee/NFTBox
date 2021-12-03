@@ -6,7 +6,7 @@ var ContractSchema = new Schema(
   {
     contractAddress: { type: String ,required: true,unique:true,dropDups: true},
 },
-  { timestamps: false }
+  { timestamps: false,versionKey:false }
 );
 
 

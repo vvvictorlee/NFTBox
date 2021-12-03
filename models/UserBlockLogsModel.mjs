@@ -14,7 +14,7 @@ var UserBlockLogsSchema = new Schema(
     },
     eventName: { type: String, required: true },
   },
-  { timestamps: false }
+  { timestamps: false,versionKey:false }
 );
 
 export default mongoose.model("UserBlockLogs", UserBlockLogsSchema);

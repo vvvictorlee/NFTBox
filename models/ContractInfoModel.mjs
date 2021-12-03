@@ -14,7 +14,7 @@ var ContractInfoSchema = new Schema(
     appType: { type: String },
     gasedMethod: { type: String },
   },
-  { timestamps: false }
+  { timestamps: false,versionKey:false }
 );
 
 export default mongoose.model("ContractInfo", ContractInfoSchema);

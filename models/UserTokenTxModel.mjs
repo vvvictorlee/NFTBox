@@ -27,7 +27,7 @@ var UserTokenTxSchema = new Schema(
     input: { type: String, required: true },
     confirmations: { type: String, required: true },
   },
-  { timestamps: false }
+  { timestamps: false,versionKey:false }
 );
 
 

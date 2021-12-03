@@ -4,6 +4,7 @@ import BlockLogs from "./models/BlockLogsModel.mjs";
 import EventSignature from "./models/EventSignatureModel.mjs";
 import Contract from "./models/ContractModel.mjs";
 import ContractInfo from "./models/ContractInfoModel.mjs";
+import TokenContractInfo from "./models/TokenContractInfoModel.mjs";
 import AccountAddress from "./models/AccountAddressModel.mjs";
 import mongoose from "mongoose";
 mongoose.set("useFindAndModify", false);
@@ -16,6 +17,8 @@ export class APIDBMgmt {
     mongoose
       .connect(MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true })
       .then(() => {
+        console.log("Connected to %s", MONGODB_URL);
+
         //don't show the log when it is test
         if (process.env.NODE_ENV !== "test") {
           console.log("Connected to %s", MONGODB_URL);
@@ -53,22 +56,29 @@ export class APIDBMgmt {
     AccountAddress.insertMany(accounts);
   }
 
+  async saveTokenContractInfo(contractinfo) {
+    TokenContractInfo.insertMany(contractinfo);
+  }
   async updateTokenPrice(address, price) {
-    await TokenContractInfo.update(
+    console.log("address==========", address);
+    let now = new Date(Date.now() + 8 * 60 * 60 * 1000).toUTCString();
+    let res = await TokenContractInfo.updateMany(
       { contractAddress: address },
-      { $setOnInsert: { price: price, lastUpdateTime: new Date().toUTCString } }
+      { price: price, lastUpdateTime: now },
+      { upsert: true }
     );
+    console.log(res);
   }
 
   async updateTokenPriceSource(para) {
-    await TokenContractInfo.update(
+    let now = new Date(Date.now() + 8 * 60 * 60 * 1000).toUTCString();
+    await TokenContractInfo.updateMany(
       { contractAddress: para.address },
       {
-        $setOnInsert: {
-          priceSource: para.source,
-          lastUpdateTime: new Date().toUTCString,
-        },
-      }
+        priceSource: para.source,
+        lastUpdateTime: now,
+      },
+      { upsert: true }
     );
   }
   async getTokenContractInfo() {
@@ -243,7 +253,8 @@ export class APIDBMgmt {
       {
         $project: {
           gased: "$gased",
-          name: {$cond: [ { $ne: [ "$apps", [] ] }, "$apps.appName", "$_id" ]},
+          apps: "$apps",
+          name: { $cond: [{ $ne: ["$apps", []] }, "$apps.appName", "$_id"] },
         },
       },
       {
@@ -251,9 +262,9 @@ export class APIDBMgmt {
           _id: "$name",
           gased: {
             $sum: "$gased",
+          },
         },
       },
-      }
     ]);
     console.log(s);
     return s;
@@ -328,7 +339,7 @@ export class APIDBMgmt {
       {
         $lookup: {
           from: "contractinfos",
-          localField: "to",
+          localField: "_id",
           foreignField: "contractAddress",
           as: "apps",
         },
@@ -336,14 +347,18 @@ export class APIDBMgmt {
       {
         $project: {
           times: "$times",
-          name: {$cond: [ { $ne: [ "$apps", [] ] }, "$apps.appName", "$_id" ]},
+          name: { $cond: [{ $ne: ["$apps", []] }, "$apps.appName", "$_id"] },
         },
       },
     ]);
     console.log(s);
     return s;
   }
-
+  // {
+  // $match: {
+  //     apps: { $ne: [] },
+  // },
+  // },
   async getTxCountSpanByAccountAndMonth(
     address,
     startdatetime,
@@ -429,7 +444,7 @@ export class APIDBMgmt {
         $project: {
           amount: { $toString: "$amount" },
           amountvalue: { $toString: "$amountvalue" },
-          contractAddress: "$contractAddress",
+          contractAddress: "$_id",
           tokenName: "$tokenName",
           tokenSymbol: "$tokenSymbol",
           tokenDecimal: "$tokenDecimal",
@@ -440,11 +455,211 @@ export class APIDBMgmt {
     return s;
   }
 
-  async getTokenTransferInByAccountAndMonth(
-    address,
-    startdatetime,
-    enddatetime
+  async getTokenTransferInAmountPriceByAccount(address) {
+    let s = await TokenTx.aggregate([
+      {
+        $match: {
+          to: address,
+        },
+      },
+      {
+        $group: {
+          _id: "$contractAddress",
+          tokenName: { $min: "$tokenName" },
+          tokenSymbol: { $min: "$tokenSymbol" },
+          tokenDecimal: { $min: "$tokenDecimal" },
+          amount: {
+            $sum: {
+              $divide: [
+                { $toDecimal: "$value" },
+                { $toDecimal: { $pow: [10, { $toDouble: "$tokenDecimal" }] } },
+              ],
+            },
+          },
+          amountvalue: {
+            $sum: {
+              $toDecimal: "$value",
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          amount: { $toString: "$amount" },
+          amountvalue: { $toString: "$amountvalue" },
+          contractAddress: "$_id",
+          tokenName: "$tokenName",
+          tokenSymbol: "$tokenSymbol",
+          tokenDecimal: "$tokenDecimal",
+        },
+      },
+      {
+        $lookup: {
+          from: "tokencontractinfos",
+          localField: "contractAddress",
+          foreignField: "contractAddress",
+          as: "tokenprices",
+        },
+      },
+      {
+        $project: {
+          pricea: {
+            $cond: [{ $ne: ["$tokenprices", []] }, "$tokenprices.price", [0]],
+          },
+        },
+      },
+      {
+        $unwind: "$pricea",
+      },
+      {
+        $project: {
+          amount: "$amount",
+          price: "$pricea",
+        },
+      },
+      {
+        $project: {
+          amount: {
+            $multiply: [{ $toDouble: "$price" }, { $toDouble: "$amount" }],
+          },
+        },
+      },
+      {
+        $group: { _id: null, amount: { $sum: "$amount" } },
+      },
+    ]);
+    // console.log(JSON.stringify(s));
+    console.log(s);
+    return s;
+  }
+
+    //   {
+    //     $match: {
+    //       tokenprices: { $ne: [] },
+    //     },
+    //   },
+  async getTokenTransferInAmountPriceByAccountAndMonth(
+    para
   ) {
+    const  address=para.address
+    const startdatetime=para.startdatetime
+    const enddatetime=para.enddatetime
+    let s = await TokenTx.aggregate([
+      {
+        $project: {
+          to: "$to",
+          value: "$value",
+          contractAddress: "$contractAddress",
+          tokenName: "$tokenName",
+          tokenSymbol: "$tokenSymbol",
+          tokenDecimal: "$tokenDecimal",
+          month: {
+            $month: {
+              $toDate: {
+                $multiply: [
+                  { $add: [{ $toDouble: "$timeStamp" }, 28800] },
+                  1000,
+                ],
+              },
+            },
+          },
+          timeStamp: { $toDouble: "$timeStamp" },
+        },
+      },
+      {
+        $match: {
+          $and: [
+            {
+              to: address,
+            },
+            { timeStamp: { $gte: startdatetime, $lt: enddatetime } },
+          ],
+        },
+      },
+      {
+        $group: {
+          _id: ["$contractAddress", "$month"],
+          tokenName: { $last: "$tokenName" },
+          tokenSymbol: { $last: "$tokenSymbol" },
+          tokenDecimal: { $last: "$tokenDecimal" },
+          month: {
+            $min: "$month",
+          },
+          amount: {
+            $sum: {
+              $divide: [
+                { $toDecimal: "$value" },
+                { $toDecimal: { $pow: [10, { $toDouble: "$tokenDecimal" }] } },
+              ],
+            },
+          },
+          amountvalue: {
+            $sum: {
+              $toDecimal: "$value",
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          amount: { $toString: "$amount" },
+          amountvalue: { $toString: "$amountvalue" },
+          contractAddress: "$_id",
+          tokenName: "$tokenName",
+          tokenSymbol: "$tokenSymbol",
+          tokenDecimal: "$tokenDecimal",
+          month: "$month",
+        },
+      },
+      {
+        $lookup: {
+          from: "tokencontractinfos",
+          localField: "contractAddress",
+          foreignField: "contractAddress",
+          as: "tokenprices",
+        },
+      },
+      {
+        $project: {
+          month: "$month",
+          amount:  "$amount" ,
+          pricea: {
+            $cond: [{ $ne: ["$tokenprices", []] }, "$tokenprices.price", [0]],
+          },
+        },
+      },
+      {
+        $unwind: "$pricea",
+      },
+      {
+        $project: {
+          month: "$month",
+          amount: "$amount",
+          price: "$pricea",
+        },
+      },
+      {
+        $project: {
+          month: "$month",
+          amount: {
+            $multiply: [{ $toDouble: "$price" }, { $toDouble: "$amount" }],
+          },
+        },
+      },
+      {
+        $group: { _id: "$month", amount: { $sum: "$amount" } },
+      },
+    ]);
+    console.log(s);
+    return s;
+  }
+
+  async getTokenTransferInByAccountAndMonth(
+  para
+  ) {
+    const  address=para.address
+    const startdatetime=para.startdatetime
+    const enddatetime=para.enddatetime
     let s = await TokenTx.aggregate([
       {
         $project: {
