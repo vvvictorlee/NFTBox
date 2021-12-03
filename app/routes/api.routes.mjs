@@ -20,4 +20,10 @@ export default  (app) => {
     app.post('/api/assetreport', async function (req, res, next) {
         await nft.assetReport(req, res);
     });
+    app.post('/api/addcontractinfo', async function (req, res, next) {
+        await nft.addContractInfo(req, res);
+    });
+    app.post('/api/addtokenpricesource', async function (req, res, next) {
+        await nft.addTokenPriceSource(req, res);
+    });
 }

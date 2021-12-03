@@ -52,7 +52,30 @@ export class APIDBMgmt {
   async saveAccountAddress(accounts) {
     AccountAddress.insertMany(accounts);
   }
- async getTxToByAccount(address) {
+
+  async updateTokenPrice(address, price) {
+    await TokenContractInfo.update(
+      { contractAddress: address },
+      { $setOnInsert: { price: price, lastUpdateTime: new Date().toUTCString } }
+    );
+  }
+
+  async updateTokenPriceSource(para) {
+    await TokenContractInfo.update(
+      { contractAddress: para.address },
+      {
+        $setOnInsert: {
+          priceSource: para.source,
+          lastUpdateTime: new Date().toUTCString,
+        },
+      }
+    );
+  }
+  async getTokenContractInfo() {
+    return await TokenContractInfo.find();
+  }
+
+  async getTxToByAccount(address) {
     // const reg = new RegExp(address, "i"); //ignorecase{ $regex: reg }
     // let s = await Tx.find({ from: address }).distinct("to");
     let s = await Tx.aggregate([
@@ -115,29 +138,6 @@ export class APIDBMgmt {
     return s;
   }
 
-  async getEarliestAndLatestTxHashByAccount(address) {
-    let s = await Tx.aggregate([
-      {
-        $match: {
-          from: address,
-        },
-      },
-      {
-        $group: {
-          _id: "$from",
-          earlist: {
-            $min: { $toDouble: "$timeStamp" },
-          },
-          latest: {
-            $max: { $toDouble: "$timeStamp" },
-          },
-        },
-      },
-    ]);
-    console.log(s);
-    return s;
-  }
-
   async getLatestBlockByAccount(address) {
     let s = await Tx.aggregate([
       {
@@ -161,7 +161,7 @@ export class APIDBMgmt {
   async getEarliestAndLatestTxByAccount(address) {
     let el = await this.getEarliestAndLatestTxHashByAccount(address);
     console.log(el);
-    if (el.length==0) {
+    if (el.length == 0) {
       return [];
     }
     let filter = {
@@ -181,14 +181,6 @@ export class APIDBMgmt {
     };
     console.log(JSON.stringify(filter));
     let s = await Tx.find(filter);
-    console.log(s);
-    return s;
-  }
-
-  async getTxCountByAccount(address,year) {
-    let s = await Tx.find({
-      from: address,
-    }).count();
     console.log(s);
     return s;
   }
@@ -219,6 +211,192 @@ export class APIDBMgmt {
     return s;
   }
 
+  async getTxGasedTotalByAccountAndApp(address) {
+    let s = await Tx.aggregate([
+      {
+        $match: {
+          from: address,
+        },
+      },
+      {
+        $group: {
+          _id: "$to",
+          gased: {
+            $sum: {
+              $multiply: [
+                { $toDouble: "$gasPrice" },
+                { $toDouble: "$gasUsed" },
+                0.000000000000000001,
+              ],
+            },
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: "contractinfos",
+          localField: "_id",
+          foreignField: "contractAddress",
+          as: "apps",
+        },
+      },
+      {
+        $project: {
+          gased: "$gased",
+          name: {$cond: [ { $ne: [ "$apps", [] ] }, "$apps.appName", "$_id" ]},
+        },
+      },
+      {
+        $group: {
+          _id: "$name",
+          gased: {
+            $sum: "$gased",
+        },
+      },
+      }
+    ]);
+    console.log(s);
+    return s;
+  }
+
+  ////// interactive report
+  async getEarliestAndLatestTxHashByAccount(address) {
+    let s = await Tx.aggregate([
+      {
+        $match: {
+          from: address,
+        },
+      },
+      {
+        $group: {
+          _id: "$from",
+          earlist: {
+            $min: { $toDouble: "$timeStamp" },
+          },
+          latest: {
+            $max: { $toDouble: "$timeStamp" },
+          },
+        },
+      },
+    ]);
+    console.log(s);
+    return s;
+  }
+  async getTxCountByAccount(address, year) {
+    let s = await Tx.find({
+      from: address,
+    }).count();
+    console.log(s);
+    return s;
+  }
+
+  async getTxCountByAccountAndContract(address) {
+    let s = await Tx.aggregate([
+      {
+        $match: {
+          from: address,
+        },
+      },
+      {
+        $group: {
+          _id: "$to",
+          times: {
+            $count: {},
+          },
+        },
+      },
+    ]);
+    console.log(s);
+    return s;
+  }
+
+  async getTxCountByAccountAndApp(address) {
+    let s = await Tx.aggregate([
+      {
+        $match: {
+          from: address,
+        },
+      },
+      {
+        $group: {
+          _id: "$to",
+          times: {
+            $count: {},
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: "contractinfos",
+          localField: "to",
+          foreignField: "contractAddress",
+          as: "apps",
+        },
+      },
+      {
+        $project: {
+          times: "$times",
+          name: {$cond: [ { $ne: [ "$apps", [] ] }, "$apps.appName", "$_id" ]},
+        },
+      },
+    ]);
+    console.log(s);
+    return s;
+  }
+
+  async getTxCountSpanByAccountAndMonth(
+    address,
+    startdatetime,
+    enddatetime,
+    range
+  ) {
+    let s = await TokenTx.aggregate([
+      {
+        $project: {
+          to: "$to",
+          from: "$from",
+          timespan: {
+            $mod: [
+              {
+                $hour: {
+                  $toDate: {
+                    $multiply: [
+                      { $add: [{ $toDouble: "$timeStamp" }, 28800] },
+                      1000,
+                    ],
+                  },
+                },
+              },
+              range,
+            ],
+          },
+          timeStamp: { $toDouble: "$timeStamp" },
+        },
+      },
+      {
+        $match: {
+          $and: [
+            {
+              from: address,
+            },
+            { timeStamp: { $gte: startdatetime, $lt: enddatetime } },
+          ],
+        },
+      },
+      {
+        $group: {
+          _id: "$timespan",
+          times: {
+            $count: {},
+          },
+        },
+      },
+    ]);
+    console.log(s);
+    return s;
+  }
+
+  ///// asset report
   async getTokenTransferInByAccount(address) {
     let s = await TokenTx.aggregate([
       {
@@ -240,7 +418,7 @@ export class APIDBMgmt {
               ],
             },
           },
-          amounts: {
+          amountvalue: {
             $sum: {
               $toDecimal: "$value",
             },
@@ -248,9 +426,13 @@ export class APIDBMgmt {
         },
       },
       {
-        $addFields: {
-          amountstr: { $toString: "$amount" },
-          amountstrs: { $toString: "$amounts" },
+        $project: {
+          amount: { $toString: "$amount" },
+          amountvalue: { $toString: "$amountvalue" },
+          contractAddress: "$contractAddress",
+          tokenName: "$tokenName",
+          tokenSymbol: "$tokenSymbol",
+          tokenDecimal: "$tokenDecimal",
         },
       },
     ]);
@@ -258,7 +440,11 @@ export class APIDBMgmt {
     return s;
   }
 
-  async getTokenTransferInByAccountAndMonth(address, starttm, endtm) {
+  async getTokenTransferInByAccountAndMonth(
+    address,
+    startdatetime,
+    enddatetime
+  ) {
     let s = await TokenTx.aggregate([
       {
         $project: {
@@ -268,6 +454,16 @@ export class APIDBMgmt {
           tokenName: "$tokenName",
           tokenSymbol: "$tokenSymbol",
           tokenDecimal: "$tokenDecimal",
+          month: {
+            $month: {
+              $toDate: {
+                $multiply: [
+                  { $add: [{ $toDouble: "$timeStamp" }, 28800] },
+                  1000,
+                ],
+              },
+            },
+          },
           timeStamp: { $toDouble: "$timeStamp" },
         },
       },
@@ -277,39 +473,18 @@ export class APIDBMgmt {
             {
               to: address,
             },
-            { timeStamp: { $gte: starttm, $lt: endtm } },
+            { timeStamp: { $gte: startdatetime, $lt: enddatetime } },
           ],
         },
       },
       {
         $group: {
-          _id: [
-            "$contractAddress",
-            {
-              $month: {
-                $toDate: {
-                  $multiply: [
-                    { $add: [{ $toDouble: "$timeStamp" }, 28800] },
-                    1000,
-                  ],
-                },
-              },
-            },
-          ],
+          _id: ["$contractAddress", "$month"],
           tokenName: { $last: "$tokenName" },
           tokenSymbol: { $last: "$tokenSymbol" },
           tokenDecimal: { $last: "$tokenDecimal" },
           month: {
-            $min: {
-              $month: {
-                $toDate: {
-                  $multiply: [
-                    { $add: [{ $toDouble: "$timeStamp" }, 28800] },
-                    1000,
-                  ],
-                },
-              },
-            },
+            $min: "$month",
           },
           amount: {
             $sum: {
@@ -319,7 +494,7 @@ export class APIDBMgmt {
               ],
             },
           },
-          amounts: {
+          amountvalue: {
             $sum: {
               $toDecimal: "$value",
             },
@@ -327,9 +502,14 @@ export class APIDBMgmt {
         },
       },
       {
-        $addFields: {
-          amountstr: { $toString: "$amount" },
-          amountstrs: { $toString: "$amounts" },
+        $project: {
+          amount: { $toString: "$amount" },
+          amountvalue: { $toString: "$amountvalue" },
+          contractAddress: "$contractAddress",
+          tokenName: "$tokenName",
+          tokenSymbol: "$tokenSymbol",
+          tokenDecimal: "$tokenDecimal",
+          month: "$month",
         },
       },
     ]);

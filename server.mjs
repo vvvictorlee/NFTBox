@@ -54,7 +54,7 @@ app.use(express.json());
 import s from "./app/routes/api.routes.mjs" 
 s(app);
 
-const port = process.env.PORT || 6789;
+const port = process.env.PORT || 8778;
 app.listen(port);
 console.log("Listening on port: " + port);
 

@@ -1,6 +1,6 @@
-const path = require('path')
+import path  from 'path'
 
-const fs = require('fs');
+import fs  from 'fs';
 
 const getJSON = (fileName) => {
         
@@ -10,8 +10,6 @@ const getJSON = (fileName) => {
 const putJSON = (fileName, json) => {
     fs.writeFileSync(path.join(__dirname, fileName), JSON.stringify(json));
 }
-
-
 
 const readCSV = (fileName) => {
     const data = fs.readFileSync(path.join(__dirname, fileName));
@@ -94,4 +92,4 @@ const ConvertToTable = (data) => {
     return table;
 }
 
-module.exports = { getJSON, putJSON, readCSVToJSON,readUCSV,readCSV,writeCSV }
+export{ getJSON, putJSON, readCSVToJSON,readUCSV,readCSV,writeCSV }

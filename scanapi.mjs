@@ -55,7 +55,7 @@ export class ScanAPI {
     const address = raddress || "0xc19D04E8Fe2d28609866e80356c027924F23B1A5";
     let blocknumber = 0;
     const blocknumbers = await apidbmgmt.getLatestBlockByAccount(address);
-    if (blocknumbers != undefined && !blocknumbers.is_empty()) {
+    if (blocknumbers != undefined && !blocknumbers.length==0) {
       blocknumber = blocknumbers[0].latest;
     }
 
@@ -80,7 +80,7 @@ export class ScanAPI {
 
         const json = await res.json();
         const txes = JSON.parse(json.result);
-        if (txes.is_empty()) {
+        if (txes.length==0) {
           break;
         }
         apidbmgmt.saveTx(json.result);
@@ -148,51 +148,84 @@ export class ScanAPI {
   }
 
   async syncTxAbiOfToAddress(address) {
-    let toes = apidbmgmt.getTxToByAccount(address);
+    let toes = await apidbmgmt.getTxToByAccount(address);
+    console.log("toes=======",toes)
     let accounts = [];
     let contracts = [];
     for (to of toes) {
       let flag = await testcode(to._id);
       if (flag) {
         let res = await testabi(to._id);
-        if (!res.is_empty()) {
+        if (!res.length==0) {
           contracts.push({ contractAddress: to._id });
         }
       } else {
         accounts.push({ accountAddress: to._id });
       }
     }
-    if (!contracts.is_empty()) {
+    if (!contracts.length==0) {
       apidbmgmt.saveContract(contracts);
     }
-    if (!accounts.is_empty()) {
+    if (!accounts.length==0) {
       apidbmgmt.saveAccountAddress(accounts);
     }
   }
 
-  async getGasFeeReport(address, detailType) {
+  async getGasFeeReport(para) {
+    const address = para.address;
+    const detailType = para.detailType;
     await this.syncOnChainData(address);
     if (detailType == undefined) {
       return await apidbmgmt.getTxGasedTotalByAccount(address);
     }
     return await apidbmgmt.getTxGasedTotalByAccountAndContract(address);
   }
-  async getInteractiveReport(address, detailType, year) {
+  async getInteractiveReport(para) {
+    const address = para.address;
+    const detailType = para.detailType;
+    const startdatetime = para.startdatetime;
+    const enddatetime = para.enddatetime;
+    const range = para.range
     await apidbmgmt.init();
     if (detailType == "first") {
       return await apidbmgmt.getEarliestAndLatestTxByAccount(address);
+    }
+    if (detailType == "span") {
+      return await apidbmgmt.getTxCountSpanByAccountAndMonth(
+        address,
+        startdatetime,
+        enddatetime,
+        range
+      );
     }
 
     await apidbmgmt.getTxCountByAccount(address, year);
   }
 
-  async getAssetReport(address, year) {
+  async getAssetReport(para) {
+    const address = para.address;
+    const startdatetime = para.startdatetime;
+    const enddatetime = para.enddatetime;
+
     await tokenApi.syncOnChainDataOfTokenTx(address);
-    let total = await tokenApi.getTokenTransferIn(address, year);
-    let months = await tokenApi.getTokenTransferInByMonth(address, year);
+    let total = await tokenApi.getTokenTransferIn(address, startdatetime,enddatetime);
+    let months = await tokenApi.getTokenTransferInByMonth(address, startdatetime,enddatetime);
     return { total, months };
   }
+
+  async addContractInfo(para) {
+       const name = para.name;
+       let tokens = para.addresses.map(addr=> {return  {contractAddress:addr,appName:name};});
+       await apidbmgmt.saveContractInfo(tokens);
+  }
+
+
+  async addTokenPriceSource(para) {
+   await apidbmgmt.updateTokenPriceSource(para);
+  }
 }
+
+
 const scanApi = new ScanAPI();
 const tokenApi = new TokenAPI();
 const logApi = new LogAPI();

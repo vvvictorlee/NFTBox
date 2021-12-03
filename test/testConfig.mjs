@@ -10,6 +10,8 @@ import chaiHttp from "chai-http";
 import  server  from "../server.mjs";
 // let should = chai.should();
 chai.use(chaiHttp);
+import chaiAsPromised  from "chai-as-promised";
+chai.use(chaiAsPromised);
 
 //Export this to use in multiple files
 // export default chai;
