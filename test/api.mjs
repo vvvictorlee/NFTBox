@@ -16,7 +16,6 @@ import { timeRange } from "../util.mjs";
 describe("api", () => {
   //Before each test we empty the database
   before(async () => {
-    await apiDBMgmt.init();
   });
 
   // Prepare data for testing
@@ -65,7 +64,7 @@ describe("api", () => {
       await apiDBMgmt.getTokenTransferInByAccountAndMonth(para);
     });
 
-    it.only("getTokenTransferInAmountPriceByAccountAndMonth", async () => {
+    it("getTokenTransferInAmountPriceByAccountAndMonth", async () => {
       let para = timeRange(2021);
       para.address = toaddress;
       await apiDBMgmt.getTokenTransferInAmountPriceByAccountAndMonth(para);
@@ -121,11 +120,8 @@ describe("api", () => {
     });
   });
 
-  describe("/POST gasfeereport", () => {
-    // before(function () {
-    //   this.timeout(10000); // 10 second timeout for setup
-    // });
-    it("gasfeereport", async () => {
+  describe("/POST gas fee report", () => {
+    it.only("gas fee report", async () => {
       let res = await chai
         .request(server)
         .post("/api/gasfeereport")
@@ -134,17 +130,46 @@ describe("api", () => {
           id: "id",
           method: "gasfeereport",
           params: {
+            address: "0xc19d04e8fe2d28609866e80356c027924f23b1a5",
+            ip: "1.2.3.4",
+          },
+        });
+      console.log("======================", res.body);
+    });
+  });
+  describe("/POST interactive report", () => {
+    it("interactive report", async () => {
+      let res = await chai
+        .request(server)
+        .post("/api/interactivereport")
+        .send({
+          jsonrpc: "2.0",
+          id: "id",
+          method: "interactivereport",
+          params: {
             address: "0xc19D04E8Fe2d28609866e80356c027924F23B1A5",
             ip: "1.2.3.4",
           },
         });
       console.log("======================", res);
-      // .end((err, res) => {
-      // 	res.should.have.status(200);
-      // 	res.body.should.have.property("message").eql("Login Success.");
-      // 	userTestData.token = res.body.data.token;
-      // });
-      //   return res.should.have.status(200)
+    });
+  });
+
+  describe("/POST asset report", () => {
+    it("asset report", async () => {
+      let res = await chai
+        .request(server)
+        .post("/api/assetreport")
+        .send({
+          jsonrpc: "2.0",
+          id: "id",
+          method: "assetreport",
+          params: {
+            address: "0xc19D04E8Fe2d28609866e80356c027924F23B1A5",
+            ip: "1.2.3.4",
+          },
+        });
+      console.log("======================", res);
     });
   });
 });

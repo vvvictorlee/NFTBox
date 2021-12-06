@@ -1,7 +1,8 @@
 import nodeFetch from "node-fetch";
-import { APIDBMgmt } from "./scanapidb.mjs";
 import { TokenAPI } from "./scantokenapi.mjs";
 import { LogAPI } from "./scanlogapi.mjs";
+import { APIDBMgmt } from "./scanapidb.mjs";
+import "./utils.mjs";
 
 import Web3 from "web3";
 const PROVIDER_URL =
@@ -13,6 +14,7 @@ const fetch = (url, init) =>
   import("node-fetch").then(({ default: fetch }) => nodeFetch(url, init));
 import HttpProxyAgent from "http-proxy-agent";
 let apiDBMgmt = new APIDBMgmt();
+
 export class ScanAPI {
   async testproxy() {
     //   try {
@@ -50,53 +52,52 @@ export class ScanAPI {
 
   // 交易手续费(Tx Fee) = 实际运行步数(Actual Gas Used) * 单步价格(Gas Price)
   async syncOnChainData(raddress) {
-    await apiDBMgmt.init();
+    console.log("=====in==syncOnChainData===raddress====", raddress);
 
     const address = raddress || "0xc19D04E8Fe2d28609866e80356c027924F23B1A5";
-    let blocknumber = 0;
-    const blocknumbers = await apiDBMgmt.getLatestBlockByAccount(address);
-    if (blocknumbers != undefined && !blocknumbers.length == 0) {
-      blocknumber = blocknumbers[0].latest;
-    }
 
-    let page = Number(1);
     while (true) {
       try {
+        let blocknumber = await apiDBMgmt.getLatestBlockByAccount(address);
         const res = await fetch(
           "https://api.hooscan.com//api?module=account&action=txlist&address=" +
             address +
             "&startblock=" +
             blocknumber +
-            "&endblock=99999999&page=" +
-            page +
-            "&offset=10000&sort=asc&apikey=YourApiKeyToken"
+            "&endblock=99999999&sort=asc&apikey=YourApiKeyToken"
         );
         const headerDate =
           res.headers && res.headers.get("date")
             ? res.headers.get("date")
             : "no response date";
         console.log("Status Code:", res.status);
-        console.log("Date in Response header:", headerDate);
+        console.log("syncOnChainData Date in Response header:", headerDate);
 
         const json = await res.json();
-        const txes = JSON.parse(json.result);
-        if (txes.length == 0) {
+
+        if (
+          json == undefined ||
+          json == null ||
+          json.result == undefined ||
+          json.result == null ||
+          json.result.length == 0
+        ) {
           break;
         }
+        console.log("====json.result.length======", json.result.length);
+
         apiDBMgmt.saveTx(json.result);
-        console.log(json);
-        ++page;
+        console.log("====json.result.length======", json.result.length);
       } catch (err) {
-        console.log(err.message); //can be console.error
+        console.log("====syncOnChainData===", err.message); //can be console.error
         break;
       }
     }
-    await this.syncTxAbiOfToAddress(raddress);
+    console.log("===syncOnChainData exit========");
   }
 
   // new Date(block.timestamp * 1000).toGMTString()
   async testtokenbalance() {
-    await apiDBMgmt.init();
     try {
       const res = await fetch(
         "http://api.hooscan.com/api?module=account&action=tokenbalance&contractaddress=0xbe8d16084841875a1f398e6c3ec00bbfcbfa571b&address=0x26ee42a4de70cebcde40795853eba4e492a9547f&tag=latest&apikey=YourApiKeyToken"
@@ -120,7 +121,6 @@ export class ScanAPI {
   }
 
   async testinternal() {
-    await apiDBMgmt.init();
     try {
       const res = await fetch(
         "http://api.hooscan.com/api?module=account&action=txlistinternal&address=0xEA54EAf095d66C6bFca2845dE895b2cAd65f6716&startblock=0&endblock=99999999999&sort=asc&apikey=YourApiKeyToken"
@@ -143,82 +143,50 @@ export class ScanAPI {
     }
   }
   async testsum() {
-    await apiDBMgmt.init();
     apiDBMgmt.getTx();
   }
 
-  async syncTxAbiOfToAddress(address) {
-    let toes = await apiDBMgmt.getTxToByAccount(address);
-    console.log("toes=======", toes);
-    let accounts = [];
-    let contracts = [];
-    for (to of toes) {
-      let flag = await testcode(to._id);
-      if (flag) {
-        let res = await testabi(to._id);
-        if (!res.length == 0) {
-          contracts.push({ contractAddress: to._id });
-        }
-      } else {
-        accounts.push({ accountAddress: to._id });
-      }
+  async getGasFeeReport(para) {
+    try {
+      const address = para.address;
+      console.log("=======syncOnChainData=========");
+      await this.syncOnChainData(address);
+      console.log("=====after==syncOnChainData=========");
+      await logApi.syncTxAbiOfToAddress(address);
+
+      const totalgased = await apiDBMgmt.getTxGasedTotalByAccount(address);
+      const gasedbycontract = await apiDBMgmt.getTxGasedTotalByAccountAndApp(
+        address
+      );
+    } catch (error) {
+      console.log("==========", error);
     }
-    if (!contracts.length == 0) {
-      apiDBMgmt.saveContract(contracts);
-    }
-    if (!accounts.length == 0) {
-      apiDBMgmt.saveAccountAddress(accounts);
-    }
+
+    return { totalgased, gasedbycontract };
   }
 
-  async getGasFeeReport(para) {
-    const address = para.address;
-    const detailType = para.detailType;
-    await this.syncOnChainData(address);
-    if (detailType == undefined) {
-      return await apiDBMgmt.getTxGasedTotalByAccount(address);
-    }
-    return await apiDBMgmt.getTxGasedTotalByAccountAndContract(address);
-  }
   async getInteractiveReport(para) {
     const address = para.address;
-    const detailType = para.detailType;
-    const startdatetime = para.startdatetime;
-    const enddatetime = para.enddatetime;
-    const range = para.range;
-    await apiDBMgmt.init();
-    if (detailType == "first") {
-      return await apiDBMgmt.getEarliestAndLatestTxByAccount(address);
-    }
-    if (detailType == "span") {
-      return await apiDBMgmt.getTxCountSpanByAccountAndMonth(
-        address,
-        startdatetime,
-        enddatetime,
-        range
-      );
-    }
+    const firstlast = await apiDBMgmt.getEarliestAndLatestTxByAccount(address);
+    const txcountbytimespan = await apiDBMgmt.getTxCountSpanByAccountAndMonth(
+      para
+    );
+    const txcountbyapp = await apiDBMgmt.getTxCountByAccountAndApp(address);
 
-    await apiDBMgmt.getTxCountByAccount(address, year);
+    const total = await apiDBMgmt.getTxCountByAccount(address, year);
+    return { total, firstlast, txcountbyapp, txcountbytimespan };
   }
 
   async getAssetReport(para) {
-    const address = para.address;
-    const startdatetime = para.startdatetime;
-    const enddatetime = para.enddatetime;
-
     await tokenApi.syncOnChainDataOfTokenTx(address);
-    let total = await tokenApi.getTokenTransferIn(
-      address,
-      startdatetime,
-      enddatetime
+    let total = await tokenApi.getTokenTransferInByAccount(para);
+    let months = await tokenApi.getTokenTransferInByAccountAndMonth(para);
+    let totalAmount = await tokenApi.getTokenTransferInAmountPriceByAccount(
+      para
     );
-    let months = await tokenApi.getTokenTransferInByMonth(
-      address,
-      startdatetime,
-      enddatetime
-    );
-    return { total, months };
+    let monthsAmount =
+      await tokenApi.getTokenTransferInAmountPriceByAccountAndMonth(para);
+    return { total, months, totalAmount, monthsAmount };
   }
 
   async addContractInfo(para) {
@@ -238,14 +206,14 @@ const scanApi = new ScanAPI();
 const tokenApi = new TokenAPI();
 const logApi = new LogAPI();
 const testaddress = "0xc19d04e8fe2d28609866e80356c027924f23b1a5";
+
 let handlers = {
   t: async function () {
-    const testaddress = "0xea54eaf095d66c6bfca2845de895b2cad65f6716";
-    ////token  transfer to
-    await apiDBMgmt.init();
-    await apiDBMgmt.saveTokenContractInfo([
-      { contractAddress: testaddress, price: "2.2" },
-    ]);
+    // const testaddress = "0xea54eaf095d66c6bfca2845de895b2cad65f6716";
+    // ////token  transfer to
+    // await apiDBMgmt.saveTokenContractInfo([
+    //   { contractAddress: testaddress, price: "2.2" },
+    // ]);
     // scanApi.test();\
     // testsum();
     // testinternal();
@@ -254,30 +222,8 @@ let handlers = {
     // testcode();
     // testlogs();
     // testabi();
-  },
-  to: async function () {
-    scanApi.testtxto(testaddress);
-  },
-  tt: async function () {
-    ////total gased  by account
-    scanApi.testtxtotal(testaddress);
-  },
-  el: async function () {
-    ////total gased  by account
-    scanApi.testel(testaddress);
-  },
-  tc: async function () {
-    scanApi.testtxcontract(testaddress);
-  },
-  ti: async function () {
-    const testaddress = "0xea54eaf095d66c6bfca2845de895b2cad65f6716";
-    ////token  transfer to
-    tokenApi.testtokenin(testaddress);
-  },
-  tm: async function () {
-    const testaddress = "0xea54eaf095d66c6bfca2845de895b2cad65f6716";
-    ////token  transfer to  by month
-    tokenApi.testtokeninm(testaddress, 2021);
+    console.log(__line);
+    console.log(__function);
   },
   default: async function () {},
 };

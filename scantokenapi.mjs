@@ -1,10 +1,11 @@
 import nodeFetch from "node-fetch";
 import { APIDBMgmt } from "./scanapidb.mjs";
+import "./utils.mjs";
 
 const fetch = (url, init) =>
   import("node-fetch").then(({ default: fetch }) => nodeFetch(url, init));
-let apidbmgmt = new APIDBMgmt();
-const scan_interval = process.env.SCAN_INTERVAL || 10000;//10 seconds
+let apiDBMgmt = new APIDBMgmt();
+const scan_interval = process.env.SCAN_INTERVAL || 10000; //10 seconds
 
 // 函数实现，参数单位 毫秒 ；
 function sleep(ms) {
@@ -13,26 +14,19 @@ function sleep(ms) {
 
 export class TokenAPI {
   async syncOnChainDataOfTokenTx(raddress) {
-    await apidbmgmt.init();
 
     const address = raddress || "0xc19D04E8Fe2d28609866e80356c027924F23B1A5";
-    let blocknumber = 0;
-    const blocknumbers = await apidbmgmt.getLatestBlockByAccount(address);
-    if (blocknumbers != undefined && !blocknumbers.length==0) {
-      blocknumber = blocknumbers[0].latest;
-    }
 
-    let page = Number(1);
     while (true) {
       try {
+        let blocknumber = await apiDBMgmt.getLatestBlockByAccount(address);
+
         const res = await fetch(
           "https://api.hooscan.com//api?module=account&action=tokentx&address=" +
             address +
             "&startblock=" +
             blocknumber +
-            "&endblock=99999999&page=" +
-            page +
-            "&offset=10000&sort=asc&apikey=YourApiKeyToken"
+            "&endblock=99999999&sort=asc&apikey=YourApiKeyToken"
         );
         const headerDate =
           res.headers && res.headers.get("date")
@@ -42,13 +36,17 @@ export class TokenAPI {
         console.log("Date in Response header:", headerDate);
 
         const json = await res.json();
-        const txes = JSON.parse(json.result);
-        if (txes.length==0) {
+        if (
+          json == undefined ||
+          json == null ||
+          json.result == undefined ||
+          json.result == null ||
+          json.result.length == 0
+        ) {
           break;
         }
-        apidbmgmt.saveTokenTx(json.result);
-        console.log(json);
-        ++page;
+        apiDBMgmt.saveTokenTx(json.result);
+        console.log(json.result.length);
       } catch (err) {
         console.log(err.message); //can be console.error
         break;
@@ -56,37 +54,31 @@ export class TokenAPI {
     }
   }
 
-  async getTokenTransferIn(address, startdatetime, enddatetime) {
-    await apidbmgmt.init();
-    return await apidbmgmt.getTokenTransferInByAccount(
-      address,
-      startdatetime,
-      enddatetime
-    );
+  async getTokenTransferInByAccount(para) {
+    return await apiDBMgmt.getTokenTransferInByAccount(para);
   }
-  async getTokenTransferInByMonth(address, startdatetime, enddatetime) {
-    await apidbmgmt.init();
+  async getTokenTransferInByAccountAndMonth(para) {
+    return await apiDBMgmt.getTokenTransferInByAccountAndMonth(para);
+  }
 
-    console.log(starttm, endtm);
-    return await apidbmgmt.getTokenTransferInByAccountAndMonth(
-      address,
-      startdatetime,
-      enddatetime
-    );
+  async getTokenTransferInAmountPriceByAccount(para) {
+    return await apiDBMgmt.getTokenTransferInAmountPriceByAccount(para);
+  }
+  async getTokenTransferInAmountPriceByAccountAndMonth(para) {
+    return await apiDBMgmt.getTokenTransferInAmountPriceByAccountAndMonth(para);
   }
 
   async fetchTokenPriceTimer() {
     console.log("==fetchtokenprice==");
 
     while (true) {
-      let tokenlist = await apidbmgmt.getTokenContractInfo();
-      for (t of tokenlist){
-           let price = 0;
+      let tokenlist = await apiDBMgmt.getTokenContractInfo();
+      for (t of tokenlist) {
+        let price = 0;
 
-           await apidbmgmt.updateTokenPrice(t.contractAddress,price);
+        await apiDBMgmt.updateTokenPrice(t.contractAddress, price);
       }
       await sleep(scan_interval);
     }
   }
-
 }

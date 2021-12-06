@@ -1,25 +1,31 @@
-import express  from "express";
+import express from "express";
 import path from "path";
 import history from "connect-history-api-fallback";
 
-// // DB connection
-// var MONGODB_URL = process.env.MONGODB_URL;
-// var mongoose = require("mongoose");
-// mongoose
-//   .connect(MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true })
-//   .then(() => {
-//     //don't show the log when it is test
-//     if (process.env.NODE_ENV !== "test") {
-//       console.log("Connected to %s", MONGODB_URL);
-//       console.log("App is running ... \n");
-//       console.log("Press CTRL + C to stop the process. \n");
-//     }
-//   })
-//   .catch((err) => {
-//     console.error("App starting error:", err.message);
-//     process.exit(1);
-//   });
-// var db = mongoose.connection;
+import "./utils.mjs";
+
+import mongoose from "mongoose";
+mongoose.set("useFindAndModify", false);
+mongoose.set("useCreateIndex", true);
+// DB connection
+var MONGODB_URL = process.env.MONGODB_URL;
+mongoose
+  .connect(MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => {
+    console.log("Connected to %s", MONGODB_URL);
+
+    //don't show the log when it is test
+    if (process.env.NODE_ENV !== "test") {
+      console.log("Connected to %s", MONGODB_URL);
+      console.log("App is running ... \n");
+      console.log("Press CTRL + C to stop the process. \n");
+    }
+  })
+  .catch((err) => {
+    console.error("App starting error:", err.message);
+    process.exit(1);
+  });
+var db = mongoose.connection;
 
 const app = express();
 app.all("*", function (req, res, next) {
@@ -51,7 +57,7 @@ app.use(express.json());
 //     res.json({"message": "."});
 // });
 
-import s from "./app/routes/api.routes.mjs" 
+import s from "./app/routes/api.routes.mjs";
 s(app);
 
 const port = process.env.PORT || 8778;

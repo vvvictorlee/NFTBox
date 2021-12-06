@@ -4,7 +4,7 @@ import { UserService } from "../users/user.service.mjs";
 const userService = new UserService();
 const paused = process.env.PAUSED;
 import { timeRange } from "../../util.mjs";
-export class NFT {
+export class MyAPI {
   // Create and Save a new Note
   gasFeeReport = async (req, res) => {
     if (req.body.params.address == undefined || !req.body.params.address) {
@@ -12,15 +12,14 @@ export class NFT {
         message: "address can not be empty",
       });
     }
-    let para = req.body.params;
-    let msg = await apiMgmt.getGasFeeReport(para);
+    let msg = await apiMgmt.getGasFeeReport(req.body.params);
 
     const json = {
       code: 10000,
       message: "success",
       data: { tokenId: msg },
     };
-    console.log("json===========", json);
+    console.log("====json.result.length======",json.result.length);
     res.send(json);
   };
 
@@ -81,10 +80,6 @@ export class NFT {
       return res.status(400).send({
         message: "address can not be empty",
       });
-    }
-    if (req.body.params.year != undefined && req.body.params.address) {
-      let tm = await timerange(req.body.params.year);
-      para = Object.extend(para, tm);
     }
 
     let msg = await apiMgmt.addContractInfo(para);

@@ -1,6 +1,6 @@
 //During the automated test the env variable, We will set it to "test"
 process.env.NODE_ENV = "test";
-process.env.MONGODB_URL = "mongodb://127.0.0.1:27017/myapi1";
+// process.env.MONGODB_URL = "mongodb://127.0.0.1:27017/myapi1";
 
 //Require the dev-dependencies
 import chai from "chai";
@@ -14,7 +14,4 @@ import chaiAsPromised from "chai-as-promised";
 chai.use(chaiAsPromised);
 
 //Export this to use in multiple files
-// export default chai;
-// export  server;
-// export  should;
 export { chai, server, should };
