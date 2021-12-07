@@ -7,7 +7,8 @@ import "./utils.mjs";
 import Web3 from "web3";
 const PROVIDER_URL =
   process.env.PROVIDER_URL || "https://http-testnet.hoosmartchain.com";
-
+const ApiKeyToken =
+  process.env.API_KEY || "";
 const web3 = new Web3(new Web3.providers.HttpProvider(PROVIDER_URL));
 
 const fetch = (url, init) =>
@@ -18,7 +19,7 @@ let apiDBMgmt = new APIDBMgmt();
 export class ScanAPI {
   async testproxy() {
     //   try {
-    //     const res = await fetch('http://api.etherscan.io/api?module=account&action=txlist&address=0xddbd2b932c763ba5b1b7ae3b362eac3e8d40121a&startblock=0&endblock=99999999&sort=asc&apikey=YourApiKeyToken');
+    //     const res = await fetch('http://api.etherscan.io/api?module=account&action=txlist&address=0xddbd2b932c763ba5b1b7ae3b362eac3e8d40121a&startblock=0&endblock=99999999&sort=asc&apikey="+ApiKeyToken+"');
     //     const headerDate = res.headers && res.headers.get('date') ? res.headers.get('date') : 'no response date';
     //     console.log('Status Code:', res.status);
     //     console.log('Date in Response header:', headerDate);
@@ -31,7 +32,7 @@ export class ScanAPI {
     //     console.log(err.message); //can be console.error
     //   }
     let url =
-      " http://api.etherscan.io/api?module=account&action=txlist&address=0xddbd2b932c763ba5b1b7ae3b362eac3e8d40121a&startblock=0&endblock=99999999&sort=asc&apikey=YourApiKeyToken";
+      " http://api.etherscan.io/api?module=account&action=txlist&address=0xddbd2b932c763ba5b1b7ae3b362eac3e8d40121a&startblock=0&endblock=99999999&page=1&offset=10000&sort=asc&apikey="+ApiKeyToken+"";
     let ip = "127.0.0.1";
     let port = "1187";
     const res = await fetch(url, {
@@ -59,12 +60,14 @@ export class ScanAPI {
     while (true) {
       try {
         let blocknumber = await apiDBMgmt.getLatestBlockByAccount(address);
-        const res = await fetch(
+        const url = 
           "https://api.hooscan.com//api?module=account&action=txlist&address=" +
             address +
             "&startblock=" +
             blocknumber +
-            "&endblock=99999999&sort=asc&apikey=YourApiKeyToken"
+            "&endblock=99999999&page=1&offset=10000&sort=asc&apikey="+ApiKeyToken+"";
+        console.log(url)
+        const res = await fetch(url
         );
         const headerDate =
           res.headers && res.headers.get("date")
@@ -96,11 +99,11 @@ export class ScanAPI {
     console.log("===syncOnChainData exit========");
   }
 
-  // new Date(block.timestamp * 1000).toGMTString()
+  // new Date(block.timestamp * 1000).toGMTString()   
   async testtokenbalance() {
     try {
       const res = await fetch(
-        "http://api.hooscan.com/api?module=account&action=tokenbalance&contractaddress=0xbe8d16084841875a1f398e6c3ec00bbfcbfa571b&address=0x26ee42a4de70cebcde40795853eba4e492a9547f&tag=latest&apikey=YourApiKeyToken"
+        "http://api.hooscan.com/api?module=account&action=tokenbalance&contractaddress=0xbe8d16084841875a1f398e6c3ec00bbfcbfa571b&address=0x26ee42a4de70cebcde40795853eba4e492a9547f&tag=latest&apikey="+ApiKeyToken+""
       );
       const headerDate =
         res.headers && res.headers.get("date")
@@ -123,7 +126,7 @@ export class ScanAPI {
   async testinternal() {
     try {
       const res = await fetch(
-        "http://api.hooscan.com/api?module=account&action=txlistinternal&address=0xEA54EAf095d66C6bFca2845dE895b2cAd65f6716&startblock=0&endblock=99999999999&sort=asc&apikey=YourApiKeyToken"
+        "http://api.hooscan.com/api?module=account&action=txlistinternal&address=0xEA54EAf095d66C6bFca2845dE895b2cAd65f6716&startblock=0&endblock=99999999999&sort=asc&apikey="+ApiKeyToken+""
       );
       const headerDate =
         res.headers && res.headers.get("date")

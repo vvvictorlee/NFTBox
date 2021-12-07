@@ -149,7 +149,7 @@ export class APIDBMgmt {
     ) {
       blocknumber = blocknumbers[0].latest;
     }
-    return blocknumber;
+    return blocknumber>0?blocknumber+1:0;
   }
 
   ////// gas fee report

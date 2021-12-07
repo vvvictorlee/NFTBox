@@ -1,7 +1,8 @@
 import nodeFetch from "node-fetch";
 import { APIDBMgmt } from "./scanapidb.mjs";
 import "./utils.mjs";
-
+const ApiKeyToken =
+  process.env.API_KEY || "";
 const fetch = (url, init) =>
   import("node-fetch").then(({ default: fetch }) => nodeFetch(url, init));
 let apiDBMgmt = new APIDBMgmt();
@@ -26,7 +27,7 @@ export class TokenAPI {
             address +
             "&startblock=" +
             blocknumber +
-            "&endblock=99999999&sort=asc&apikey=YourApiKeyToken"
+            "&endblock=99999999&sort=asc&apikey="+ApiKeyToken+""
         );
         const headerDate =
           res.headers && res.headers.get("date")
