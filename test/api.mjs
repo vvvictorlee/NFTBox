@@ -12,11 +12,11 @@ const testaddress = "0xc19d04e8fe2d28609866e80356c027924f23b1a5";
 const toaddress = "0x26ee42a4de70cebcde40795853eba4e492a9547f";
 const tokenaddress = "0xbe8d16084841875a1f398e6c3ec00bbfcbfa571b";
 import { timeRange } from "../util.mjs";
+import "../utils.mjs";
 
 describe("api", () => {
   //Before each test we empty the database
-  before(async () => {
-  });
+  before(async () => {});
 
   // Prepare data for testing
   const testData = {
@@ -71,9 +71,57 @@ describe("api", () => {
     });
 
     it("getTxCountSpanByAccountAndMonth", async () => {
-      const testaddress = "0xea54eaf095d66c6bfca2845de895b2cad65f6716";
       ////token  transfer to
-      await apiDBMgmt.getTxCountSpanByAccountAndMonth(testaddress);
+      const para = {
+        address: "0xc19d04e8fe2d28609866e80356c027924f23b1a5",
+        year: "2021",
+        startdatetime: 1619844892,
+        enddatetime: 1638955412,
+        range: "6",
+      };
+      await apiDBMgmt.getTxCountSpanByAccountAndMonth(para);
+    });
+    it("saveEventSignature ", async () => {
+      ////token  transfer to
+      await apiDBMgmt.saveEventSignature([
+        { eventName: "fAdminChanged", eventSignature: "0x7e644d79" },
+        { eventName: "fBeaconUpgraded", eventSignature: "0x1cf3b03a" },
+        { eventName: "fUpgraded", eventSignature: "0xbc7cd75a" },
+      ]);
+    });
+    it("getTxEventNameByAccount", async () => {
+      ////token  transfer to
+      //   const para = {
+      //     address: "0xc19d04e8fe2d28609866e80356c027924f23b1a5",
+      //     year: "2021",
+      //     startdatetime: 1619844892,
+      //     enddatetime: 1638955412,
+      //     range: "6",
+      //   };
+      const address = "0xd4d41ec4d4d3b775b43a82cb5b0c61e0f114ab1d";
+      await apiDBMgmt.getTxEventNameByAccount(address);
+    });
+    it("syncBlockLogsByContractAddress", async () => {
+      const address = "0xd4d41ec4d4d3b775b43a82cb5b0c61e0f114ab1d";
+      const testtokenaddress = "0x6e250De4635f2A87c2CF092Dafd500787a6942b2";
+
+      let res = await logApi.getEventNameFromAbiByContract(testtokenaddress);
+      res = await logApi.getEventNameFromAbiByContract(address);
+
+      if (res != undefined && res != null && res > 0) {
+        const flag = await logApi.syncBlockLogsByContractAddress(address);
+        if (flag != 0) {
+          let events = await apiDBMgmt.getTxEventNameByAccount(address);
+          await apiDBMgmt.saveTxHashEventName(events);
+        }
+      }
+    });
+    it.only("getTxGasedTotalByAccountAndMethod", async () => {
+      const address = "0xc13018a528e4498ee6fa28d0f519a034972ad1e8";
+    //   await scanApi.syncOnChainData(address);
+    //   const s = await apiDBMgmt.getTxGasedTotalByAccountAndMethod(address);
+
+    //   console.log(s);
     });
     it("saveContractInfo ", async () => {
       ////token  transfer to
@@ -121,7 +169,7 @@ describe("api", () => {
   });
 
   describe("/POST gas fee report", () => {
-    it.only("gas fee report", async () => {
+    it("gas fee report", async () => {
       let res = await chai
         .request(server)
         .post("/api/gasfeereport")
@@ -131,10 +179,9 @@ describe("api", () => {
           method: "gasfeereport",
           params: {
             address: "0xc19d04e8fe2d28609866e80356c027924f23b1a5",
-            ip: "1.2.3.4",
           },
         });
-      console.log("======================", res.body);
+      console.log("=========res.body=============", JSON.stringify(res.body));
     });
   });
   describe("/POST interactive report", () => {
@@ -147,11 +194,12 @@ describe("api", () => {
           id: "id",
           method: "interactivereport",
           params: {
-            address: "0xc19D04E8Fe2d28609866e80356c027924F23B1A5",
-            ip: "1.2.3.4",
+            address: "0xc19d04e8fe2d28609866e80356c027924f23b1a5",
+            year: 2021,
+            range: 6,
           },
         });
-      console.log("======================", res);
+      console.log("=========res.body=============", JSON.stringify(res.body));
     });
   });
 
@@ -165,11 +213,11 @@ describe("api", () => {
           id: "id",
           method: "assetreport",
           params: {
-            address: "0xc19D04E8Fe2d28609866e80356c027924F23B1A5",
-            ip: "1.2.3.4",
+            address: "0xc19d04e8fe2d28609866e80356c027924f23b1a5",
+            year: 2021,
           },
         });
-      console.log("======================", res);
+      console.log("=========res.body=============", JSON.stringify(res.body));
     });
   });
 });

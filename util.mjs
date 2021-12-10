@@ -2,7 +2,6 @@ import path from "path";
 
 import fs from "fs";
 
-
 const getJSON = (fileName) => {
   return JSON.parse(fs.readFileSync(path.join(__dirname, fileName)));
 };
@@ -85,20 +84,18 @@ const ConvertToTable = (data) => {
       count++;
     }
   }
-  console.log("==count===", count);
   console.log("==wrongaddresses===", wrongaddresses);
 
   return table;
 };
 
-
-
 const timeRange = (year) => {
   let nextyear = Number(year) + 1;
   let startdt = new Date(year + "-01-01 00:00:00.000");
   let enddt = new Date(nextyear + "-01-01 00:00:00.000");
-  let startdatetime = Date.parse(startdt) / 1000;
-  let enddatetime = Date.parse(enddt) / 1000;
+  let startdatetime = (Date.parse(startdt)/1000 );
+  let enddatetime = (Date.parse(enddt)/1000 );
+
   return { startdatetime, enddatetime };
 };
 const printHeaders = (req) => {
@@ -112,5 +109,13 @@ const printHeaders = (req) => {
   console.log("=====referer=========", referer);
 };
 
-
-export { getJSON, putJSON, readCSVToJSON, readUCSV, readCSV, writeCSV,timeRange,printHeaders };
+export {
+  getJSON,
+  putJSON,
+  readCSVToJSON,
+  readUCSV,
+  readCSV,
+  writeCSV,
+  timeRange,
+  printHeaders,
+};

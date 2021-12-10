@@ -6,6 +6,7 @@ import Contract from "./models/ContractModel.mjs";
 import ContractInfo from "./models/ContractInfoModel.mjs";
 import TokenContractInfo from "./models/TokenContractInfoModel.mjs";
 import AccountAddress from "./models/AccountAddressModel.mjs";
+import TxHashEventName from "./models/TxHashEventNameModel.mjs";
 import mongoose from "mongoose";
 mongoose.set("useFindAndModify", false);
 mongoose.set("useCreateIndex", true);
@@ -33,8 +34,7 @@ export class APIDBMgmt {
       });
     var db = mongoose.connection;
   }
-  _badgedetail = null;
-  _ip = null;
+
   async saveTx(tx) {
     Tx.insertMany(tx);
   }
@@ -60,6 +60,11 @@ export class APIDBMgmt {
   async saveTokenContractInfo(contractinfo) {
     TokenContractInfo.insertMany(contractinfo);
   }
+
+ async saveTxHashEventName(txHashEventName) {
+    TxHashEventName.insertMany(txHashEventName);
+  }
+
   async updateTokenPrice(address, price) {
     console.log("address==========", address);
     let now = new Date(Date.now() + 8 * 60 * 60 * 1000).toUTCString();
@@ -84,6 +89,49 @@ export class APIDBMgmt {
   }
   async getTokenContractInfo() {
     return await TokenContractInfo.find();
+  }
+
+  async getTxEventNameByAccount(address) {
+    let s = await BlockLogs.aggregate([
+      {
+        $match: {
+          address: address,
+        },
+      },
+      {
+        $project: {
+          transactionHash: "$transactionHash",
+          eventName: { $slice: ["$topics", 0, 1] },
+        },
+      },
+      {
+        $unwind: "$eventName",
+      },
+      {
+        $lookup: {
+          from: "eventsignatures",
+          localField: "eventName",
+          foreignField: "eventSignature",
+          as: "methods",
+        },
+      },
+      {
+        $match: {
+          methods: { $ne: [] },
+        },
+      },
+      {
+        $project: {
+          transactionHash: "$transactionHash",
+          eventName: "$methods.eventName",
+        },
+      },
+      {
+        $unwind: "$eventName",
+      },
+    ]);
+    console.log("=======getTxEventNameByAccount==========", s, s.length);
+    return s;
   }
 
   async getTxToByAccount(address) {
@@ -139,7 +187,7 @@ export class APIDBMgmt {
         },
       },
     ]);
-    console.log(s);
+    console.log(__line,__function,s);
     let blocknumber = 0;
     const blocknumbers = s;
     if (
@@ -149,7 +197,38 @@ export class APIDBMgmt {
     ) {
       blocknumber = blocknumbers[0].latest;
     }
-    return blocknumber>0?blocknumber+1:0;
+
+    return blocknumber > 0 ? blocknumber + 1 : 0;
+  }
+
+  async getLatestBlockByAccountFromTokenTx(address) {
+    let s = await TokenTx.aggregate([
+      {
+        $match: {
+          from: address,
+        },
+      },
+      {
+        $group: {
+          _id: "$from",
+          latest: {
+            $max: { $toDouble: "$blockNumber" },
+          },
+        },
+      },
+    ]);
+    console.log(__line, __function, s);
+    let blocknumber = 0;
+    const blocknumbers = s;
+    if (
+      blocknumbers != undefined &&
+      blocknumbers != null &&
+      !blocknumbers.length == 0
+    ) {
+      blocknumber = blocknumbers[0].latest;
+    }
+
+    return blocknumber > 0 ? blocknumber + 1 : 0;
   }
 
   ////// gas fee report
@@ -175,7 +254,7 @@ export class APIDBMgmt {
         },
       },
     ]);
-    console.log(s);
+    // //console.log(s);
     return s;
   }
 
@@ -201,7 +280,7 @@ export class APIDBMgmt {
         },
       },
     ]);
-    console.log(s);
+    //console.log(s);
     return s;
   }
 
@@ -250,7 +329,52 @@ export class APIDBMgmt {
         },
       },
     ]);
-    console.log(s);
+    // //console.log(s);
+    return s;
+  }
+
+  async getTxGasedTotalByAccountAndMethod(address) {
+    let s = await Tx.aggregate([
+      {
+        $match: {
+          from: address,
+        },
+      },
+      {
+        $lookup: {
+          from: "txhasheventname",
+          localField: "transactionHash",
+          foreignField: "transactionHash",
+          as: "txevents",
+        },
+      },
+      {
+        $project: {
+          gasPrice: { $toDouble: "$gasPrice" },
+          gasUsed: { $toDouble: "$gasUsed" },
+          gased: "$gased",
+          txevents: "$txevents",
+          eventNameorHash: {
+            $cond: [
+              { $ne: ["$txevents", []] },
+              "$txevents.eventName",
+              "$transactionHash",
+            ],
+          },
+        },
+      },
+      {
+        $group: {
+          _id: "$eventNameorHash",
+          gased: {
+            $sum: {
+              $multiply: ["$gasPrice", "$gasUsed", 0.000000000000000001],
+            },
+          },
+        },
+      },
+    ]);
+    // //console.log(s);
     return s;
   }
 
@@ -258,8 +382,8 @@ export class APIDBMgmt {
   async getTxCountByAccount(address, year) {
     let s = await Tx.find({
       from: address,
-    }).count();
-    console.log(s);
+    }).countDocuments();
+    //console.log(s);
     return s;
   }
 
@@ -279,7 +403,7 @@ export class APIDBMgmt {
         },
       },
     ]);
-    console.log(s);
+    //console.log(s);
     return s;
   }
 
@@ -313,7 +437,7 @@ export class APIDBMgmt {
         },
       },
     ]);
-    console.log(s);
+
     return s;
   }
 
@@ -340,7 +464,7 @@ export class APIDBMgmt {
     };
     console.log(JSON.stringify(filter));
     let s = await Tx.find(filter);
-    console.log(s);
+    //console.log(s);
     return s;
   }
 
@@ -363,7 +487,7 @@ export class APIDBMgmt {
         },
       },
     ]);
-    console.log(s);
+    //console.log(s);
     return s;
   }
 
@@ -373,12 +497,13 @@ export class APIDBMgmt {
   // },
   // },
   async getTxCountSpanByAccountAndMonth(para) {
+    // console.log(__line, __function, para);
     const address = para.address;
     const startdatetime = para.startdatetime;
     const enddatetime = para.enddatetime;
     const range = para.range;
 
-    let s = await TokenTx.aggregate([
+    let s = await Tx.aggregate([
       {
         $project: {
           to: "$to",
@@ -395,7 +520,7 @@ export class APIDBMgmt {
                   },
                 },
               },
-              range,
+              { $toDouble: range },
             ],
           },
           timeStamp: { $toDouble: "$timeStamp" },
@@ -473,7 +598,7 @@ export class APIDBMgmt {
         },
       },
     ]);
-    console.log(s);
+    //console.log(s);
     return s;
   }
 
@@ -559,7 +684,7 @@ export class APIDBMgmt {
       },
     ]);
     // console.log(JSON.stringify(s));
-    console.log(s);
+    //console.log(s);
     return s;
   }
 
@@ -635,7 +760,7 @@ export class APIDBMgmt {
         },
       },
     ]);
-    console.log(s);
+    //console.log(s);
     return s;
   }
   //   {
@@ -753,7 +878,7 @@ export class APIDBMgmt {
         $group: { _id: "$month", amount: { $sum: "$amount" } },
       },
     ]);
-    console.log(s);
+    //console.log(s);
     return s;
   }
 }

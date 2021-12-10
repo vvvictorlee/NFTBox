@@ -4,29 +4,30 @@ var Schema = mongoose.Schema;
 
 var TxSchema = new Schema(
   {
-    blockNumber: { type: String, required: true },
-    timeStamp: { type: String, required: true },
+    blockNumber: { type: String },
+    timeStamp: { type: String },
     hash: {
       type: String,
       required: true,unique:true,dropDups: true
     },
-    nonce: { type: String, required: true },
-    blockHash: { type: String, required: true },
-    transactionIndex: { type: String, required: true },
-    from: { type: String, required: true },
-    to: { type: String, required: true },
-    value: { type: String, required: true },
-    gas: { type: String, required: true },
-    gasPrice: { type: String, required: true },
-    isError: { type: String, required: true },
-    txreceipt_status: { type: String, required: true },
-    input: { type: String, required: true },
+    nonce: { type: String },
+    blockHash: { type: String },
+    transactionIndex: { type: String },
+    from: { type: String },
+    to: { type: String },
+    value: { type: String },
+    gas: { type: String },
+    gasPrice: { type: String },
+    isError: { type: String },
+    txreceipt_status: { type: String },
     contractAddress: { type: String },
-    cumulativeGasUsed: { type: String, required: true },
-    gasUsed: { type: String, required: true },
-    confirmations: { type: String, required: true },
+    cumulativeGasUsed: { type: String },
+    gasUsed: { type: String },
+    confirmations: { type: String },
   },
   { timestamps: false,versionKey:false }
 );
+
+
 
 export default  mongoose.model("Tx", TxSchema);

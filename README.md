@@ -4,7 +4,7 @@
 
 curl -X POST \
      -H 'Content-Type: application/json' \
-     -d '{"jsonrpc":"2.0","id":"id","method":"gasfeereport","params":{"address":"0xc19D04E8Fe2d28609866e80356c027924F23B1A5","ip":"1.2.3.4"}}' \
+     -d '{"jsonrpc":"2.0","id":"id","method":"gasfeereport","params":{"address":"0xc19d04e8fe2d28609866e80356c027924f23b1a5","ip":"1.2.3.4"}}' \
      http://localhost:8778/api/gasfeereport
 
 

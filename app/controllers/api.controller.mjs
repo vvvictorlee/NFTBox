@@ -4,6 +4,8 @@ import { UserService } from "../users/user.service.mjs";
 const userService = new UserService();
 const paused = process.env.PAUSED;
 import { timeRange } from "../../util.mjs";
+import "../../utils.mjs";
+
 export class MyAPI {
   // Create and Save a new Note
   gasFeeReport = async (req, res) => {
@@ -12,29 +14,29 @@ export class MyAPI {
         message: "address can not be empty",
       });
     }
-    let msg = await apiMgmt.getGasFeeReport(req.body.params);
-
+    let para = req.body.params;
+    para.address = para.address.toLowerCase();
+    let msg = await apiMgmt.getGasFeeReport(para);
     const json = {
       code: 10000,
       message: "success",
-      data: { tokenId: msg },
+      data: { msg: msg },
     };
-    console.log("====json.result.length======",json.result.length);
     res.send(json);
   };
 
   // Find a single note with a noteId
   interactiveReport = async (req, res) => {
-    //console.log(req.body)
     if (!req.body.params.address) {
       return res.status(400).send({
         message: "address can not be empty",
       });
     }
     let para = req.body.params;
-    if (req.body.params.year != undefined && req.body.params.address) {
-      let tm = await timeRange(req.body.params.year);
-      para = Object.extend(para, tm);
+    para.address = para.address.toLowerCase();
+    if (req.body.params.year != undefined && req.body.params.year) {
+      let tm = timeRange(req.body.params.year);
+      Object.assign(para, tm);
     }
     let msg = await apiMgmt.getInteractiveReport(para);
 
@@ -50,17 +52,18 @@ export class MyAPI {
 
   // Find a single note with a noteId
   assetReport = async (req, res) => {
+        // console.log(__line,_function,"========")
     let para = req.body.params;
     if (req.body.params.address == undefined || !req.body.params.address) {
       return res.status(400).send({
         message: "address can not be empty",
       });
     }
-    if (req.body.params.year != undefined && req.body.params.address) {
-      let tm = await timerange(req.body.params.year);
-      para = Object.extend(para, tm);
+    if (req.body.params.year != undefined && req.body.params.year) {
+      let tm = timeRange(req.body.params.year);
+      Object.assign(para, tm);
     }
-
+    para.address = para.address.toLowerCase();
     let msg = await apiMgmt.getAssetReport(para);
 
     const json = {
@@ -81,7 +84,7 @@ export class MyAPI {
         message: "address can not be empty",
       });
     }
-
+    para.address = para.address.toLowerCase();
     let msg = await apiMgmt.addContractInfo(para);
 
     const json = {
@@ -102,6 +105,7 @@ export class MyAPI {
         message: "address can not be empty",
       });
     }
+    para.address = para.address.toLowerCase();
     let msg = await apiMgmt.addTokenPriceSource(para);
 
     const json = {

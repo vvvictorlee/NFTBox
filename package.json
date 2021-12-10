@@ -4,7 +4,7 @@
   "private": false,
   "scripts": {
     "start": "DEBUG=app node   -r dotenv/config server.mjs  dotenv_config_path=.env",
-    "api": "DEBUG=app node  -r dotenv/config scanapi.mjs  dotenv_config_path=.env",
+    "api": "DEBUG=app,api node  -r dotenv/config scanapi.mjs  dotenv_config_path=.env",
     "test": "mocha -r dotenv/config --timeout 90000 --recursive './test/**/*.mjs' dotenv_config_path=.env "
   },
   "dependencies": {
@@ -15,6 +15,7 @@
     "chai-http": "^4.3.0",
     "connect-history-api-fallback": "^1.6.0",
     "core-js": "^3.6.4",
+    "debug": "^4.3.3",
     "dotenv": "^9.0.2",
     "esm": "^3.2.25",
     "ethereumjs-tx": "^2.1.2",

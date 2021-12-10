@@ -12,7 +12,7 @@ const fetch = (url, init) =>
   import("node-fetch").then(({ default: fetch }) => nodeFetch(url, init));
 import HttpProxyAgent from "http-proxy-agent";
 export class LogAPI {
-  async testlogs(raddress) {
+  async syncBlockLogsByContractAddress(raddress) {
     const address = raddress || "0xc953e0ce3c498A04e5c3C1CA0D7BA365326f734d";
     try {
       const url =
@@ -28,29 +28,37 @@ export class LogAPI {
           ? res.headers.get("date")
           : "no response date";
       console.log("Status Code:", res.status);
-      console.log("testlogs Date in Response header:", headerDate);
+      console.log(
+        "syncBlockLogsByContractAddress Date in Response header:",
+        headerDate
+      );
       const json = await res.json();
-      console.log(json.result);
-      const logs = json.result;
-      const eventsig2name = await testabi(address);
-      const t = logs.map((a) => {
-        a["eventName"] =
-          eventsig2name[a.topics[0]] == undefined
-            ? a.topics[0]
-            : eventsig2name[a.topics[0]];
-        return {
-          transactionHash: a.transactionHash,
-          timeStamp: web3.utils.hexToNumber(a.timeStamp),
-          gasPrice: web3.utils.hexToNumber(a.gasPrice),
-          gasUsed: web3.utils.hexToNumber(a.gasUsed),
-          eventName: a.eventName,
-        };
+      //   console.log(json.result);
+      let logs = json.result;
+      //   const eventsig2name = await getEventNameFromAbiByContract(address);
+      let hashset = new Set();
+      logs = logs.filter((a) => {
+        if (hashset.has(a.transactionHash)) {
+          return false;
+        }
+        hashset.add(a.transactionHash);
+        return true;
       });
-      console.log(t);
-      // apidbmgmt.saveBlockLogs(json.result);
+      const t = logs.map((a) => {
+        a["timeStamp"] = web3.utils.hexToNumber(a.timeStamp);
+        a["gasPrice"] = web3.utils.hexToNumber(a.gasPrice);
+        a["gasUsed"] = web3.utils.hexToNumber(a.gasUsed);
+        a["eventName"] = a.topics[0];
+        return a;
+      });
+      //   console.log(t);
+      await apiDBMgmt.saveBlockLogs(t);
+      console.log("======saveBlockLogs====after========");
     } catch (err) {
       console.log(err.message); //can be console.error
+      return 0;
     }
+    return 1;
   }
 
   async syncTxAbiOfToAddress(address) {
@@ -58,15 +66,25 @@ export class LogAPI {
       let toes = await apiDBMgmt.getTxToByAccount(address);
       let accounts = [];
       let contracts = [];
+
+      if (toes.length > 10) {
+        toes.splice(10);
+      }
+
       for (let to of toes) {
-        let flag = await this.testcode(to._id);
+        let flag = await this.geContractCode(to._id);
 
         if (flag != undefined && flag != null && flag) {
-
-          let res = await this.testabi(to._id);
+          let res = await this.getEventNameFromAbiByContract(to._id);
 
           if (res != undefined && res != null && res > 0) {
             contracts.push({ contractAddress: to._id });
+            const flag = await this.syncBlockLogsByContractAddress(to._id);
+            if (flag!=0){
+                let events = await apiDBMgmt.getTxEventNameByAccount(to._id);
+                await apiDBMgmt.saveTxHashEventName(events);
+            }
+
           } else {
             contracts.push({ contractAddress: to._id, verified: "unverified" });
           }
@@ -86,12 +104,12 @@ export class LogAPI {
     }
   }
 
-  async testcode(raddress) {
+  async geContractCode(raddress) {
     const address = raddress || "0xc953e0ce3c498A04e5c3C1CA0D7BA365326f734d";
     let code = web3.eth.getCode(address);
     return code != "0x";
-    //   let apidbmgmt = new APIDBMgmt();
-    //   await apidbmgmt.init();
+    //   let apiDBMgmt = new APIDBMgmt();
+    //   await apiDBMgmt.init();
     //   try {
     //     const res = await fetch(
     //       "http://api.hooscan.com/api?module=proxy&action=eth_getCode&address=" +
@@ -116,7 +134,7 @@ export class LogAPI {
     //   }
   }
 
-  async testabi(rcontractAddress) {
+  async getEventNameFromAbiByContract(rcontractAddress) {
     const contractAddress =
       rcontractAddress || "0xc953e0ce3c498A04e5c3C1CA0D7BA365326f734d";
     try {
@@ -132,7 +150,10 @@ export class LogAPI {
           ? res.headers.get("date")
           : "no response date";
       console.log("Status Code:", res.status);
-      console.log("testabi Date in Response header:", headerDate);
+      console.log(
+        "getEventNameFromAbiByContract Date in Response header:",
+        headerDate
+      );
 
       const json = await res.json();
       console.log(json);
@@ -151,18 +172,21 @@ export class LogAPI {
           .filter((a) => a.type == "event")
           .map((a) => {
             return {
-              contractAddress: contractAddress,
               eventName: a.name,
               eventSignature: web3.eth.abi.encodeEventSignature(a),
             };
           });
         console.log(events);
         try {
-          apidbmgmt.saveEventSignature(events);
+          apiDBMgmt.saveEventSignature(events);
         } catch (error) {
-          console.error(error);
+          console.error(
+            __line,
+            __function,
+            "===saveEventSignature=====",
+            error
+          );
         }
-
         // const es = events.reduce((s, a) => {
         //   s[a.eventSignature] = a.eventName;
         //   return s;
@@ -175,7 +199,7 @@ export class LogAPI {
         return 1;
       }
     } catch (err) {
-      console.log("=======testabi=========", err.message); //can be console.error
+      console.log("=======getEventNameFromAbiByContract=========", err.message); //can be console.error
     }
     return 0;
   }
