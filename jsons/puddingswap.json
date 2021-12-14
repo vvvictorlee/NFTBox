@@ -1,0 +1,497 @@
+{
+  "name": "puddingswap",
+  "timestamp": "2020-08-25T15:41:29.665Z",
+  "version": {
+    "major": 1,
+    "minor": 3,
+    "patch": 1
+  },
+  "tags": {},
+  "logoURI": "https://exchange.puddingswap.finance/images/192x192_App_Icon.png",
+  "keywords": [
+    "puddingswap",
+    "default"
+  ],
+  "tokens": [
+    {
+      "name": "Wrapped HOO",
+      "symbol": "WHOO",
+      "address": "0x3EFF9D389D13D6352bfB498BCF616EF9b1BEaC87",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0x3EFF9D389D13D6352bfB498BCF616EF9b1BEaC87.png"
+    },
+    {
+      "name": "PuddingSwap Token",
+      "symbol": "PUD",
+      "address": "0xbE8D16084841875a1f398E6C3eC00bBfcbFa571b",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0xbE8D16084841875a1f398E6C3eC00bBfcbFa571b.png"
+    },
+    {
+      "name": "Bitcon",
+      "symbol": "BTC",
+      "address": "0xAad9654a4df6973A92C1fd3e95281F0B37960CCd",
+      "chainId": 70,
+      "decimals": 8,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0xAad9654a4df6973A92C1fd3e95281F0B37960CCd.png"
+    },
+    {
+      "name": "Ethereum",
+      "symbol": "ETH",
+      "address": "0xA1588dC914e236bB5AE4208Ce3081246f7A00193",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0xA1588dC914e236bB5AE4208Ce3081246f7A00193.png"
+    },
+    {
+      "name": "Bitcoin Cash",
+      "symbol": "BCH",
+      "address": "0x6705b383dEF2D9f3f93bc00C5FDe402613d2D695",
+      "chainId": 70,
+      "decimals": 8,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0x6705b383dEF2D9f3f93bc00C5FDe402613d2D695.png"
+    },
+    {
+      "name": "Litecoin",
+      "symbol": "LTC",
+      "address": "0x13e93721DC992b3E14333dBdb48C0e7Ec55431c3",
+      "chainId": 70,
+      "decimals": 8,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0x13e93721DC992b3E14333dBdb48C0e7Ec55431c3.png"
+    },
+    {
+      "name": "Dogecoin",
+      "symbol": "DOGE",
+      "address": "0x886dB4C7827e196ECc777eEB6a94C23c79B9467A",
+      "chainId": 70,
+      "decimals": 8,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0x886dB4C7827e196ECc777eEB6a94C23c79B9467A.png"
+    },
+    {
+      "name": "Polkadot",
+      "symbol": "DOT",
+      "address": "0xA71e7ae7A5B154f1ED12476a4C54c5Ec6e3426AC",
+      "chainId": 70,
+      "decimals": 10,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0xA71e7ae7A5B154f1ED12476a4C54c5Ec6e3426AC.png"
+    },
+    {
+      "name": "Kusama",
+      "symbol": "KSM",
+      "address": "0xe3f4F13ae64c1D5156d9bCff4b6a98a70fC32C57",
+      "chainId": 70,
+      "decimals": 12,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0xe3f4F13ae64c1D5156d9bCff4b6a98a70fC32C57.png"
+    },
+    {
+      "name": "EOS",
+      "symbol": "EOS",
+      "address": "0x2D83F0551a65466Aa4872cf25693F4c3e834f602",
+      "chainId": 70,
+      "decimals": 4,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0x2D83F0551a65466Aa4872cf25693F4c3e834f602.png"
+    },
+    {
+      "name": "Ethereum Classic",
+      "symbol": "ETC",
+      "address": "0xfC523B7BfAb1656b36A57Ef35F9D5c738CbF1E6C",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0xfC523B7BfAb1656b36A57Ef35F9D5c738CbF1E6C.png"
+    },
+    {
+      "name": "Cosmos",
+      "symbol": "ATOM",
+      "address": "0x381f6698a7f369DD729390D817A7BfeB765fB105",
+      "chainId": 70,
+      "decimals": 6,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0x381f6698a7f369DD729390D817A7BfeB765fB105.png"
+    },
+    {
+      "name": "Flow",
+      "symbol": "FLOW",
+      "address": "0xcB27775227Ae21dB4De6AC3F156139300Cf70aF5",
+      "chainId": 70,
+      "decimals": 8,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0xcB27775227Ae21dB4De6AC3F156139300Cf70aF5.png"
+    },
+    {
+      "name": "Binance Coin",
+      "symbol": "BNB",
+      "address": "0xa787254704339474A827bd1ee4772c455e3aE7F2",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0xa787254704339474A827bd1ee4772c455e3aE7F2.png"
+    },
+    {
+      "name": "Tether",
+      "symbol": "USDT",
+      "address": "0xD16bAbe52980554520F6Da505dF4d1b124c815a7",
+      "chainId": 70,
+      "decimals": 6,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0xD16bAbe52980554520F6Da505dF4d1b124c815a7.png"
+    },
+    {
+      "name": "USD Coin",
+      "symbol": "USDC",
+      "address": "0x92a0bD4584c147D1B0e8F9185dB0BDa10B05Ed7e",
+      "chainId": 70,
+      "decimals": 6,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0x92a0bD4584c147D1B0e8F9185dB0BDa10B05Ed7e.png"
+    },
+    {
+      "name": "Pippi Shrimp Token",
+      "symbol": "PIPI",
+      "address": "0x685b9D0aeecD5153a332a334A04Ce1bc7A4Bf92A",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0x685b9D0aeecD5153a332a334A04Ce1bc7A4Bf92A.png"
+    },
+    {
+      "name": "TokenPocket Token",
+      "symbol": "TPT",
+      "address": "0x263e10bE808bafaD9bd62a0998a36d4e6B9fcb19",
+      "chainId": 70,
+      "decimals": 4,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0x263e10bE808bafaD9bd62a0998a36d4e6B9fcb19.png"
+    },
+    {
+      "name": "Filecoin",
+      "symbol": "FIL",
+      "address": "0x0bf85D3B0C9ebCC282FDe0591882d12E57E700B3",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0x0bf85D3B0C9ebCC282FDe0591882d12E57E700B3.png"
+    },
+    {
+      "name": "LDT",
+      "symbol": "LDT",
+      "address": "0xd63F3cceef518e183e27615A7D6404d0803210Af",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0xd63F3cceef518e183e27615A7D6404d0803210Af.png"
+    },
+    {
+      "name": "LOOT",
+      "symbol": "LOOT",
+      "address": "0xD8f6d61C2cC69c04F176616aD1c7de211b00af31",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0xD8f6d61C2cC69c04F176616aD1c7de211b00af31.png"
+    },
+    {
+      "name": "GFC",
+      "symbol": "GFC",
+      "address": "0xE9FB7d75822064A71aE2F4E8626D6407F70Fb4eF",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0xE9FB7d75822064A71aE2F4E8626D6407F70Fb4eF.png"
+    },
+    {
+      "name": "MOF",
+      "symbol": "MOF",
+      "address": "0xb9445a228bcBC37344f19905d03e6F6a00f7E005",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0xb9445a228bcBC37344f19905d03e6F6a00f7E005.png"
+    },
+    {
+      "name": "Hoomoon",
+      "symbol": "hoomoon",
+      "address": "0x9ADd100b10442269bFb650488C5e48Ae3CBCF1d2",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0x9ADd100b10442269bFb650488C5e48Ae3CBCF1d2.png"
+    },
+    {
+      "name": "Kitty Coin",
+      "symbol": "KITTY",
+      "address": "0x66068f0460B2932f79C0B31B02AcF0ef4ECB175C",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0x66068f0460B2932f79C0B31B02AcF0ef4ECB175C.png"
+    },
+    {
+      "name": "PIGX",
+      "symbol": "PIGX",
+      "address": "0x35f75b8a1545af83d71c60d5f6cda71ecbfdc24c",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0x35f75b8a1545af83d71c60d5f6cda71ecbfdc24c.png"
+    },
+    {
+      "name": "ZILD",
+      "symbol": "ZILD",
+      "address": "0xB328002712466111606456FFd55f820bcb9cf18F",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0xB328002712466111606456FFd55f820bcb9cf18F.png"
+    },
+    {
+      "name": "LAYER2",
+      "symbol": "LAYER2",
+      "address": "0xebBD83abDe1c794CC587dEFeA49d33573dE29211",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0xebBD83abDe1c794CC587dEFeA49d33573dE29211.png"
+    },
+    {
+      "name": "Yunge Protocol",
+      "symbol": "YUNGE",
+      "address": "0x07f823D3d011f7C612084f04D025F4a026F76afd",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0x07f823D3d011f7C612084f04D025F4a026F76afd.png"
+    },
+    {
+      "name": "Moneta",
+      "symbol": "MNA",
+      "address": "0x124c04Ed0ED67609D194745181CcF2F1DBEf9271",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0x124c04Ed0ED67609D194745181CcF2F1DBEf9271.png"
+    },
+    {
+      "name": "GameDAO",
+      "symbol": "GDC",
+      "address": "0x68411e16a4F2054e0b3F7899E9e6a23faD5500E1",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0x68411e16a4F2054e0b3F7899E9e6a23faD5500E1.png"
+    },
+    {
+      "name": "ShouYi",
+      "symbol": "SYI",
+      "address": "0x24a8449B65a81A9Fb9FDE4d508D7018a9339C5b9",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0x24a8449B65a81A9Fb9FDE4d508D7018a9339C5b9.png"
+    },
+    {
+      "name": "CLAIM",
+      "symbol": "CLAIM",
+      "address": "0x13154efe79d4d7f86407d56f8f6a1b07fb0b80ff",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0x13154efe79d4d7f86407d56f8f6a1b07fb0b80ff.png"
+    },
+    {
+      "name": "RooLend",
+      "symbol": "ROO",
+      "address": "0x01a2cb0cA7A03F1aC7Fc2FCe78552Ba248c2ad46",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0x01a2cb0cA7A03F1aC7Fc2FCe78552Ba248c2ad46.png"
+    },
+    {
+      "name": "RooLend",
+      "symbol": "sROO",
+      "address": "0x7C0241847b59e7Fc2F40FD95c58cD4af4d491fcb",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0x01a2cb0cA7A03F1aC7Fc2FCe78552Ba248c2ad46.png"
+    },
+    {
+      "name": "HyperGraph",
+      "symbol": "HGT",
+      "address": "0x7dde5e7139a6e2096ace3c82680bf58ca1d7fee9",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0x7dde5e7139a6e2096ace3c82680bf58ca1d7fee9.png"
+    },
+    {
+      "name": "NFT-STK",
+      "symbol": "STK",
+      "address": "0x3E259bfe720093ABb26A2c3fE57670259B2ebeA2",
+      "chainId": 70,
+      "decimals": 12,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0x3E259bfe720093ABb26A2c3fE57670259B2ebeA2.png"
+    },
+    {
+      "name": "TITAN",
+      "symbol": "TITAN",
+      "address": "0xe7135426F31aa53b7A08d157f0138E03F48954D5",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0xe7135426F31aa53b7A08d157f0138E03F48954D5.png"
+    },
+    {
+      "name": "FFN",
+      "symbol": "FFN",
+      "address": "0x74248c9caf0F5F203b0A32ccB4Ce5B5427125eE8",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0x74248c9caf0F5F203b0A32ccB4Ce5B5427125eE8.png"
+    },
+    {
+      "name": "SAME",
+      "symbol": "SAME",
+      "address": "0x3f9b86987b96db944b34a6a2483d488369a41e3f",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0x3f9b86987b96db944b34a6a2483d488369a41e3f.png"
+    },
+    {
+      "name": "AIB",
+      "symbol": "AIB",
+      "address": "0x2fFc487Ef3A76c5794A468DA11021c9058367f7A",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0x2fFc487Ef3A76c5794A468DA11021c9058367f7A.png"
+    },
+    {
+      "name": "9CAT",
+      "symbol": "9CAT",
+      "address": "0x67dF38f569546e263fEe9aD3d97276D567988560",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0x67dF38f569546e263fEe9aD3d97276D567988560.png"
+    },
+    {
+      "name": "GENX",
+      "symbol": "GENX",
+      "address": "0xc48270d4672cc0111e9340c6d813e6cbb362b888",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0xc48270d4672cc0111e9340c6d813e6cbb362b888.png"
+    },
+    {
+      "name": "SGT",
+      "symbol": "SGT",
+      "address": "0xcad4de5b89c1992794181e944dcbe6f17402437d",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0xcad4de5b89c1992794181e944dcbe6f17402437d.png"
+    },
+    {
+      "name": "aiBED",
+      "symbol": "aiBED",
+      "address": "0x9A9E27523bb0C59c2f4cDbFa2e19e99aB74128F7",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0x9A9E27523bb0C59c2f4cDbFa2e19e99aB74128F7.png"
+    },
+    {
+      "name": "SGR",
+      "symbol": "SGR",
+      "address": "0x3cac9a2900227cd33d0f40b1b5b09187c85aef3e",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0x3cac9a2900227cd33d0f40b1b5b09187c85aef3e.png"
+    },
+    {
+      "name": "RLT",
+      "symbol": "RLT",
+      "address": "0x2a520797D0864DCA9DB40f55869673355b13AF33",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0x2a520797D0864DCA9DB40f55869673355b13AF33.png"
+    },
+    {
+      "name": "Punk World Token",
+      "symbol": "DP",
+      "address": "0x61B27ADebc9b7c7ffCF8bDFd2cec3339fd582e77",
+      "chainId": 70,
+      "decimals": 9,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0x61B27ADebc9b7c7ffCF8bDFd2cec3339fd582e77.png"
+    },
+    {
+      "name": "SHIBA INU",
+      "symbol": "SHIB",
+      "address": "0x56B0C9B12E8480b4C865322CB3d5CEf1c22c1430",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0x56B0C9B12E8480b4C865322CB3d5CEf1c22c1430.png"
+    },
+    {
+      "name": "LINK",
+      "symbol": "LINK",
+      "address": "0x294CDE734A863Dcf65417992424405bCcF3973E7",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0x294CDE734A863Dcf65417992424405bCcF3973E7.png"
+    },
+    {
+      "name": "F9",
+      "symbol": "F9",
+      "address": "0x3dFd430987bBED8dE7B173BE076FC876e789F2a6",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0x3dFd430987bBED8dE7B173BE076FC876e789F2a6.png"
+    },
+    {
+      "name": "Solana",
+      "symbol": "SOL",
+      "address": "0xbB680D2672b369d39FaC17487Be8dFc44DD42053",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0xbB680D2672b369d39FaC17487Be8dFc44DD42053.png"
+    },
+    {
+      "name": "Avalanche",
+      "symbol": "AVAX",
+      "address": "0x9DC3eA39736451386D43BcB20616fd6F32225671",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0x9DC3eA39736451386D43BcB20616fd6F32225671.png"
+    },
+    {
+      "name": "OHM",
+      "symbol": "OHM",
+      "address": "0x320ddb6a8D27170611D152dA398f1C26d6581003",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0x320ddb6a8D27170611D152dA398f1C26d6581003.png"
+    },
+    {
+      "name": "MANA",
+      "symbol": "MANA",
+      "address": "0x2Bf44fD81ba52f42db70418Ae2BD2798508E4C79",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0x2Bf44fD81ba52f42db70418Ae2BD2798508E4C79.png"
+    },
+    {
+      "name": "SAND",
+      "symbol": "SAND",
+      "address": "0x07bCC2444cF4a3C750a534026DCD3bBc979eFd85",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0x07bCC2444cF4a3C750a534026DCD3bBc979eFd85.png"
+    },
+    {
+      "name": "SPELL",
+      "symbol": "SPELL",
+      "address": "0xc3C2B3a2BD04c0A36224EBa45bcE0D0719E6eABa",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0xc3C2B3a2BD04c0A36224EBa45bcE0D0719E6eABa.png"
+    },
+    {
+      "name": "UNI",
+      "symbol": "UNI",
+      "address": "0x1FC14E78612edC54e36506C4A11a1A3bE4fE48aF",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0x1FC14E78612edC54e36506C4A11a1A3bE4fE48aF.png"
+    },
+    {
+      "name": "GALA",
+      "symbol": "GALA",
+      "address": "0x2DA53728c13B56082c6B5dEE966bCbaD7E9934a1",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0x2DA53728c13B56082c6B5dEE966bCbaD7E9934a1.png"
+    },
+    {
+      "name": "MBOX",
+      "symbol": "MBOX",
+      "address": "0x84A5a5d570b050f2509CCA299841AA61187Ab3DE",
+      "chainId": 70,
+      "decimals": 18,
+      "logoURI": "https://exchange.puddingswap.finance/images/coins/0x84A5a5d570b050f2509CCA299841AA61187Ab3DE.png"
+    }
+  ]
+}

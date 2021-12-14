@@ -4,15 +4,18 @@ import { APIDBMgmt } from "../scanapidb.mjs";
 import { ScanAPI } from "../scanapi.mjs";
 import { TokenAPI } from "../scantokenapi.mjs";
 import { LogAPI } from "../scanlogapi.mjs";
+import { TimerAPI } from "../scantimerapi.mjs";
 const apiDBMgmt = new APIDBMgmt();
 const scanApi = new ScanAPI();
 const tokenApi = new TokenAPI();
 const logApi = new LogAPI();
+const timerApi = new TimerAPI();
 const testaddress = "0xc19d04e8fe2d28609866e80356c027924f23b1a5";
 const toaddress = "0x26ee42a4de70cebcde40795853eba4e492a9547f";
 const tokenaddress = "0xbe8d16084841875a1f398e6c3ec00bbfcbfa571b";
 import { timeRange } from "../util.mjs";
 import "../utils.mjs";
+import { readJSON } from "./util.mjs";
 
 describe("api", () => {
   //Before each test we empty the database
@@ -116,12 +119,18 @@ describe("api", () => {
         }
       }
     });
-    it.only("getTxGasedTotalByAccountAndMethod", async () => {
+    it("getTxGasedTotalByAccountAndMethod", async () => {
       const address = "0xc13018a528e4498ee6fa28d0f519a034972ad1e8";
-    //   await scanApi.syncOnChainData(address);
-    //   const s = await apiDBMgmt.getTxGasedTotalByAccountAndMethod(address);
+      await scanApi.syncOnChainData(address);
+      const s = await apiDBMgmt.getTxGasedTotalByAccountAndMethod(address);
 
-    //   console.log(s);
+      console.log(s);
+    });
+    it("getTxContractAddressesByAccount", async () => {
+      const address = "0xc13018a528e4498ee6fa28d0f519a034972ad1e8";
+      const s = await apiDBMgmt.getTxContractAddressesByAccount(address);
+
+      console.log(s);
     });
     it("saveContractInfo ", async () => {
       ////token  transfer to
@@ -166,6 +175,27 @@ describe("api", () => {
         source: "url",
       });
     });
+
+    it("parsePriceInfo", async () => {
+      const json = readJSON("../jsons/prices.json");
+      await timerApi.parsePriceInfo();
+    });
+
+    it("parsePriceInfoFromSwap", async () => {
+      const json = readJSON("../jsons/swapprices.json");
+      await timerApi.parsePriceInfoFromSwap();
+    });
+
+
+    it.only("pricefromhooex", async () => {
+      const json = readJSON("../jsons/prices.json");
+      await timerApi.pricefromhooex();
+    });
+
+    it("pricefromhooex", async () => {
+      await timerApi.pricefromswap();
+    });
+
   });
 
   describe("/POST gas fee report", () => {

@@ -5,13 +5,16 @@ import EventSignature from "./models/EventSignatureModel.mjs";
 import Contract from "./models/ContractModel.mjs";
 import ContractInfo from "./models/ContractInfoModel.mjs";
 import TokenContractInfo from "./models/TokenContractInfoModel.mjs";
+import TokenPrice from "./models/TokenPriceModel.mjs";
+
 import AccountAddress from "./models/AccountAddressModel.mjs";
 import TxHashEventName from "./models/TxHashEventNameModel.mjs";
 import mongoose from "mongoose";
 mongoose.set("useFindAndModify", false);
 mongoose.set("useCreateIndex", true);
 import "./utils.mjs";
-
+import debug from "debug";
+const apidebug = new debug("api");
 export class APIDBMgmt {
   async init() {
     // DB connection
@@ -61,8 +64,16 @@ export class APIDBMgmt {
     TokenContractInfo.insertMany(contractinfo);
   }
 
- async saveTxHashEventName(txHashEventName) {
+  async saveTxHashEventName(txHashEventName) {
     TxHashEventName.insertMany(txHashEventName);
+  }
+
+  async saveTokenPrice(addresses) {
+    await TokenPrice.insertMany(addresses);
+  }
+
+  async deleteTokenPrice(addresses) {
+    await TokenPrice.deleteMany({ contractAddress: { $in: addresses } });
   }
 
   async updateTokenPrice(address, price) {
@@ -87,6 +98,7 @@ export class APIDBMgmt {
       { upsert: true }
     );
   }
+
   async getTokenContractInfo() {
     return await TokenContractInfo.find();
   }
@@ -134,6 +146,22 @@ export class APIDBMgmt {
     return s;
   }
 
+  async getTxContractAddressesByAccount(address) {
+    // const reg = new RegExp(address, "i"); //ignorecase{ $regex: reg }
+    let s = await Tx.find({
+      $and: [
+        {
+          from: address,
+        },
+        { contractAddress: { $ne: null } },
+        { contractAddress: { $ne: "" } },
+      ],
+    }).distinct("contractAddress");
+
+    console.log("=======getTxContractAddressesByAccount==========", s.length);
+    return s;
+  }
+
   async getTxToByAccount(address) {
     // const reg = new RegExp(address, "i"); //ignorecase{ $regex: reg }
     // let s = await Tx.find({ from: address }).distinct("to");
@@ -171,6 +199,103 @@ export class APIDBMgmt {
     return s;
   }
 
+  async getTopTxCount() {
+    const topcount = 50;
+
+    let totxcount = await Tx.aggregate([
+      {
+        $lookup: {
+          from: "accountaddresses",
+          localField: "to",
+          foreignField: "accountAddress",
+          as: "accounts",
+        },
+      },
+      { $match: { accounts: [] } },
+      {
+        $lookup: {
+          from: "contractaddresses",
+          localField: "to",
+          foreignField: "contractAddress",
+          as: "contracts",
+        },
+      },
+      { $match: { contracts: [] } },
+      {
+        $group: {
+          _id: "$to",
+          times: {
+            $count: {},
+          },
+        },
+      },
+      { $match: { times: { $gt: topcount } } },
+    ]);
+    const toarr = totxcount.map((x) => x._id);
+    let fromtxcount = await Tx.aggregate([
+      {
+        $lookup: {
+          from: "accountaddresses",
+          localField: "to",
+          foreignField: "accountAddress",
+          as: "accounts",
+        },
+      },
+      { $match: { accounts: [] } },
+      {
+        $lookup: {
+          from: "contractaddresses",
+          localField: "to",
+          foreignField: "contractAddress",
+          as: "contracts",
+        },
+      },
+      { $match: { contracts: [] } },
+      {
+        $group: {
+          _id: "$from",
+          times: {
+            $count: {},
+          },
+        },
+      },
+      { $match: { times: { $gt: topcount } } },
+    ]);
+    const fromarr = fromtxcount.map((x) => x._id);
+    let contracttxcount = await Tx.aggregate([
+      {
+        $match: {
+          $and: [
+            { contractAddress: { $ne: null } },
+            { contractAddress: { $ne: "" } },
+          ],
+        },
+      },
+      {
+        $lookup: {
+          from: "contractaddresses",
+          localField: "contractAddress",
+          foreignField: "contractAddress",
+          as: "contracts",
+        },
+      },
+      { $match: { contracts: [] } },
+      {
+        $group: {
+          _id: "$contractAddress",
+          times: {
+            $count: {},
+          },
+        },
+      },
+      { $match: { times: { $gt: topcount } } },
+    ]);
+    const contractarr = contracttxcount.map((x) => x._id);
+
+    //console.log(s);
+    return [...toarr, ...fromarr, ...contractarr];
+  }
+
   async getLatestBlockByAccount(address) {
     let s = await Tx.aggregate([
       {
@@ -187,7 +312,7 @@ export class APIDBMgmt {
         },
       },
     ]);
-    console.log(__line,__function,s);
+    console.log(__line, __function, s);
     let blocknumber = 0;
     const blocknumbers = s;
     if (
@@ -317,7 +442,7 @@ export class APIDBMgmt {
         $project: {
           gased: "$gased",
           apps: "$apps",
-          name: { $cond: [{ $ne: ["$apps", []] }, "$apps.appName", "$_id"] },
+          name: { $cond: [{ $ne: ["$apps", []] }, "$apps.appName", "other"] },
         },
       },
       {
@@ -355,11 +480,7 @@ export class APIDBMgmt {
           gased: "$gased",
           txevents: "$txevents",
           eventNameorHash: {
-            $cond: [
-              { $ne: ["$txevents", []] },
-              "$txevents.eventName",
-              "$transactionHash",
-            ],
+            $cond: [{ $ne: ["$txevents", []] }, "$txevents.eventName", "other"],
           },
         },
       },
@@ -433,7 +554,15 @@ export class APIDBMgmt {
       {
         $project: {
           times: "$times",
-          name: { $cond: [{ $ne: ["$apps", []] }, "$apps.appName", "$_id"] },
+          name: { $cond: [{ $ne: ["$apps", []] }, "$apps.appName", "other"] },
+        },
+      },
+      {
+        $group: {
+          _id: "$name",
+          times: {
+            $sum: "$times",
+          },
         },
       },
     ]);

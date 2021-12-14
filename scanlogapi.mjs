@@ -1,7 +1,8 @@
 import nodeFetch from "node-fetch";
 import { APIDBMgmt } from "./scanapidb.mjs";
 import "./utils.mjs";
-
+import debug from "debug";
+const apidebug = new debug("api");
 import Web3 from "web3";
 const PROVIDER_URL =
   process.env.PROVIDER_URL || "https://http-testnet.hoosmartchain.com";

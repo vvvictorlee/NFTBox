@@ -2,6 +2,7 @@ import nodeFetch from "node-fetch";
 import { TokenAPI } from "./scantokenapi.mjs";
 import { LogAPI } from "./scanlogapi.mjs";
 import { APIDBMgmt } from "./scanapidb.mjs";
+import { TimerAPI } from "./scantimerapi.mjs";
 import "./utils.mjs";
 import debug from "debug";
 const apidebug = new debug("api");
@@ -59,10 +60,10 @@ export class ScanAPI {
 
     const address = raddress || "0xc19D04E8Fe2d28609866e80356c027924F23B1A5";
     let prevblocknumber = -1;
-let blocknumber = 0;
+    let blocknumber = 0;
     while (true) {
       try {
-         blocknumber = await apiDBMgmt.getLatestBlockByAccount(address);
+        blocknumber = await apiDBMgmt.getLatestBlockByAccount(address);
         const url =
           "https://api.hooscan.com//api?module=account&action=txlist&address=" +
           address +
@@ -93,7 +94,10 @@ let blocknumber = 0;
           break;
         }
         // console.log("====json.result.length======", json.result, json.result.length);
-        const jr  = json.result.map(x=>{ delete x.input; return x});
+        const jr = json.result.map((x) => {
+          delete x.input;
+          return x;
+        });
         apiDBMgmt.saveTx(jr);
         console.log("====json.result.length======", json.result.length);
       } catch (err) {
@@ -174,7 +178,11 @@ let blocknumber = 0;
       const gasedbycontract = await apiDBMgmt.getTxGasedTotalByAccountAndApp(
         address
       );
-      return { totalgased, gasedbycontract };
+      const gasedbymethod = await apiDBMgmt.getTxGasedTotalByAccountAndMethod(
+        address
+      );
+
+      return { totalgased, gasedbycontract, gasedbymethod };
     } catch (error) {
       console.log("==========", error);
     }
@@ -235,6 +243,7 @@ let blocknumber = 0;
 const scanApi = new ScanAPI();
 const tokenApi = new TokenAPI();
 const logApi = new LogAPI();
+const timerAPI = new TimerAPI();
 const testaddress = "0xd4D41Ec4D4D3b775b43A82CB5b0C61E0F114aB1D"; //"0xc19d04e8fe2d28609866e80356c027924f23b1a5";
 const testtokenaddress = "0x6e250De4635f2A87c2CF092Dafd500787a6942b2";
 // UnhandledPromiseRejectionWarning: BulkWriteError: E11000 duplicate key error collection: myapi2.blocklogs index: transactionHash_1 dup key: { transactionHash: "0x10ec02ef81fa39b8afc99fc02bfb2a01cb8b56c61bf4daf41651ddbf59a5204d" }
@@ -246,7 +255,9 @@ let handlers = {
     await apiDBMgmt.init();
     // await logApi.syncBlockLogsByContractAddress(testaddress);
     console.log("======syncBlockLogsByContractAddress====after========");
-    await logApi.getEventNameFromAbiByContract(testtokenaddress);
+    // await logApi.getEventNameFromAbiByContract(testtokenaddress);
+    const r = await timerAPI.parsePriceInfoFromSwap();
+    console.log(r);
   },
   default: async function () {},
 };

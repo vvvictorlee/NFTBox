@@ -1,12 +1,15 @@
 import path from "path";
 
 import fs from "fs";
+import {fileURLToPath} from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-const getJSON = (fileName) => {
+const readJSON = (fileName) => {
   return JSON.parse(fs.readFileSync(path.join(__dirname, fileName)));
 };
 
-const putJSON = (fileName, json) => {
+const writeJSON = (fileName, json) => {
   fs.writeFileSync(path.join(__dirname, fileName), JSON.stringify(json));
 };
 
@@ -110,8 +113,8 @@ const printHeaders = (req) => {
 };
 
 export {
-  getJSON,
-  putJSON,
+  readJSON,
+  writeJSON,
   readCSVToJSON,
   readUCSV,
   readCSV,
