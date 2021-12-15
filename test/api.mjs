@@ -175,19 +175,16 @@ describe("api", () => {
       });
     });
 
-    it("parsePriceInfo", async () => {
-      const json = readJSON("../jsons/prices.json");
-      await timerApi.parsePriceInfo();
+    it.only("parsePriceInfo", async () => {
+      const json = readJSON("./jsons/prices.json");
+      await timerApi.parsePriceInfo(json);
     });
-
     it("parsePriceInfoFromSwap", async () => {
-      const json = readJSON("../jsons/swapprices.json");
-      await timerApi.parsePriceInfoFromSwap();
+      const json = readJSON("./jsons/swapprices.json");
+      await timerApi.parsePriceInfoFromSwap(json);
     });
 
-
-    it.only("pricefromhooex", async () => {
-      const json = readJSON("../jsons/prices.json");
+    it("pricefromhooex", async () => {
       await timerApi.pricefromhooex();
     });
 
