@@ -20,12 +20,28 @@ params: {
 
 ```javascript
 {
-    code: 10000, //成功code码 失败：   10001 已领过  10002 领完  10003 IP 请求过
-    message: 'success', //success fail
-    data: {
-        tokenid: '1', //徽章的地址
-    }
-
+  "code": 10000,//成功code码 
+  "message": "success",
+  "data": {
+      "totalgased": [//总消耗量
+        {
+          "_id": "0xc19d04e8fe2d28609866e80356c027924f23b1a5",
+          "gasedhoo": 0.95529290125983
+        }
+      ],
+      "gasedbycontract": [//消耗项目明细
+        {
+          "_id": "other",
+          "gased": 0.9552929012598301
+        }
+      ],
+      "gasedbymethod": [//消耗类别明细
+        {
+          "_id": "other",
+          "gased": 0.95529290125983
+        }
+      ]
+  }
 }
 
 ```
@@ -70,8 +86,7 @@ curl -X POST \
 ## 交互报告
 * 年度总交互次数
 * 交互项目明细。- 不同项目占比
-* 第一次与HSC的交互：   您在2021年5月19日第一次参与到HSC，第一次参与的项目是PuddingSwap
-* 该用户最晚一次交互是在什么时间及什么项目（您最晚一次参与的项目是 PuddingSwap）
+* 该用户第一次与HSC的交互（在2021年5月19日第一次参与到HSC，第一次参与的项目是PuddingSwap，最晚一次交互是在什么时间及什么项目（最晚一次参与的项目是 PuddingSwap）
 * 交互时间明细   -基于不同时段
 
 ### api/interactivereport
@@ -81,6 +96,8 @@ curl -X POST \
 ```javascript
 params: {
     address: '0xA2E21fD9F96CBa00f088c48858c3BaEf3e00cb5C', //hsc账户地址
+"year":"2021",//年度
+"range":"6"//时段长度如6小时
 }
 
 ```
@@ -89,11 +106,72 @@ params: {
 
 ```javascript
 {
-    code: 10000, //成功code码 失败： 例如10001等   10001 没有领取过，10002 领过，被转走    10003  领取被转，接收到其他
-    message: 'success', //success fail
-    data: {
-            tokenid: 1 //徽章id,
-    }
+  "code": 10000,
+  "message": "success",
+  "data": {
+    "total": 9429,//年度总交互次数
+    "firstlast": [//第一次与HSC的交互  最近一次交互
+      {
+        "_id": "61b6fa0f202498093e12996f",
+        "blockNumber": "29141",
+        "timeStamp": "1619844892",
+        "hash": "0xe8980b2a408f62f8847494de21ce841fa6d648f01d687fe9bf09732a25563946",
+        "nonce": "0",
+        "blockHash": "0x5266d42be6302a1dec38b4153d8fb43585d0dbe0bb085c2b62c8d39836023567",
+        "transactionIndex": "0",
+        "from": "0xc19d04e8fe2d28609866e80356c027924f23b1a5",
+        "to": "0xd16babe52980554520f6da505df4d1b124c815a7",
+        "value": "0",
+        "gas": "2000000",
+        "gasPrice": "1000000000",
+        "isError": "0",
+        "txreceipt_status": "1",
+        "contractAddress": "",
+        "cumulativeGasUsed": "52333",
+        "gasUsed": "52333",
+        "confirmations": "6512191"
+      },
+      {
+        "_id": "61b6fb1d104bf00a050d22f9",
+        "blockNumber": "172006",
+        "timeStamp": "1620273487",
+        "hash": "0x495a11b1d624af528f5661b6c1b1ab34efe1bc88c6880a396b953503a2962311",
+        "nonce": "9428",
+        "blockHash": "0xeeb1fcae73591caf5f17820ec2a7fd1a7d870ad7b665dadbdb9e55a11ddaec49",
+        "transactionIndex": "4",
+        "from": "0xc19d04e8fe2d28609866e80356c027924f23b1a5",
+        "to": "0xc19d04e8fe2d28609866e80356c027924f23b1a5",
+        "value": "1185010050000000000000",
+        "gas": "2000000",
+        "gasPrice": "2000000000",
+        "isError": "0",
+        "txreceipt_status": "1",
+        "contractAddress": "",
+        "cumulativeGasUsed": "549561",
+        "gasUsed": "21000",
+        "confirmations": "6369415"
+      }
+    ],
+    "txcountbyapp": [//交互项目明细
+      {
+        "_id": [
+          "appname"
+        ],
+        "times": 9
+      },
+      {
+        "_id": "other",
+        "times": 9420
+      }
+    ],
+    "txcountbytimespan": [//交互时间明细
+      {
+        "_id": 3,
+        "times": 1177
+      },
+      
+    ]
+  }
 }
 ```
 
@@ -207,7 +285,13 @@ curl -X POST \
 ### api/assetreport
 #### method: Post
 #### 请求参数：
-无
+```javascript
+params: {
+    address: '0xA2E21fD9F96CBa00f088c48858c3BaEf3e00cb5C', //hsc账户地址
+    "year":"2021",//年度
+}
+
+```
 
 #### 返回：
 
@@ -216,7 +300,28 @@ curl -X POST \
   "code": 10000,
   "message": "success",
   "data": {
-    "flag": false    true  结束  false 未结束 
+    "total": [],//年度代币数量
+    "months": [//按月度统计代币数量
+      {
+        "_id": [
+          "0xd8f6d61c2cc69c04f176616ad1c7de211b00af31",
+          12
+        ],
+        "amount": "2917267.968497967236814442",
+        "amountvalue": "2917267968497967236814442",
+        "tokenName": "LOOT",
+        "tokenSymbol": "LOOT",
+        "tokenDecimal": "18",
+        "month": 12
+      },
+    ],
+    "totalAmount": [],//年度总价值
+    "monthsAmount": [//按月度统计总价值
+      {
+        "_id": 12,
+        "amount": 65169.21252422202
+      }
+    ]
   }
 }
 ```
@@ -595,7 +700,15 @@ curl -X POST \
 ### api/addcontractinfo
 #### method: Post
 #### 请求参数：
-无
+```javascript
+"params":
+{
+  "name": "uniswap",
+  "addresses": [
+    "0xc19D04E8Fe2d28609866e80356c027924F23B1A5"
+  ]
+}
+```
 
 #### 返回：
 
@@ -631,7 +744,11 @@ curl -X POST \
 ### api/addtokenpricesource
 #### method: Post
 #### 请求参数：
-无
+"params":
+{
+  "address": "0xc19D04E8Fe2d28609866e80356c027924F23B1A5",
+  "source": "https://api.hoolgd.com/open/v1/tickers/all-market"
+}
 
 #### 返回：
 
