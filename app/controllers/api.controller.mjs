@@ -20,7 +20,7 @@ export class MyAPI {
     const json = {
       code: 10000,
       message: "success",
-      data: { msg: msg },
+      data: msg,
     };
     res.send(json);
   };
@@ -43,16 +43,14 @@ export class MyAPI {
     const json = {
       code: 10000,
       message: "success",
-      data: {
-        tokenId: msg,
-      },
+      data: msg,
     };
     res.send(json);
   };
 
   // Find a single note with a noteId
   assetReport = async (req, res) => {
-        // console.log(__line,_function,"========")
+    // console.log(__line,_function,"========")
     let para = req.body.params;
     if (req.body.params.address == undefined || !req.body.params.address) {
       return res.status(400).send({
@@ -69,9 +67,7 @@ export class MyAPI {
     const json = {
       code: 10000,
       message: "success",
-      data: {
-        flag: msg,
-      },
+      data: msg,
     };
     res.send(json);
   };
@@ -79,20 +75,23 @@ export class MyAPI {
   // Find a single note with a noteId
   addContractInfo = async (req, res) => {
     let para = req.body.params;
-    if (req.body.params.address == undefined || !req.body.params.address) {
+    if (req.body.params.name == undefined || !req.body.params.name) {
       return res.status(400).send({
-        message: "address can not be empty",
+        message: "name can not be empty",
       });
     }
-    para.address = para.address.toLowerCase();
-    let msg = await apiMgmt.addContractInfo(para);
+    if (req.body.params.addresses == undefined || !req.body.params.addresses) {
+      return res.status(400).send({
+        message: "addresses can not be empty",
+      });
+    }
 
+    para.addresses = para.addresses.map((x) => x.toLowerCase());
+    let msg = await apiMgmt.addContractInfo(para);
+    msg = msg==undefined||msg==null||msg == {} ? "success" : msg;
     const json = {
       code: 10000,
-      message: "success",
-      data: {
-        flag: msg,
-      },
+      message: msg,
     };
     res.send(json);
   };
@@ -107,13 +106,11 @@ export class MyAPI {
     }
     para.address = para.address.toLowerCase();
     let msg = await apiMgmt.addTokenPriceSource(para);
-
+    console.log(msg)
+    msg = msg==undefined||msg==null||msg == {} ? "success" : msg;
     const json = {
       code: 10000,
-      message: "success",
-      data: {
-        flag: msg,
-      },
+      message: msg
     };
     res.send(json);
   };
