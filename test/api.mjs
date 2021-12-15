@@ -13,9 +13,8 @@ const timerApi = new TimerAPI();
 const testaddress = "0xc19d04e8fe2d28609866e80356c027924f23b1a5";
 const toaddress = "0x26ee42a4de70cebcde40795853eba4e492a9547f";
 const tokenaddress = "0xbe8d16084841875a1f398e6c3ec00bbfcbfa571b";
-import { timeRange } from "../util.mjs";
+import { timeRange ,readJSON} from "../util.mjs";
 import "../utils.mjs";
-import { readJSON } from "./util.mjs";
 
 describe("api", () => {
   //Before each test we empty the database
