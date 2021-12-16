@@ -259,6 +259,26 @@ let handlers = {
     const r = await timerAPI.parsePriceInfoFromSwap();
     console.log(r);
   },
+  abi: async function () {
+    await apiDBMgmt.init();
+    console.log("======syncTxAbiOfToAddress============");
+    const r = await timerAPI.fetchAbiTimer();
+    console.log(r);
+  },
+  info: async function () {
+
+    await apiDBMgmt.init();
+    console.log("======fetchAppInfoTimer============");
+    const r = await timerAPI.fetchAppInfoTimer();
+    console.log(r);
+  },
+  price: async function () {
+
+    await apiDBMgmt.init();
+    console.log("======fetchTokenPriceTimer============");
+    const r = await timerAPI.fetchTokenPriceTimer();
+    console.log(r);
+  },
   default: async function () {},
 };
 

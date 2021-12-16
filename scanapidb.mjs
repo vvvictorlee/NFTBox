@@ -53,13 +53,18 @@ export class APIDBMgmt {
   async saveContract(contract) {
     Contract.insertMany(contract);
   }
+  async getContracts(addresses) {
+   return  Contract.find({contractAddress: { $in: addresses }}).distinct("contractAddress");
+  }
   async saveContractInfo(contractinfo) {
     ContractInfo.insertMany(contractinfo);
   }
   async saveAccountAddress(accounts) {
     AccountAddress.insertMany(accounts);
   }
-
+  async getAccountAddresses(addresses) {
+   return  AccountAddress.find({AccountAddress: { $in: addresses }}).distinct("AccountAddress");
+  }
   async saveTokenContractInfo(contractinfo) {
     TokenContractInfo.insertMany(contractinfo);
   }

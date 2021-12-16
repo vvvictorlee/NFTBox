@@ -81,11 +81,10 @@ export class LogAPI {
           if (res != undefined && res != null && res > 0) {
             contracts.push({ contractAddress: to._id });
             const flag = await this.syncBlockLogsByContractAddress(to._id);
-            if (flag!=0){
-                let events = await apiDBMgmt.getTxEventNameByAccount(to._id);
-                await apiDBMgmt.saveTxHashEventName(events);
+            if (flag != 0) {
+              let events = await apiDBMgmt.getTxEventNameByAccount(to._id);
+              await apiDBMgmt.saveTxHashEventName(events);
             }
-
           } else {
             contracts.push({ contractAddress: to._id, verified: "unverified" });
           }
@@ -95,10 +94,20 @@ export class LogAPI {
       }
 
       if (contracts.length > 0) {
-        await apiDBMgmt.saveContract(contracts);
+        const addresses = contracts.map((x) => x.contractAddress);
+        const s = await apiDBMgmt.getContracts(addresses);
+        contracts = contracts.filter((x) => s.indexOf(x) == -1);
+        if (contracts.length > 0) {
+          await apiDBMgmt.saveContract(contracts);
+        }
       }
       if (accounts.length > 0) {
-        await apiDBMgmt.saveAccountAddress(accounts);
+        const addresses = accounts.map((x) => x.accountAddress);
+        const s = await apiDBMgmt.getAccountAddresses(addresses);
+        accounts = accounts.filter((x) => s.indexOf(x) == -1);
+        if (accounts.length > 0) {
+          await apiDBMgmt.saveAccountAddress(accounts);
+        }
       }
     } catch (error) {
       console.log("=========syncTxAbiOfToAddress===error====", error);

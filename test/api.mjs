@@ -13,7 +13,7 @@ const timerApi = new TimerAPI();
 const testaddress = "0xc19d04e8fe2d28609866e80356c027924f23b1a5";
 const toaddress = "0x26ee42a4de70cebcde40795853eba4e492a9547f";
 const tokenaddress = "0xbe8d16084841875a1f398e6c3ec00bbfcbfa571b";
-import { timeRange ,readJSON} from "../util.mjs";
+import { timeRange, readJSON } from "../util.mjs";
 import "../utils.mjs";
 
 describe("api", () => {
@@ -72,6 +72,11 @@ describe("api", () => {
       await apiDBMgmt.getTokenTransferInAmountPriceByAccountAndMonth(para);
     });
 
+    it("getTopTxCount", async () => {
+      const address = await apiDBMgmt.getTopTxCount();
+      console.log(address);
+    });
+
     it("getTxCountSpanByAccountAndMonth", async () => {
       ////token  transfer to
       const para = {
@@ -82,6 +87,16 @@ describe("api", () => {
         range: "6",
       };
       await apiDBMgmt.getTxCountSpanByAccountAndMonth(para);
+    });
+    it("saveTokenPrice ", async () => {
+      ////token  transfer to
+      await apiDBMgmt.saveTokenPrice([
+        {
+          contractAddress: "symaddress[xx[0].trim()]",
+          price: "x.price.trim()",
+          lastUpdateTime: "now",
+        },
+      ]);
     });
     it("saveEventSignature ", async () => {
       ////token  transfer to
@@ -167,6 +182,12 @@ describe("api", () => {
       ////token  transfer to
       await apiDBMgmt.updateTokenPrice(tokenaddress, "0.0207");
     });
+    it.only("updateTokegetContractsnPrice ", async () => {
+      ////token  transfer to
+      const addresses = [];
+      const s = await apiDBMgmt.getContracts(addresses);
+      console.log(s);
+    });
     it("updateTokenPriceSource", async () => {
       ////token  transfer to  by month
       await apiDBMgmt.updateTokenPriceSource({
@@ -175,7 +196,7 @@ describe("api", () => {
       });
     });
 
-    it.only("parsePriceInfo", async () => {
+    it("parsePriceInfo", async () => {
       const json = readJSON("./jsons/prices.json");
       await timerApi.parsePriceInfo(json);
     });
@@ -184,14 +205,13 @@ describe("api", () => {
       await timerApi.parsePriceInfoFromSwap(json);
     });
 
-    it("pricefromhooex", async () => {
-      await timerApi.pricefromhooex();
+    it("fetchPriceFromHooEx", async () => {
+      await timerApi.fetchPriceFromHooEx();
     });
 
-    it("pricefromhooex", async () => {
-      await timerApi.pricefromswap();
+    it("fetchPriceFromSwap", async () => {
+      await timerApi.fetchPriceFromSwap();
     });
-
   });
 
   describe("/POST gas fee report", () => {
