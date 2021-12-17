@@ -2,7 +2,9 @@ import nodeFetch from "node-fetch";
 import { APIDBMgmt } from "./scanapidb.mjs";
 import "./utils.mjs";
 import debug from "debug";
-const apidebug = new debug("api");
+const apidebug = new debug("api:debug:token");
+const apiinfo = new debug("api:info:token");
+const apierror = new debug("api:error:token");
 
 const ApiKeyToken = process.env.API_KEY || "";
 const fetch = (url, init) =>
@@ -26,14 +28,14 @@ export class TokenAPI {
           "&endblock=99999999&sort=asc&apikey=" +
           ApiKeyToken +
           "";
-        console.log(url);
+        apidebug(url);
         const res = await fetch(url);
         const headerDate =
           res.headers && res.headers.get("date")
             ? res.headers.get("date")
             : "no response date";
-        console.log("Status Code:", res.status);
-        console.log(
+        apidebug("Status Code:", res.status);
+        apidebug(
           "syncOnChainDataOfTokenTx Date in Response header:",
           headerDate
         );
@@ -50,11 +52,11 @@ export class TokenAPI {
         }
         apiDBMgmt.saveTokenTx(json.result);
 
-        console.log(blocknumber, json.result);
+        apidebug(blocknumber, json.result);
 
-        console.log(blocknumber, json.result.length);
+        apidebug(blocknumber, json.result.length);
       } catch (err) {
-        console.log(err.message); //can be console.error
+        apierror(__line, __function, err.message);
         break;
       }
     }

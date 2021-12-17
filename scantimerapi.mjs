@@ -3,7 +3,10 @@ import { APIDBMgmt } from "./scanapidb.mjs";
 import "./utils.mjs";
 import { readJSON, readCSV } from "./util.mjs";
 import debug from "debug";
-const apidebug = new debug("api");
+const apidebug = new debug("api:debug:timer");
+const apiinfo = new debug("api:info:timer");
+const apierror = new debug("api:error:timer");
+
 import Web3 from "web3";
 import BigNumber from "bignumber.js";
 import { LogAPI } from "./scanlogapi.mjs";
@@ -48,7 +51,7 @@ import child_process from "child_process";
 export class TimerAPI {
   async testql() {
     const data = await client.query(tokensQuery).toPromise();
-    console.log(data);
+    apidebug(data);
   }
   async testqa() {
     var cmd =
@@ -69,15 +72,15 @@ export class TimerAPI {
         res.headers && res.headers.get("date")
           ? res.headers.get("date")
           : "no response date";
-      console.log("Status Code:", res.status);
-      console.log("fetchPriceFromHooEx Date in Response header:", headerDate);
+      apidebug("Status Code:", res.status);
+      apidebug("fetchPriceFromHooEx Date in Response header:", headerDate);
 
       const json = await res.json();
 
-      //   console.log(json);
+      //   apidebug(json);
       await this.parsePriceInfo(json);
     } catch (err) {
-      console.log(err.message); //can be console.error
+      apierror(__line, __function, err.message);
     }
   }
   async fetchPriceFromSwap() {
@@ -90,12 +93,12 @@ export class TimerAPI {
         "Content-Type": "text/plain",
       },
     });
-    console.log("Response Headers ============ ");
+    apidebug("Response Headers ============ ");
     res.headers.forEach(function (v, i, a) {
-      console.log(i + " : " + v);
+      apidebug(i + " : " + v);
     });
     const json = await res.text();
-    console.log(json);
+    apidebug(json);
 
     await this.parsePriceInfoFromSwap(JSON.parse(json));
   }
@@ -133,7 +136,7 @@ export class TimerAPI {
       .map((x) => {
         const xx = x.symbol.split("-");
         if (symaddress[xx[0].trim()] == "") {
-          console.log(xx, "empty");
+          apiinfo(xx, "empty");
         }
         return {
           contractAddress: symaddress[xx[0].trim()],
@@ -142,7 +145,7 @@ export class TimerAPI {
         };
       });
 
-    prices.map((price, index) => console.log(price, index));
+    prices.map((price, index) => apidebug(price, index));
 
     const addresses = prices.map((x) => x.contractAddress);
     apiDBMgmt.deleteTokenPrice(addresses);
@@ -155,7 +158,7 @@ export class TimerAPI {
       if (x.address != undefined && x.address.trim() != "") {
         s[x.symbol.trim()] = x.address.trim().toLowerCase();
       } else {
-        console.log(x);
+        apiinfo(x);
       }
       return s;
     }, {});
@@ -184,7 +187,7 @@ export class TimerAPI {
         };
       });
 
-    prices.map((price, index) => console.log(price, index));
+    prices.map((price, index) => apidebug(price, index));
 
     const addresses = prices.map((x) => x.contractAddress);
     apiDBMgmt.deleteTokenPrice(addresses);
@@ -192,11 +195,11 @@ export class TimerAPI {
   }
 
   async fetchAbiTimer() {
-    console.log("==fetchabi==");
+    apiinfo("==fetchabi==");
 
     while (true) {
       let now = new Date(Date.now() + 8 * 60 * 60 * 1000).toUTCString();
-      console.log("==fetchAbiTimer====in =", now);
+      apiinfo("==fetchAbiTimer====in =", now);
       const addresses = await apiDBMgmt.getTopTxCount();
       for (let address of addresses) {
         await logApi.syncTxAbiOfToAddress(address);
@@ -206,7 +209,7 @@ export class TimerAPI {
   }
 
   async fetchAppInfoTimer() {
-    console.log("==fetchAppInfo==");
+    apiinfo("==fetchAppInfo==");
 
     while (true) {
       await sleep(scan_interval);
@@ -214,11 +217,11 @@ export class TimerAPI {
   }
 
   async fetchTokenPriceTimer() {
-    console.log("==fetchTokenPriceTimer==");
+    apiinfo("==fetchTokenPriceTimer==");
 
     while (true) {
       let now = new Date(Date.now() + 8 * 60 * 60 * 1000).toUTCString();
-      console.log("==fetchTokenPriceTimer====in =", now);
+      apiinfo("==fetchTokenPriceTimer====in =", now);
 
       await this.fetchPriceFromHooEx();
       await this.fetchPriceFromSwap();

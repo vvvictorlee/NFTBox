@@ -6,10 +6,6 @@ import { authorize } from "../_helpers/authorize.mjs";
 import { MyAPI } from "../controllers/api.controller.mjs";
 const nft = new MyAPI();
 export default (app) => {
-  // Create a new MyAPI
-  // app.post('/api/gasfeereport',authorize(), async function (req, res, next) {
-  //     await nft.gasFeeReport(req, res);
-  // });
   app.post("/api/gasfeereport", async function (req, res, next) {
     await nft.gasFeeReport(req, res);
   });

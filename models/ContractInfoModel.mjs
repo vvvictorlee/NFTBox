@@ -12,7 +12,6 @@ var ContractInfoSchema = new Schema(
     },
     appName: { type: String },
     appType: { type: String },
-    gasedMethod: { type: String },
   },
   { timestamps: false,versionKey:false }
 );

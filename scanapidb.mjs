@@ -14,7 +14,9 @@ mongoose.set("useFindAndModify", false);
 mongoose.set("useCreateIndex", true);
 import "./utils.mjs";
 import debug from "debug";
-const apidebug = new debug("api");
+const apidebug = new debug("api:debug:db");
+const apiinfo = new debug("api:info:db");
+const apierror = new debug("api:error:db");
 export class APIDBMgmt {
   async init() {
     // DB connection
@@ -22,57 +24,142 @@ export class APIDBMgmt {
     mongoose
       .connect(MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true })
       .then(() => {
-        console.log("Connected to %s", MONGODB_URL);
+        apiinfo("Connected to %s", MONGODB_URL);
 
         //don't show the log when it is test
         if (process.env.NODE_ENV !== "test") {
-          console.log("Connected to %s", MONGODB_URL);
-          console.log("App is running ... \n");
-          console.log("Press CTRL + C to stop the process. \n");
+          apiinfo("Connected to %s", MONGODB_URL);
+          apiinfo("App is running ... \n");
+          apiinfo("Press CTRL + C to stop the process. \n");
         }
       })
       .catch((err) => {
-        console.error("App starting error:", err.message);
+        apierror(__line, __function, "App starting error:", err.message);
         process.exit(1);
       });
     var db = mongoose.connection;
   }
 
   async saveTx(tx) {
-    Tx.insertMany(tx);
+    const hashes = tx.map((x) => x.hash);
+    const s = await this.getTx(hashes);
+    tx = tx.filter((x) => s.indexOf(x) == -1);
+    if (tx.length > 0) {
+      Tx.insertMany(tx);
+    }
+  }
+  async getTx(tx) {
+    return Tx.find({
+      hash: { $in: tx },
+    }).distinct("hash");
   }
   async saveTokenTx(tokenTx) {
-    TokenTx.insertMany(tokenTx);
+    const hashes = tokenTx.map((x) => x.hash);
+    const s = await this.getTokenTx(hashes);
+    tokenTx = tokenTx.filter((x) => s.indexOf(x) == -1);
+    if (tokenTx.length > 0) {
+      TokenTx.insertMany(tokenTx);
+    }
+  }
+  async getTokenTx(tokenTx) {
+    return TokenTx.find({
+      hash: { $in: tokenTx },
+    }).distinct("hash");
   }
   async saveBlockLogs(blockLogs) {
-    BlockLogs.insertMany(blockLogs);
+    const hashes = blockLogs.map((x) => x.transactionHash);
+    const s = await this.getBlockLogs(hashes);
+    blockLogs = blockLogs.filter((x) => s.indexOf(x) == -1);
+    if (blockLogs.length > 0) {
+      BlockLogs.insertMany(blockLogs);
+    }
   }
+  async getBlockLogs(blockLogs) {
+    return BlockLogs.find({
+      transactionHash: { $in: blockLogs },
+    }).distinct("transactionHash");
+  }
+
   async saveEventSignature(eventSignatures) {
-    EventSignature.insertMany(eventSignatures);
+    const events = eventSignatures.map((x) => x.eventSignature);
+    const s = await this.getEventSignature(events);
+    eventSignatures = eventSignatures.filter((x) => s.indexOf(x) == -1);
+    if (eventSignatures.length > 0) {
+      EventSignature.insertMany(eventSignatures);
+    }
   }
-  async saveContract(contract) {
-    Contract.insertMany(contract);
+
+  async getEventSignature(eventSignatures) {
+    return EventSignature.find({
+      eventSignature: { $in: eventSignatures },
+    }).distinct("eventSignature");
+  }
+
+  async saveContract(contracts) {
+    const addresses = contracts.map((x) => x.contractAddress);
+    const s = await this.getContracts(addresses);
+    contracts = contracts.filter((x) => s.indexOf(x) == -1);
+    if (contracts.length > 0) {
+      Contract.insertMany(contracts);
+    }
   }
   async getContracts(addresses) {
-   return  Contract.find({contractAddress: { $in: addresses }}).distinct("contractAddress");
+    return Contract.find({ contractAddress: { $in: addresses } }).distinct(
+      "contractAddress"
+    );
   }
   async saveContractInfo(contractinfo) {
-    ContractInfo.insertMany(contractinfo);
+    const addresses = contractinfo.map((x) => x.contractAddress);
+    const s = await this.getContractInfo(addresses);
+    contractinfo = contractinfo.filter((x) => s.indexOf(x) == -1);
+    if (contractinfo.length > 0) {
+      ContractInfo.insertMany(contractinfo);
+    }
+  }
+  async getContractInfo(addresses) {
+    return ContractInfo.find({ contractAddress: { $in: addresses } }).distinct(
+      "contractAddress"
+    );
   }
   async saveAccountAddress(accounts) {
-    AccountAddress.insertMany(accounts);
+    const addresses = accounts.map((x) => x.accountAddress);
+    const s = await this.getAccountAddresses(addresses);
+    accounts = accounts.filter((x) => s.indexOf(x) == -1);
+    if (accounts.length > 0) {
+      AccountAddress.insertMany(accounts);
+    }
   }
   async getAccountAddresses(addresses) {
-   return  AccountAddress.find({AccountAddress: { $in: addresses }}).distinct("AccountAddress");
+    return AccountAddress.find({ AccountAddress: { $in: addresses } }).distinct(
+      "AccountAddress"
+    );
   }
-  async saveTokenContractInfo(contractinfo) {
-    TokenContractInfo.insertMany(contractinfo);
+  async saveTokenContractInfo(tokencontractinfo) {
+    const addresses = tokencontractinfo.map((x) => x.contractAddress);
+    const s = await this.getTokenContractInfo(addresses);
+    tokencontractinfo = tokencontractinfo.filter((x) => s.indexOf(x) == -1);
+    if (tokencontractinfo.length > 0) {
+      TokenContractInfo.insertMany(tokencontractinfo);
+    }
   }
-
+  async getTokenContractInfo(addresses) {
+    return TokenContractInfo.find({
+      contractAddress: { $in: addresses },
+    }).distinct("contractAddress");
+  }
   async saveTxHashEventName(txHashEventName) {
-    TxHashEventName.insertMany(txHashEventName);
+    const hashes = txHashEventName.map((x) => x.transactionHash);
+    const s = await this.getTxHashEventName(hashes);
+    txHashEventName = txHashEventName.filter((x) => s.indexOf(x) == -1);
+    if (txHashEventName.length > 0) {
+      TxHashEventName.insertMany(txHashEventName);
+    }
   }
-
+  async getTxHashEventName(txHashEventName) {
+    return TxHashEventName.find({
+      transactionHash: { $in: txHashEventName },
+    }).distinct("transactionHash");
+  }
   async saveTokenPrice(addresses) {
     await TokenPrice.insertMany(addresses);
   }
@@ -82,14 +169,14 @@ export class APIDBMgmt {
   }
 
   async updateTokenPrice(address, price) {
-    console.log("address==========", address);
+    apidebug("address==========", address);
     let now = new Date(Date.now() + 8 * 60 * 60 * 1000).toUTCString();
     let res = await TokenContractInfo.updateMany(
       { contractAddress: address },
       { price: price, lastUpdateTime: now },
       { upsert: true }
     );
-    console.log(res);
+    apidebug(res);
   }
 
   async updateTokenPriceSource(para) {
@@ -147,7 +234,7 @@ export class APIDBMgmt {
         $unwind: "$eventName",
       },
     ]);
-    console.log("=======getTxEventNameByAccount==========", s, s.length);
+    apidebug("=======getTxEventNameByAccount==========", s, s.length);
     return s;
   }
 
@@ -163,7 +250,7 @@ export class APIDBMgmt {
       ],
     }).distinct("contractAddress");
 
-    console.log("=======getTxContractAddressesByAccount==========", s.length);
+    apidebug("=======getTxContractAddressesByAccount==========", s.length);
     return s;
   }
 
@@ -200,7 +287,7 @@ export class APIDBMgmt {
         },
       },
     ]);
-    console.log("=======getTxToByAccount==========", s.length);
+    apidebug("=======getTxToByAccount==========", s.length);
     return s;
   }
 
@@ -297,7 +384,7 @@ export class APIDBMgmt {
     ]);
     const contractarr = contracttxcount.map((x) => x._id);
 
-    //console.log(s);
+    //apidebug(s);
     return [...toarr, ...fromarr, ...contractarr];
   }
 
@@ -317,7 +404,7 @@ export class APIDBMgmt {
         },
       },
     ]);
-    console.log(__line, __function, s);
+    apidebug(__line, __function, s);
     let blocknumber = 0;
     const blocknumbers = s;
     if (
@@ -347,7 +434,7 @@ export class APIDBMgmt {
         },
       },
     ]);
-    console.log(__line, __function, s);
+    apidebug(__line, __function, s);
     let blocknumber = 0;
     const blocknumbers = s;
     if (
@@ -384,7 +471,7 @@ export class APIDBMgmt {
         },
       },
     ]);
-    // //console.log(s);
+    // //apidebug(s);
     return s;
   }
 
@@ -410,7 +497,7 @@ export class APIDBMgmt {
         },
       },
     ]);
-    //console.log(s);
+    //apidebug(s);
     return s;
   }
 
@@ -459,7 +546,7 @@ export class APIDBMgmt {
         },
       },
     ]);
-    // //console.log(s);
+    // //apidebug(s);
     return s;
   }
 
@@ -500,7 +587,7 @@ export class APIDBMgmt {
         },
       },
     ]);
-    // //console.log(s);
+    // //apidebug(s);
     return s;
   }
 
@@ -509,7 +596,7 @@ export class APIDBMgmt {
     let s = await Tx.find({
       from: address,
     }).countDocuments();
-    //console.log(s);
+    //apidebug(s);
     return s;
   }
 
@@ -529,7 +616,7 @@ export class APIDBMgmt {
         },
       },
     ]);
-    //console.log(s);
+    //apidebug(s);
     return s;
   }
 
@@ -577,7 +664,7 @@ export class APIDBMgmt {
 
   async getEarliestAndLatestTxByAccount(address) {
     let el = await this.getEarliestAndLatestTxHashByAccount(address);
-    console.log(el);
+    apidebug(el);
     if (el.length == 0) {
       return [];
     }
@@ -596,9 +683,9 @@ export class APIDBMgmt {
         },
       ],
     };
-    console.log(JSON.stringify(filter));
+    apidebug(JSON.stringify(filter));
     let s = await Tx.find(filter);
-    //console.log(s);
+    //apidebug(s);
     return s;
   }
 
@@ -621,7 +708,7 @@ export class APIDBMgmt {
         },
       },
     ]);
-    //console.log(s);
+    //apidebug(s);
     return s;
   }
 
@@ -631,7 +718,7 @@ export class APIDBMgmt {
   // },
   // },
   async getTxCountSpanByAccountAndMonth(para) {
-    // console.log(__line, __function, para);
+    // apidebug(__line, __function, para);
     const address = para.address;
     const startdatetime = para.startdatetime;
     const enddatetime = para.enddatetime;
@@ -679,7 +766,7 @@ export class APIDBMgmt {
         },
       },
     ]);
-    console.log(s);
+    apidebug(s);
     return s;
   }
 
@@ -732,7 +819,7 @@ export class APIDBMgmt {
         },
       },
     ]);
-    //console.log(s);
+    //apidebug(s);
     return s;
   }
 
@@ -817,8 +904,8 @@ export class APIDBMgmt {
         $group: { _id: null, amount: { $sum: "$amount" } },
       },
     ]);
-    // console.log(JSON.stringify(s));
-    //console.log(s);
+    // apidebug(JSON.stringify(s));
+    //apidebug(s);
     return s;
   }
 
@@ -894,7 +981,7 @@ export class APIDBMgmt {
         },
       },
     ]);
-    //console.log(s);
+    //apidebug(s);
     return s;
   }
   //   {
@@ -1012,7 +1099,7 @@ export class APIDBMgmt {
         $group: { _id: "$month", amount: { $sum: "$amount" } },
       },
     ]);
-    //console.log(s);
+    //apidebug(s);
     return s;
   }
 }

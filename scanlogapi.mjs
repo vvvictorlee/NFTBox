@@ -2,7 +2,9 @@ import nodeFetch from "node-fetch";
 import { APIDBMgmt } from "./scanapidb.mjs";
 import "./utils.mjs";
 import debug from "debug";
-const apidebug = new debug("api");
+const apidebug = new debug("api:debug:log");
+const apiinfo = new debug("api:info:log");
+const apierror = new debug("api:error:log");
 import Web3 from "web3";
 const PROVIDER_URL =
   process.env.PROVIDER_URL || "https://http-testnet.hoosmartchain.com";
@@ -22,19 +24,19 @@ export class LogAPI {
         "&apikey=" +
         ApiKeyToken +
         "";
-      console.log(url);
+      apidebug(url);
       const res = await fetch(url);
       const headerDate =
         res.headers && res.headers.get("date")
           ? res.headers.get("date")
           : "no response date";
-      console.log("Status Code:", res.status);
-      console.log(
+      apidebug("Status Code:", res.status);
+      apidebug(
         "syncBlockLogsByContractAddress Date in Response header:",
         headerDate
       );
       const json = await res.json();
-      //   console.log(json.result);
+      //   apidebug(json.result);
       let logs = json.result;
       //   const eventsig2name = await getEventNameFromAbiByContract(address);
       let hashset = new Set();
@@ -52,11 +54,11 @@ export class LogAPI {
         a["eventName"] = a.topics[0];
         return a;
       });
-      //   console.log(t);
+      //   apidebug(t);
       await apiDBMgmt.saveBlockLogs(t);
-      console.log("======saveBlockLogs====after========");
+      apidebug("======saveBlockLogs====after========");
     } catch (err) {
-      console.log(err.message); //can be console.error
+      apierror(__line, __function, err.message);
       return 0;
     }
     return 1;
@@ -94,23 +96,13 @@ export class LogAPI {
       }
 
       if (contracts.length > 0) {
-        const addresses = contracts.map((x) => x.contractAddress);
-        const s = await apiDBMgmt.getContracts(addresses);
-        contracts = contracts.filter((x) => s.indexOf(x) == -1);
-        if (contracts.length > 0) {
-          await apiDBMgmt.saveContract(contracts);
-        }
+        await apiDBMgmt.saveContract(contracts);
       }
       if (accounts.length > 0) {
-        const addresses = accounts.map((x) => x.accountAddress);
-        const s = await apiDBMgmt.getAccountAddresses(addresses);
-        accounts = accounts.filter((x) => s.indexOf(x) == -1);
-        if (accounts.length > 0) {
-          await apiDBMgmt.saveAccountAddress(accounts);
-        }
+        await apiDBMgmt.saveAccountAddress(accounts);
       }
     } catch (error) {
-      console.log("=========syncTxAbiOfToAddress===error====", error);
+      apierror(__line, __function, error);
     }
   }
 
@@ -118,30 +110,6 @@ export class LogAPI {
     const address = raddress || "0xc953e0ce3c498A04e5c3C1CA0D7BA365326f734d";
     let code = web3.eth.getCode(address);
     return code != "0x";
-    //   let apiDBMgmt = new APIDBMgmt();
-    //   await apiDBMgmt.init();
-    //   try {
-    //     const res = await fetch(
-    //       "http://api.hooscan.com/api?module=proxy&action=eth_getCode&address=" +
-    //         address +
-    //         "&tag=latest&apikey="+ApiKeyToken+""
-    //     );
-    //     const headerDate =
-    //       res.headers && res.headers.get("date")
-    //         ? res.headers.get("date")
-    //         : "no response date";
-    //     console.log("Status Code:", res.status);
-    //     console.log("Date in Response header:", headerDate);
-
-    //     const json = await res.json();
-    //     console.log(json);
-    //     const code = JSON.parse(json.result);
-    //     // for(user of users) {
-    //     //   console.log(`Got user with id: ${user.id}, name: ${user.name}`);
-    //     // }
-    //   } catch (err) {
-    //     console.log(err.message); //can be console.error
-    //   }
   }
 
   async getEventNameFromAbiByContract(rcontractAddress) {
@@ -159,14 +127,14 @@ export class LogAPI {
         res.headers && res.headers.get("date")
           ? res.headers.get("date")
           : "no response date";
-      console.log("Status Code:", res.status);
-      console.log(
+      apidebug("Status Code:", res.status);
+      apidebug(
         "getEventNameFromAbiByContract Date in Response header:",
         headerDate
       );
 
       const json = await res.json();
-      console.log(json);
+      apidebug(json);
       if (
         json != undefined &&
         json != null &&
@@ -186,30 +154,25 @@ export class LogAPI {
               eventSignature: web3.eth.abi.encodeEventSignature(a),
             };
           });
-        console.log(events);
+        apidebug(events);
         try {
           apiDBMgmt.saveEventSignature(events);
         } catch (error) {
-          console.error(
-            __line,
-            __function,
-            "===saveEventSignature=====",
-            error
-          );
+          apierror(__line, __function, error);
         }
         // const es = events.reduce((s, a) => {
         //   s[a.eventSignature] = a.eventName;
         //   return s;
         // }, {});
-        // console.log(es);
+        // apidebug(es);
         // // for(user of users) {
-        // //   console.log(`Got user with id: ${user.id}, name: ${user.name}`);
+        // //   apidebug(`Got user with id: ${user.id}, name: ${user.name}`);
         // // }
         // return es;
         return 1;
       }
     } catch (err) {
-      console.log("=======getEventNameFromAbiByContract=========", err.message); //can be console.error
+      apierror(__line, __function, err.message);
     }
     return 0;
   }

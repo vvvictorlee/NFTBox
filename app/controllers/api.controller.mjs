@@ -1,8 +1,6 @@
 import { ScanAPI } from "../../scanapi.mjs";
 const apiMgmt = new ScanAPI();
 import { UserService } from "../users/user.service.mjs";
-const userService = new UserService();
-const paused = process.env.PAUSED;
 import { timeRange } from "../../util.mjs";
 import "../../utils.mjs";
 
@@ -50,7 +48,6 @@ export class MyAPI {
 
   // Find a single note with a noteId
   assetReport = async (req, res) => {
-    // console.log(__line,_function,"========")
     let para = req.body.params;
     if (req.body.params.address == undefined || !req.body.params.address) {
       return res.status(400).send({
@@ -88,7 +85,7 @@ export class MyAPI {
 
     para.addresses = para.addresses.map((x) => x.toLowerCase());
     let msg = await apiMgmt.addContractInfo(para);
-    msg = msg==undefined||msg==null||msg == {} ? "success" : msg;
+    msg = msg == undefined || msg == null || msg == {} ? "success" : msg;
     const json = {
       code: 10000,
       message: msg,
@@ -106,11 +103,10 @@ export class MyAPI {
     }
     para.address = para.address.toLowerCase();
     let msg = await apiMgmt.addTokenPriceSource(para);
-    console.log(msg)
-    msg = msg==undefined||msg==null||msg == {} ? "success" : msg;
+    msg = msg == undefined || msg == null || msg == {} ? "success" : msg;
     const json = {
       code: 10000,
-      message: msg
+      message: msg,
     };
     res.send(json);
   };
