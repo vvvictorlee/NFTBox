@@ -10,10 +10,8 @@ var TokenContractInfoSchema = new Schema(
       unique: true,
       dropDups: true,
     },
-    price: { type: String },
     priceSource: { type: String },
     priceSourceType: { type: String },
-    lastUpdateTime: { type: String },
   },
   { timestamps: false,versionKey:false }
 );

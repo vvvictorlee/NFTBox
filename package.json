@@ -4,8 +4,8 @@
   "private": false,
   "scripts": {
     "start": "DEBUG=app node   -r dotenv/config server.mjs  dotenv_config_path=.env",
-    "api": "DEBUG=app,api node  -r dotenv/config scanapi.mjs  dotenv_config_path=.env",
-    "test": "mocha -r dotenv/config --timeout 90000 --recursive './test/**/*.mjs' dotenv_config_path=.env "
+    "api": "DEBUG=app,api:debug:log,api:debug:db node  -r dotenv/config scanapi.mjs  dotenv_config_path=.env",
+    "test": "DEBUG=app,api:debug:log,api:debug:db mocha -r dotenv/config --timeout 90000 --recursive './test/**/*.mjs' dotenv_config_path=.env "
   },
   "dependencies": {
     "async-redis": "^2.0.0",

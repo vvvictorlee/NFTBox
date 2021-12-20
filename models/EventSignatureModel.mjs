@@ -4,8 +4,8 @@ var Schema = mongoose.Schema;
 
 var EventSignatureSchema = new Schema(
   {
-    eventName: { type: String, required: true },
-    eventSignature: { type: String, required: true,unique:true,dropDups: true },
+    eventName: { type: String },
+    eventSignature: { type: String,unique:true,dropDups: true },
   },
   { timestamps: false,versionKey:false }
 );

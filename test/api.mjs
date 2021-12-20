@@ -147,10 +147,6 @@ describe("api", () => {
       console.log(s);
     });
     it("saveContractInfo ", async () => {
-      ////token  transfer to
-      //   await apiDBMgmt.saveTokenContractInfo([
-      //     { contractAddress: testaddress, price: "4.4" }
-      //   ]);
       await apiDBMgmt.saveContractInfo([
         {
           contractAddress: "0x1cd14602425efead850db5b2ecb6f6fb9059e7b6",
@@ -160,29 +156,87 @@ describe("api", () => {
           contractAddress: "0xff714022dcf8cf20c22a8396b635152a95185621",
           appName: "appname",
         },
+      ]);
+    });
+    it("saveTx ", async () => {
+      await apiDBMgmt.saveTx([
         {
-          contractAddress: "0xcc627e99236b4919d2b4986fac52a0e86dbad973",
-          appName: "appname",
+          hash: "0x1cd14602425efead850db5b2ecb6f6fb9059e7b6",
         },
         {
-          contractAddress: "0x01484d31ed350dc8b52a40a6215c3bbb88dbe0ab",
-          appName: "appname",
-        },
-        {
-          contractAddress: "0x345458f902e9c61adfc1153eb27e14458b8ae65f",
-          appName: "appname",
-        },
-        {
-          contractAddress: "0x8e5427ed6c48c9f3cf4da406ed46254a602a144e",
-          appName: "appname",
+          hash: "0xff714022dcf8cf20c22a8396b635152a95185621",
         },
       ]);
     });
+    it("saveTokenTx ", async () => {
+      await apiDBMgmt.saveTokenTx([
+        {
+          hash: "0x1cd14602425efead850db5b2ecb6f6fb9059e7b6",
+        },
+        {
+          hash: "0xff714022dcf8cf20c22a8396b635152a95185621",
+        },
+      ]);
+    });
+    it("saveBlockLogs ", async () => {
+      await apiDBMgmt.saveBlockLogs([
+        {
+          transactionHash: "0x1cd14602425efead850db5b2ecb6f6fb9059e7b6",
+        },
+        {
+          transactionHash: "0xff714022dcf8cf20c22a8396b635152a95185621",
+        },
+      ]);
+    });
+    it("saveContract ", async () => {
+      await apiDBMgmt.saveContract([
+        {
+          contractAddress: "0x03314c6da7688178e6a80edac90c5ad500521C72",
+        },
+        {
+          contractAddress: "0xff714022dcf8cf20c22a8396b635152a95185621",
+        },
+        {
+          contractAddress: "0xff714022dcf8cf20c22a8396b635152a95185631",
+        },
+      ]);
+    });
+    it.only("saveAccountAddress ", async () => {
+      await apiDBMgmt.saveAccountAddress([
+        {
+          accountAddress: "0x1cd14602425efead850db5b2ecb6f6fb9059e7b9",
+        },
+        {
+          accountAddress: "0xff714022dcf8cf20c22a8396b635152a95185611",
+        },
+      ]);
+    });
+    it("saveTokenContractInfo ", async () => {
+      await apiDBMgmt.saveTokenContractInfo([
+        {
+          contractAddress: "0x1cd14602425efead850db5b2ecb6f6fb9059e7b6",
+        },
+        {
+          contractAddress: "0xff714022dcf8cf20c22a8396b635152a95185621",
+        },
+      ]);
+    });
+    it("saveTxHashEventName ", async () => {
+      await apiDBMgmt.saveTxHashEventName([
+        {
+          transactionHash: "0x1cd14602425efead850db5b2ecb6f6fb9059e8b6",
+        },
+        {
+          transactionHash: "0xff714022dcf8cf20c22a8396b635152a95185621",
+        },
+      ]);
+    });
+
     it("updateTokenPrice ", async () => {
       ////token  transfer to
       await apiDBMgmt.updateTokenPrice(tokenaddress, "0.0207");
     });
-    it.only("updateTokegetContractsnPrice ", async () => {
+    it("updateTokegetContractsnPrice ", async () => {
       ////token  transfer to
       const addresses = [];
       const s = await apiDBMgmt.getContracts(addresses);

@@ -56,7 +56,6 @@ export class LogAPI {
       });
       //   apidebug(t);
       await apiDBMgmt.saveBlockLogs(t);
-      apidebug("======saveBlockLogs====after========");
     } catch (err) {
       apierror(__line, __function, err.message);
       return 0;
@@ -96,6 +95,7 @@ export class LogAPI {
       }
 
       if (contracts.length > 0) {
+      apidebug("====== if (contracts.length > 0)============",contracts);
         await apiDBMgmt.saveContract(contracts);
       }
       if (accounts.length > 0) {

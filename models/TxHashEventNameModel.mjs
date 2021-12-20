@@ -8,7 +8,7 @@ var TxHashEventNameSchema = new Schema(
       type: String,
       required: true,unique:true,dropDups: true
     },
-    eventName: { type: String, required: true },
+    eventName: { type: String},
   },
   { timestamps: false,versionKey:false }
 );

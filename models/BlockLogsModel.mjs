@@ -4,19 +4,19 @@ var Schema = mongoose.Schema;
 
 var BlockLogsSchema = new Schema(
   {
-    address: { type: String, required: true },
-    topics: { type: Array, required: true },
-    data: { type: String, required: true },
-    blockNumber: { type: String, required: true },
-    timeStamp: { type: String, required: true },
-    gasPrice: { type: String, required: true },
-    gasUsed: { type: String, required: true },
-    logIndex: { type: String, required: true },
+    address: { type: String },
+    topics: { type: Array },
+    data: { type: String },
+    blockNumber: { type: String },
+    timeStamp: { type: String },
+    gasPrice: { type: String },
+    gasUsed: { type: String },
+    logIndex: { type: String },
     transactionHash: {
       type: String,
       required: true,unique:true,dropDups: true
     },
-    transactionIndex: { type: String, required: true },
+    transactionIndex: { type: String },
   },
   { timestamps: false,versionKey:false }
 );

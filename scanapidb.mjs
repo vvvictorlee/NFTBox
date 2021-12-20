@@ -17,6 +17,17 @@ import debug from "debug";
 const apidebug = new debug("api:debug:db");
 const apiinfo = new debug("api:info:db");
 const apierror = new debug("api:error:db");
+const models = {
+  Contract,
+  Tx,
+  TokenTx,
+  BlockLogs,
+  EventSignature,
+  ContractInfo,
+  AccountAddress,
+  TokenContractInfo,
+  TxHashEventName,
+};
 export class APIDBMgmt {
   async init() {
     // DB connection
@@ -40,125 +51,59 @@ export class APIDBMgmt {
     var db = mongoose.connection;
   }
 
-  async saveTx(tx) {
-    const hashes = tx.map((x) => x.hash);
-    const s = await this.getTx(hashes);
-    tx = tx.filter((x) => s.indexOf(x) == -1);
-    if (tx.length > 0) {
-      Tx.insertMany(tx);
+  async saveModel(name, key, contracts) {
+    apidebug(name, key, contracts)
+    const addresses = contracts.map((x) => x[key]);
+    let s = await this.getModel(name, key, addresses);
+apidebug(s)
+    s = s.map((x) => x.toLowerCase());
+apidebug(s)
+
+    contracts = contracts.filter((x) => s.indexOf(x[key].toLowerCase()) == -1);
+ apidebug(name, key, contracts)
+    if (contracts.length > 0) {
+      models[name].insertMany(contracts);
     }
   }
-  async getTx(tx) {
-    return Tx.find({
-      hash: { $in: tx },
-    }).distinct("hash");
+
+  async getModel(name, key, addresses) {
+    return models[name]
+      .find({ contractAddress: { $in: addresses } })
+      .distinct(key);
+  }
+  async saveTx(tx) {
+    await this.saveModel("Tx", "hash", tx);
   }
   async saveTokenTx(tokenTx) {
-    const hashes = tokenTx.map((x) => x.hash);
-    const s = await this.getTokenTx(hashes);
-    tokenTx = tokenTx.filter((x) => s.indexOf(x) == -1);
-    if (tokenTx.length > 0) {
-      TokenTx.insertMany(tokenTx);
-    }
-  }
-  async getTokenTx(tokenTx) {
-    return TokenTx.find({
-      hash: { $in: tokenTx },
-    }).distinct("hash");
+    await this.saveModel("TokenTx", "hash", tokenTx);
   }
   async saveBlockLogs(blockLogs) {
-    const hashes = blockLogs.map((x) => x.transactionHash);
-    const s = await this.getBlockLogs(hashes);
-    blockLogs = blockLogs.filter((x) => s.indexOf(x) == -1);
-    if (blockLogs.length > 0) {
-      BlockLogs.insertMany(blockLogs);
-    }
-  }
-  async getBlockLogs(blockLogs) {
-    return BlockLogs.find({
-      transactionHash: { $in: blockLogs },
-    }).distinct("transactionHash");
+    await this.saveModel("BlockLogs", "transactionHash", blockLogs);
   }
 
   async saveEventSignature(eventSignatures) {
-    const events = eventSignatures.map((x) => x.eventSignature);
-    const s = await this.getEventSignature(events);
-    eventSignatures = eventSignatures.filter((x) => s.indexOf(x) == -1);
-    if (eventSignatures.length > 0) {
-      EventSignature.insertMany(eventSignatures);
-    }
-  }
-
-  async getEventSignature(eventSignatures) {
-    return EventSignature.find({
-      eventSignature: { $in: eventSignatures },
-    }).distinct("eventSignature");
+    await this.saveModel("EventSignature", "eventSignature", eventSignatures);
   }
 
   async saveContract(contracts) {
-    const addresses = contracts.map((x) => x.contractAddress);
-    const s = await this.getContracts(addresses);
-    contracts = contracts.filter((x) => s.indexOf(x) == -1);
-    if (contracts.length > 0) {
-      Contract.insertMany(contracts);
-    }
+    await this.saveModel("Contract", "contractAddress", contracts);
   }
-  async getContracts(addresses) {
-    return Contract.find({ contractAddress: { $in: addresses } }).distinct(
-      "contractAddress"
-    );
-  }
+
   async saveContractInfo(contractinfo) {
-    const addresses = contractinfo.map((x) => x.contractAddress);
-    const s = await this.getContractInfo(addresses);
-    contractinfo = contractinfo.filter((x) => s.indexOf(x) == -1);
-    if (contractinfo.length > 0) {
-      ContractInfo.insertMany(contractinfo);
-    }
-  }
-  async getContractInfo(addresses) {
-    return ContractInfo.find({ contractAddress: { $in: addresses } }).distinct(
-      "contractAddress"
-    );
+    await this.saveModel("ContractInfo", "contractAddress", contractinfo);
   }
   async saveAccountAddress(accounts) {
-    const addresses = accounts.map((x) => x.accountAddress);
-    const s = await this.getAccountAddresses(addresses);
-    accounts = accounts.filter((x) => s.indexOf(x) == -1);
-    if (accounts.length > 0) {
-      AccountAddress.insertMany(accounts);
-    }
-  }
-  async getAccountAddresses(addresses) {
-    return AccountAddress.find({ AccountAddress: { $in: addresses } }).distinct(
-      "AccountAddress"
-    );
+    await this.saveModel("AccountAddress", "accountAddress", accounts);
   }
   async saveTokenContractInfo(tokencontractinfo) {
-    const addresses = tokencontractinfo.map((x) => x.contractAddress);
-    const s = await this.getTokenContractInfo(addresses);
-    tokencontractinfo = tokencontractinfo.filter((x) => s.indexOf(x) == -1);
-    if (tokencontractinfo.length > 0) {
-      TokenContractInfo.insertMany(tokencontractinfo);
-    }
-  }
-  async getTokenContractInfo(addresses) {
-    return TokenContractInfo.find({
-      contractAddress: { $in: addresses },
-    }).distinct("contractAddress");
+    await this.saveModel(
+      "TokenContractInfo",
+      "contractAddress",
+      tokencontractinfo
+    );
   }
   async saveTxHashEventName(txHashEventName) {
-    const hashes = txHashEventName.map((x) => x.transactionHash);
-    const s = await this.getTxHashEventName(hashes);
-    txHashEventName = txHashEventName.filter((x) => s.indexOf(x) == -1);
-    if (txHashEventName.length > 0) {
-      TxHashEventName.insertMany(txHashEventName);
-    }
-  }
-  async getTxHashEventName(txHashEventName) {
-    return TxHashEventName.find({
-      transactionHash: { $in: txHashEventName },
-    }).distinct("transactionHash");
+    await this.saveModel("TxHashEventName", "transactionHash", txHashEventName);
   }
   async saveTokenPrice(addresses) {
     await TokenPrice.insertMany(addresses);

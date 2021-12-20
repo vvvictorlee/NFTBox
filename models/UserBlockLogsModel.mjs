@@ -4,15 +4,15 @@ var Schema = mongoose.Schema;
 
 var UserBlockLogsSchema = new Schema(
   {
-    address: { type: String, required: true },
-    timeStamp: { type: String, required: true },
-    gasPrice: { type: String, required: true },
-    gasUsed: { type: String, required: true },
+    address: { type: String },
+    timeStamp: { type: String },
+    gasPrice: { type: String },
+    gasUsed: { type: String },
     transactionHash: {
       type: String,
       required: true,unique:true,dropDups: true
     },
-    eventName: { type: String, required: true },
+    eventName: { type: String },
   },
   { timestamps: false,versionKey:false }
 );
