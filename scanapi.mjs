@@ -333,7 +333,7 @@ let handlers = {
         apidebug("=a=a====in =", a);
         bres.push(a);
       }
-    //   let a = await web3.eth.getBalance(web3.utils.toChecksumAddress(b[0]));
+      let a = await web3.eth.getBalance(web3.utils.toChecksumAddress(b[0]));
     //   apidebug("=a=a====in =", a);
       bres.push(a);
       res.push(bres);
