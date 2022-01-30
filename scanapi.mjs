@@ -292,8 +292,8 @@ let handlers = {
       "0x3EFF9D389D13D6352bfB498BCF616EF9b1BEaC87",
     ];
     let bl = await timerAPI.parseBlacklist();
-    bl = bl.slice(0, 1);
-    console.log(bl);
+    // bl = bl.slice(0, 1);
+    // console.log(bl);
 
     let res = [];
     for (let b of bl) {
