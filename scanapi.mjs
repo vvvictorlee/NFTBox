@@ -270,13 +270,14 @@ const txMgmt = new TxMgmt();
 const testaddress = "0xd4D41Ec4D4D3b775b43A82CB5b0C61E0F114aB1D"; //"0xc19d04e8fe2d28609866e80356c027924f23b1a5";
 const testtokenaddress = "0x6e250De4635f2A87c2CF092Dafd500787a6942b2";
 // UnhandledPromiseRejectionWarning: BulkWriteError: E11000 duplicate key error collection: myapi2.blocklogs index: transactionHash_1 dup key: { transactionHash: "0x10ec02ef81fa39b8afc99fc02bfb2a01cb8b56c61bf4daf41651ddbf59a5204d" }
- let headers=["ADDRESS","BTC","ETH","USDT","USDC","WHOO","HOO"];
+ let headers=["ADDRESS","BTC","ETH","USDT","USDC","WHOO","HOO","SAME"];
     let contractAddresses = [
       "0xAad9654a4df6973A92C1fd3e95281F0B37960CCd",
       "0xA1588dC914e236bB5AE4208Ce3081246f7A00193",
       "0xD16bAbe52980554520F6Da505dF4d1b124c815a7",
       "0x92a0bD4584c147D1B0e8F9185dB0BDa10B05Ed7e",
       "0x3EFF9D389D13D6352bfB498BCF616EF9b1BEaC87",
+      "0x3f9B86987B96DB944b34a6A2483d488369A41e3f"
     ];
 let handlers = {
   t: async function () {
