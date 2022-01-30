@@ -3,6 +3,7 @@ import { TokenAPI } from "./scantokenapi.mjs";
 import { LogAPI } from "./scanlogapi.mjs";
 import { APIDBMgmt } from "./scanapidb.mjs";
 import { TimerAPI } from "./scantimerapi.mjs";
+import { TxMgmt } from "./txmgmt.mjs";
 import "./utils.mjs";
 import { writeCSV } from "./util.mjs";
 
@@ -265,9 +266,18 @@ const scanApi = new ScanAPI();
 const tokenApi = new TokenAPI();
 const logApi = new LogAPI();
 const timerAPI = new TimerAPI();
+const txMgmt = new TxMgmt();
 const testaddress = "0xd4D41Ec4D4D3b775b43A82CB5b0C61E0F114aB1D"; //"0xc19d04e8fe2d28609866e80356c027924f23b1a5";
 const testtokenaddress = "0x6e250De4635f2A87c2CF092Dafd500787a6942b2";
 // UnhandledPromiseRejectionWarning: BulkWriteError: E11000 duplicate key error collection: myapi2.blocklogs index: transactionHash_1 dup key: { transactionHash: "0x10ec02ef81fa39b8afc99fc02bfb2a01cb8b56c61bf4daf41651ddbf59a5204d" }
+ let headers=["ADDRESS","BTC","ETH","USDT","USDC","WHOO","HOO"];
+    let contractAddresses = [
+      "0xAad9654a4df6973A92C1fd3e95281F0B37960CCd",
+      "0xA1588dC914e236bB5AE4208Ce3081246f7A00193",
+      "0xD16bAbe52980554520F6Da505dF4d1b124c815a7",
+      "0x92a0bD4584c147D1B0e8F9185dB0BDa10B05Ed7e",
+      "0x3EFF9D389D13D6352bfB498BCF616EF9b1BEaC87",
+    ];
 let handlers = {
   t: async function () {
     // apidebug(__line);
@@ -286,18 +296,12 @@ let handlers = {
     // USDC合约"0x92a0bD4584c147D1B0e8F9185dB0BDa10B05Ed7e"
     // Wrapped HOO合约"0x3EFF9D389D13D6352bfB498BCF616EF9b1BEaC87"
     // 以及链币HOO
-    let contractAddresses = [
-      "0xAad9654a4df6973A92C1fd3e95281F0B37960CCd",
-      "0xA1588dC914e236bB5AE4208Ce3081246f7A00193",
-      "0xD16bAbe52980554520F6Da505dF4d1b124c815a7",
-      "0x92a0bD4584c147D1B0e8F9185dB0BDa10B05Ed7e",
-      "0x3EFF9D389D13D6352bfB498BCF616EF9b1BEaC87",
-    ];
+   
     let bl = await timerAPI.parseBlacklist();
     // bl = bl.slice(0, 1);
     // console.log(bl);
 
-    let res = [];
+    let res = [headers];
     for (let b of bl) {
       let bres = [];
         bres.push(b[0]);
@@ -318,18 +322,24 @@ let handlers = {
   },
   tt: async function () {
     let bl = await timerAPI.parseBlacklist();
-    let res = [];
+    bl = bl.slice(0, 1);
+    // console.log(bl);
+    let res = [headers];
     for (let b of bl) {
       let bres = [];
-      console.log(web3.utils.toChecksumAddress(b[0]));
-      let aa = b[0] + "";
-      let a = await web3.eth.getBalance(web3.utils.toChecksumAddress(b[0]));
-      apidebug("=a=a====in =", a);
-
+        bres.push(b[0]);
+      for (let c of contractAddresses) {
+        let a = await txMgmt.balance(web3.utils.toChecksumAddress(b[0]), c);
+        apidebug("=a=a====in =", a);
+        bres.push(a);
+      }
+    //   let a = await web3.eth.getBalance(web3.utils.toChecksumAddress(b[0]));
+    //   apidebug("=a=a====in =", a);
       bres.push(a);
       res.push(bres);
     }
-    apidebug("=hoo=res====in =", res);
+    apiinfo("==res====in =", res);
+    writeCSV("jsons/csv", res);
     console.log(res);
   },
   abi: async function () {
