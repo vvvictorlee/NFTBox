@@ -258,7 +258,9 @@ export class ScanAPI {
     await apiDBMgmt.updateTokenPriceSource(para);
   }
 }
-
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(() => resolve(), ms));
+}
 const scanApi = new ScanAPI();
 const tokenApi = new TokenAPI();
 const logApi = new LogAPI();
@@ -301,6 +303,7 @@ let handlers = {
         bres.push(b[0]);
       for (let c of contractAddresses) {
         let a = await scanApi.getTokenBalance(b, c);
+        sleep(200);
         // apidebug("=a=a====in =", a);
         bres.push(a);
       }
