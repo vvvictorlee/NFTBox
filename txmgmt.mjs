@@ -70,7 +70,7 @@ function instanceContract() {
     contracts.push(contract);
     contractobjs[CONTRACT_ADDRESS[i]] = contract;
   }
-  // //console.log(Contract.methods)
+  console.log(contracts,contractobjs)
 }
 
 let handlers = {
