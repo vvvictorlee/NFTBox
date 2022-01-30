@@ -14,7 +14,7 @@ const CONTRACT_ADDRESS = [
   "0xD16bAbe52980554520F6Da505dF4d1b124c815a7",
   "0x92a0bD4584c147D1B0e8F9185dB0BDa10B05Ed7e",
   "0x3EFF9D389D13D6352bfB498BCF616EF9b1BEaC87",
-  "0x3f9B86987B96DB944b34a6A2483d488369A41e3f"
+  "0x3f9B86987B96DB944b34a6A2483d488369A41e3f",
 ];
 const _TOTAL_SUPPLY = process.env.TOTAL_SUPPLY || 10000;
 const TOTAL_SUPPLY = JSON.parse(_TOTAL_SUPPLY);
@@ -39,7 +39,7 @@ const web3 = new Web3(new Web3.providers.HttpProvider(PROVIDER_URL));
 let abi = {};
 let contract = {};
 let proxy = validators[0];
-instanceContract();
+// instanceContract();
 // const index = 0;
 // let indexOfProxy = 0;
 export class TxMgmt {
@@ -55,23 +55,48 @@ export class TxMgmt {
       .call({ from: address });
     return amount;
   }
+
+
+    async instanceContract(contract_address) {
+  let json = readJSON("./jsons/ERC20Mintable.json");
+  const abi = json.abi;
+  let sameabi = readJSON("./jsons/same.json");
+
+  for (let i = 0; i < contract_address.length; i++) {
+    contract = new web3.eth.Contract(
+      i == contract_address.length - 1 ? sameabi : abi,
+      contract_address[i]
+    );
+    if (undefined == contract) {
+      console.log("un==", contract_address[i]);
+      return;
+    }
+    contracts.push(contract);
+    contractobjs[contract_address[i]] = contract;
+  }
+  console.log(contracts, contractobjs);
+}
+
 }
 
 function instanceContract() {
   let json = readJSON("./jsons/ERC20Mintable.json");
   const abi = json.abi;
-    let sameabi = readJSON("./jsons/same.json");
+  let sameabi = readJSON("./jsons/same.json");
 
   for (let i = 0; i < CONTRACT_ADDRESS.length; i++) {
-    contract = new web3.eth.Contract(i==CONTRACT_ADDRESS.length-1?sameabi:abi, CONTRACT_ADDRESS[i]);
+    contract = new web3.eth.Contract(
+      i == CONTRACT_ADDRESS.length - 1 ? sameabi : abi,
+      CONTRACT_ADDRESS[i]
+    );
     if (undefined == contract) {
-      console.log("un==",CONTRACT_ADDRESS[i]);
+      console.log("un==", CONTRACT_ADDRESS[i]);
       return;
     }
     contracts.push(contract);
     contractobjs[CONTRACT_ADDRESS[i]] = contract;
   }
-  console.log(contracts,contractobjs)
+  console.log(contracts, contractobjs);
 }
 
 let handlers = {
@@ -81,4 +106,3 @@ let handlers = {
 // console.log(process.argv);
 const f = handlers[process.argv[2]] || handlers["default"];
 f();
-
