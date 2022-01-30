@@ -303,7 +303,7 @@ let handlers = {
         bres.push(b[0]);
       for (let c of contractAddresses) {
         let a = await scanApi.getTokenBalance(b, c);
-        sleep(200);
+        sleep(300);
         // apidebug("=a=a====in =", a);
         bres.push(a);
       }
