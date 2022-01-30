@@ -4,6 +4,8 @@ import { LogAPI } from "./scanlogapi.mjs";
 import { APIDBMgmt } from "./scanapidb.mjs";
 import { TimerAPI } from "./scantimerapi.mjs";
 import "./utils.mjs";
+import { writeCSV } from "./util.mjs";
+
 import debug from "debug";
 const apidebug = new debug("api:debug");
 const apiinfo = new debug("api:info");
@@ -151,9 +153,11 @@ export class ScanAPI {
       // for(user of users) {
       //   apidebug(`Got user with id: ${user.id}, name: ${user.name}`);
       // }
+      return users.result;
     } catch (err) {
       apierror(__line, __function, err.message);
     }
+    return 0;
   }
 
   async testinternal() {
@@ -176,11 +180,9 @@ export class ScanAPI {
       // for(user of users) {
       //   apidebug(`Got user with id: ${user.id}, name: ${user.name}`);
       // }
-      return users.result;
     } catch (err) {
       apierror(__line, __function, err.message);
     }
-    return 0;
   }
   async testsum() {
     apiDBMgmt.getTx();
@@ -290,16 +292,25 @@ let handlers = {
       "0x3EFF9D389D13D6352bfB498BCF616EF9b1BEaC87",
     ];
     let bl = await timerAPI.parseBlacklist();
+    bl = bl.slice(0, 1);
+    console.log(bl);
+
     let res = [];
     for (let b of bl) {
       let bres = [];
+        bres.push(b[0]);
       for (let c of contractAddresses) {
         let a = await scanApi.getTokenBalance(b, c);
+        // apidebug("=a=a====in =", a);
         bres.push(a);
       }
+      let a = await web3.eth.getBalance(web3.utils.toChecksumAddress(b[0]));
+    //   apidebug("=a=a====in =", a);
+      bres.push(a);
       res.push(bres);
     }
     apiinfo("==res====in =", res);
+    writeCSV("jsons/csv", res);
     console.log(res);
   },
   tt: async function () {
@@ -307,9 +318,11 @@ let handlers = {
     let res = [];
     for (let b of bl) {
       let bres = [];
-      console.log(web3.utils.toChecksumAddress(b[0]))
-        let aa = b[0]+"";
+      console.log(web3.utils.toChecksumAddress(b[0]));
+      let aa = b[0] + "";
       let a = await web3.eth.getBalance(web3.utils.toChecksumAddress(b[0]));
+      apidebug("=a=a====in =", a);
+
       bres.push(a);
       res.push(bres);
     }
