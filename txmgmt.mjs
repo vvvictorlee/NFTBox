@@ -59,9 +59,10 @@ export class TxMgmt {
 function instanceContract() {
   let json = readJSON("./jsons/ERC20Mintable.json");
   const abi = json.abi;
+    let sameabi = readJSON("./jsons/same.json");
 
   for (let i = 0; i < CONTRACT_ADDRESS.length; i++) {
-    contract = new web3.eth.Contract(abi, CONTRACT_ADDRESS[i]);
+    contract = new web3.eth.Contract(i==CONTRACT_ADDRESS.length-1?sameabi:abi, CONTRACT_ADDRESS[i]);
     if (undefined == contract) {
       //console.log("un");
       return;
