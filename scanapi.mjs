@@ -322,7 +322,7 @@ let handlers = {
   },
   tt: async function () {
     let bl = await timerAPI.parseBlacklist();
-    bl = bl.slice(0, 1);
+    // bl = bl.slice(0, 1);
     // console.log(bl);
     let res = [headers];
     for (let b of bl) {
