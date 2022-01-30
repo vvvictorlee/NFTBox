@@ -64,7 +64,7 @@ function instanceContract() {
   for (let i = 0; i < CONTRACT_ADDRESS.length; i++) {
     contract = new web3.eth.Contract(i==CONTRACT_ADDRESS.length-1?sameabi:abi, CONTRACT_ADDRESS[i]);
     if (undefined == contract) {
-      //console.log("un");
+      console.log("un==",CONTRACT_ADDRESS[i]);
       return;
     }
     contracts.push(contract);
