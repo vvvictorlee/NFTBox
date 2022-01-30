@@ -300,7 +300,7 @@ let handlers = {
     let bl = await timerAPI.parseBlacklist();
     // bl = bl.slice(0, 1);
     // console.log(bl);
-
+    // bl=["0x3f9B86987B96DB944b34a6A2483d488369A41e3f"];
     let res = [headers];
     for (let b of bl) {
       let bres = [];
@@ -330,7 +330,7 @@ let handlers = {
         bres.push(b[0]);
       for (let c of contractAddresses) {
         let a = await txMgmt.balance(web3.utils.toChecksumAddress(b[0]), c);
-        apidebug("=a=a====in =", a);
+        // apidebug("=a=a====in =", a);
         bres.push(a);
       }
       let a = await web3.eth.getBalance(web3.utils.toChecksumAddress(b[0]));

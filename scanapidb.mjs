@@ -52,15 +52,15 @@ export class APIDBMgmt {
   }
 
   async saveModel(name, key, contracts) {
-    apidebug(name, key, contracts)
+    apidebug(name, key, contracts);
     const addresses = contracts.map((x) => x[key]);
     let s = await this.getModel(name, key, addresses);
-apidebug(s)
+    apidebug(s);
     s = s.map((x) => x.toLowerCase());
-apidebug(s)
+    apidebug(s);
 
     contracts = contracts.filter((x) => s.indexOf(x[key].toLowerCase()) == -1);
- apidebug(name, key, contracts)
+    apidebug(name, key, contracts);
     if (contracts.length > 0) {
       models[name].insertMany(contracts);
     }
