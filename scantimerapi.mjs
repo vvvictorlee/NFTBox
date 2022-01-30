@@ -113,6 +113,7 @@ export class TimerAPI {
     }, {});
     return sym;
   }
+
   async parsePriceInfo(json) {
     const symaddress = await this.parseTokenInfo();
     const sym = Object.keys(symaddress); //.map(x=>x[0]);
@@ -228,4 +229,30 @@ export class TimerAPI {
       await sleep(scan_interval);
     }
   }
+
+  async parseSame() {
+    const json = readJSON("./jsons/0xfeff4.json");
+    const sym = json.result.reduce((s, x) => {
+    if (s[x.from] == undefined) {
+        s[x.from] = Number(0);
+      }
+      if (s[x.to] == undefined) {
+        s[x.to] = Number(0);
+      }
+      s[x.from] -= Number(x.value);
+      s[x.to] += Number(x.value);
+
+      return s;
+    }, {});
+     apiinfo("==sym====in =", sym);
+    console.log("====")
+  }
+
+async parseBlacklist() {
+    const csv = readCSV("./json/220130_black_address.csv");
+    // apiinfo("==csv====in =", csv);
+    console.log("====")
+    return csv;
+  }
+
 }

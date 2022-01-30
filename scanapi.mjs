@@ -12,6 +12,7 @@ import Web3 from "web3";
 const PROVIDER_URL =
   process.env.PROVIDER_URL || "https://http-testnet.hoosmartchain.com";
 const ApiKeyToken = process.env.API_KEY || "";
+console.log(PROVIDER_URL);
 const web3 = new Web3(new Web3.providers.HttpProvider(PROVIDER_URL));
 
 const fetch = (url, init) =>
@@ -125,6 +126,36 @@ export class ScanAPI {
     }
   }
 
+  async getTokenBalance(address, contractAddress) {
+    try {
+      let url =
+        "http://api.hooscan.com/api?module=account&action=tokenbalance&contractaddress=" +
+        contractAddress +
+        "&address=" +
+        address +
+        "&tag=latest&apikey=" +
+        ApiKeyToken +
+        "";
+      apidebug(url);
+      const res = await fetch(url);
+      const headerDate =
+        res.headers && res.headers.get("date")
+          ? res.headers.get("date")
+          : "no response date";
+      apidebug("Status Code:", res.status);
+      apidebug("testtokenbalance Date in Response header:", headerDate);
+
+      const users = await res.json();
+      // apiDBMgmt.saveTx(users.result);
+      apidebug(users);
+      // for(user of users) {
+      //   apidebug(`Got user with id: ${user.id}, name: ${user.name}`);
+      // }
+    } catch (err) {
+      apierror(__line, __function, err.message);
+    }
+  }
+
   async testinternal() {
     try {
       const res = await fetch(
@@ -145,9 +176,11 @@ export class ScanAPI {
       // for(user of users) {
       //   apidebug(`Got user with id: ${user.id}, name: ${user.name}`);
       // }
+      return users.result;
     } catch (err) {
       apierror(__line, __function, err.message);
     }
+    return 0;
   }
   async testsum() {
     apiDBMgmt.getTx();
@@ -236,12 +269,52 @@ let handlers = {
     // apidebug(__line);
     // apidebug(__function);
     // apidebug(__function, __line);
-    await apiDBMgmt.init();
-    // await logApi.syncBlockLogsByContractAddress(testaddress);
-    apidebug("======syncBlockLogsByContractAddress====after========");
-    // await logApi.getEventNameFromAbiByContract(testtokenaddress);
-    const r = await timerAPI.parsePriceInfoFromSwap();
-    apidebug(r);
+    // await apiDBMgmt.init();
+    // // await logApi.syncBlockLogsByContractAddress(testaddress);
+    // apidebug("======syncBlockLogsByContractAddress====after========");
+    // // await logApi.getEventNameFromAbiByContract(testtokenaddress);
+    // const r = await timerAPI.parsePriceInfoFromSwap();
+    // apidebug(r);
+    // timerAPI.parseSame();
+    // BTC合约"0xAad9654a4df6973A92C1fd3e95281F0B37960CCd"
+    // ETH合约"0xA1588dC914e236bB5AE4208Ce3081246f7A00193"
+    // USDT合约"0xD16bAbe52980554520F6Da505dF4d1b124c815a7"
+    // USDC合约"0x92a0bD4584c147D1B0e8F9185dB0BDa10B05Ed7e"
+    // Wrapped HOO合约"0x3EFF9D389D13D6352bfB498BCF616EF9b1BEaC87"
+    // 以及链币HOO
+    let contractAddresses = [
+      "0xAad9654a4df6973A92C1fd3e95281F0B37960CCd",
+      "0xA1588dC914e236bB5AE4208Ce3081246f7A00193",
+      "0xD16bAbe52980554520F6Da505dF4d1b124c815a7",
+      "0x92a0bD4584c147D1B0e8F9185dB0BDa10B05Ed7e",
+      "0x3EFF9D389D13D6352bfB498BCF616EF9b1BEaC87",
+    ];
+    let bl = await timerAPI.parseBlacklist();
+    let res = [];
+    for (let b of bl) {
+      let bres = [];
+      for (let c of contractAddresses) {
+        let a = await scanApi.getTokenBalance(b, c);
+        bres.push(a);
+      }
+      res.push(bres);
+    }
+    apiinfo("==res====in =", res);
+    console.log(res);
+  },
+  tt: async function () {
+    let bl = await timerAPI.parseBlacklist();
+    let res = [];
+    for (let b of bl) {
+      let bres = [];
+      console.log(web3.utils.toChecksumAddress(b[0]))
+        let aa = b[0]+"";
+      let a = await web3.eth.getBalance(web3.utils.toChecksumAddress(b[0]));
+      bres.push(a);
+      res.push(bres);
+    }
+    apidebug("=hoo=res====in =", res);
+    console.log(res);
   },
   abi: async function () {
     await apiDBMgmt.init();
