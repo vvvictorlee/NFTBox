@@ -233,7 +233,7 @@ export class TimerAPI {
   async parseSame() {
     const json = readJSON("./jsons/0xfeff4.json");
     const sym = json.result.reduce((s, x) => {
-    if (s[x.from] == undefined) {
+      if (s[x.from] == undefined) {
         s[x.from] = Number(0);
       }
       if (s[x.to] == undefined) {
@@ -244,15 +244,14 @@ export class TimerAPI {
 
       return s;
     }, {});
-     apiinfo("==sym====in =", sym);
-    console.log("====")
+    apiinfo("==sym====in =", sym);
+    console.log("====");
   }
 
-async parseBlacklist() {
-    const csv = readCSV("./json/220130_black_address.csv");
+  async parseBlacklist() {
+    const csv = readCSV("./jsons/220130_black_address.csv");
     // apiinfo("==csv====in =", csv);
-    console.log("====")
+    console.log("====");
     return csv;
   }
-
 }
