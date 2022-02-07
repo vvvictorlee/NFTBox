@@ -5,7 +5,6 @@ const dataMgmt = new DataMgmt();
 const path = require('path')
 const fs = require('fs');
 exports.sendimage = async (req, res) => {
-    console.log("sss");
     // const qrcodeName = Date.now() + '-' + Math.random().toString(36).slice(-6);
     const filePath = path.resolve(__dirname, "../images/" + req.params.name + ".png");
     // 给客户端返回一个文件流
