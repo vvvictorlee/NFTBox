@@ -32,7 +32,7 @@ var AWS = require('aws-sdk');
 var credentials = new AWS.SharedIniFileCredentials();
 AWS.config.credentials = credentials;
 // Set the region 
-AWS.config.update({region: 'us-west-1'});
+AWS.config.update({region: 'ap-northeast-1'});
 
 // Create sendEmail params 
 var params = {
@@ -62,9 +62,9 @@ var params = {
       Data: 'Test tmvl email'
      }
     },
-  Source: 'lisheng2007@hotmail.com', /* required */
+  Source: 'lisheg.ipad@me.com', /* required */
   ReplyToAddresses: [
-     'llisheg.ipad@me.com',
+     'lisheg.ipad@me.com',
     /* more items */
   ],
 };
