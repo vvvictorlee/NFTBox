@@ -2,7 +2,7 @@ var AWS = require('aws-sdk');
 var credentials = new AWS.SharedIniFileCredentials();
 AWS.config.credentials = credentials;
 // Set region
-AWS.config.update({region: 'ap-northeast-1'});
+AWS.config.update({region: 'cn-north-1'});
 
 // Create publish parameters
 var params = {
