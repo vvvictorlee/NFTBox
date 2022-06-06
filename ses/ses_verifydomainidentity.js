@@ -30,7 +30,7 @@
 // Load the AWS SDK for Node.js
 var AWS = require('aws-sdk');
 // Set region 
-AWS.config.update({region: 'REGION'});
+AWS.config.update({region: 'ap-northeast-1'});
 
 // Create the promise and SES service object
 var verifyDomainPromise = new AWS.SES({apiVersion: '2010-12-01'}).verifyDomainIdentity({Domain: "DOMAIN_NAME"}).promise();

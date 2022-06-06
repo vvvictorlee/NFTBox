@@ -30,7 +30,7 @@
     // Load the AWS SDK for Node.js.
 var AWS = require('aws-sdk');
 // Set the AWS Region.
-AWS.config.update({region: 'REGION'});
+AWS.config.update({region: 'ap-northeast-1'});
 
 // Create the promise and Amazon Simple Email Service (Amazon SES) service object.
 var templatePromise = new AWS.SES({apiVersion: '2010-12-01'}).getTemplate({TemplateName: 'TEMPLATE_NAME'}).promise();

@@ -13,7 +13,7 @@ ses_listreceiptrulesets.js demonstrates how to list Amazon Simple Email Service 
 // Load the AWS SDK for Node.js.
 var AWS = require('aws-sdk');
 // Set the AWS Region.
-AWS.config.update({ region: 'REGION' });
+AWS.config.update({ region: 'ap-northeast-1' });
 
 // Create listReceiptRuleSets parameters.
 var params = {

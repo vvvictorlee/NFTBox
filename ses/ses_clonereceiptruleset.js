@@ -12,7 +12,7 @@ ses_clonereceiptruleset.js demonstrates how to clone an Amazon Simple Email Serv
 // Load the AWS SDK for Node.js.
 var AWS = require('aws-sdk');
 // Set the AWS Region.
-AWS.config.update({ region: 'REGION' });
+AWS.config.update({ region: 'ap-northeast-1' });
 
 // Create cloneReceiptRuleSet parameters.
 var params = {
