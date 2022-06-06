@@ -29,12 +29,12 @@
 // Load the AWS SDK for Node.js
 var AWS = require('aws-sdk');
 // Set region
-AWS.config.update({region: 'REGION'});
+AWS.config.update({region: 'ap-northeast-1'});
 
 // Create publish parameters
 var params = {
   Message: 'MESSAGE_TEXT', /* required */
-  TopicArn: 'TOPIC_ARN'
+  TopicArn: 'hsc-multichain-liquidity-tvl-alert'
 };
 
 // Create promise and SNS service object

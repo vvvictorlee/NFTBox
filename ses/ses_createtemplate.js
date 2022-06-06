@@ -10,38 +10,47 @@
  * This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
-*/
-
-//snippet-sourcedescription:[sns_checkphoneoptout.js demonstrates how to determine whether a phone number has opted out of receiving Amazon SMS messages.]
-//snippet-service:[sns]
+ *
+ */
+ 
+//snippet-sourcedescription:[ses_createtemplate.js demonstrates how to create an Amazon SES email template.]
 //snippet-keyword:[JavaScript]
 //snippet-sourcesyntax:[javascript]
 //snippet-keyword:[Code Sample]
-//snippet-keyword:[Amazon Simple Notification Service]
+//snippet-keyword:[Amazon Simple Email Service]
+//snippet-service:[ses]
 //snippet-sourcetype:[full-example]
 //snippet-sourcedate:[2018-06-02]
 //snippet-sourceauthor:[AWS-JSDG]
 
 // ABOUT THIS NODE.JS SAMPLE: This sample is part of the SDK for JavaScript Developer Guide topic at
-// https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide//sns-examples-sending-sms.html
+// https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/ses-examples-creating-template.html
 
-// snippet-start:[sns.JavaScript.SMS.checkIfPhoneNumberIsOptedOut]
+// snippet-start:[ses.JavaScript.templates.createTemplate]
 // Load the AWS SDK for Node.js
 var AWS = require('aws-sdk');
-var credentials = new AWS.SharedIniFileCredentials();
-AWS.config.credentials = credentials;
-// Set region
-AWS.config.update({region: 'ap-northeast-1'});
+// Set the region 
+AWS.config.update({region: 'REGION'});
 
-// Create promise and SNS service object
-var phonenumPromise = new AWS.SNS({apiVersion: '2010-03-31'}).checkIfPhoneNumberIsOptedOut({}).promise();
+// Create createTemplate params
+var params = {
+  Template: { 
+    TemplateName: 'TEMPLATE_NAME', /* required */
+    HtmlPart: 'HTML_CONTENT',
+    SubjectPart: 'SUBJECT_LINE',
+    TextPart: 'TEXT_CONTENT'
+  }
+};
+
+// Create the promise and SES service object
+var templatePromise = new AWS.SES({apiVersion: '2010-12-01'}).createTemplate(params).promise();
 
 // Handle promise's fulfilled/rejected states
-phonenumPromise.then(
+templatePromise.then(
   function(data) {
-    console.log("Phone Opt Out is " + data.isOptedOut);
+    console.log(data);
   }).catch(
     function(err) {
     console.error(err, err.stack);
   });
-// snippet-end:[sns.JavaScript.SMS.checkIfPhoneNumberIsOptedOut]
+// snippet-end:[ses.JavaScript.templates.createTemplate]

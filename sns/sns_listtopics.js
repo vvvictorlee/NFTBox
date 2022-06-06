@@ -28,8 +28,10 @@
 // snippet-start:[sns.JavaScript.topics.listTopics]
 // Load the AWS SDK for Node.js
 var AWS = require('aws-sdk');
+var credentials = new AWS.SharedIniFileCredentials();
+AWS.config.credentials = credentials;
 // Set region
-AWS.config.update({region: 'REGION'});
+AWS.config.update({region: 'ap-northeast-1'});
 
 // Create promise and SNS service object
 var listTopicsPromise = new AWS.SNS({apiVersion: '2010-03-31'}).listTopics({}).promise();

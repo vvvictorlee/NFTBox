@@ -28,11 +28,13 @@
 // snippet-start:[sns.JavaScript.topics.createTopic]
 // Load the AWS SDK for Node.js
 var AWS = require('aws-sdk');
+var credentials = new AWS.SharedIniFileCredentials();
+AWS.config.credentials = credentials;
 // Set region
-AWS.config.update({region: 'REGION'});
+AWS.config.update({region: 'ap-northeast-1'});
 
 // Create promise and SNS service object
-var createTopicPromise = new AWS.SNS({apiVersion: '2010-03-31'}).createTopic({Name: "TOPIC_NAME"}).promise();
+var createTopicPromise = new AWS.SNS({apiVersion: '2010-03-31'}).createTopic({Name: "multichain-liquidity-tvl-alert"}).promise();
 
 // Handle promise's fulfilled/rejected states
 createTopicPromise.then(
