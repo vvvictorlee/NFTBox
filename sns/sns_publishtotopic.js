@@ -33,8 +33,8 @@ AWS.config.update({region: 'ap-northeast-1'});
 
 // Create publish parameters
 var params = {
-  Message: 'MESSAGE_TEXT', /* required */
-  TopicArn: 'hsc-multichain-liquidity-tvl-alert'
+  Message: 'hsc multichain tvl-alert', /* required */
+  TopicArn: 'arn:aws:sns:ap-northeast-1:001552894677:hsc_monitor'
 };
 
 // Create promise and SNS service object
