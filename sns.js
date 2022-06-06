@@ -2,12 +2,12 @@ var AWS = require('aws-sdk');
 var credentials = new AWS.SharedIniFileCredentials();
 AWS.config.credentials = credentials;
 // Set region
-AWS.config.update({region: 'REGION'});
+AWS.config.update({region: 'ap-northeast-1'});
 
 // Create publish parameters
 var params = {
   Message: 'TEXT_MESSAGE', /* required */
-  PhoneNumber: 'E.164_PHONE_NUMBER',
+  PhoneNumber: '+8613641187977',
 };
 
 // Create promise and SNS service object
