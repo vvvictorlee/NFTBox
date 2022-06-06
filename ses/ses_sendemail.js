@@ -38,11 +38,11 @@ AWS.config.update({region: 'ap-northeast-1'});
 var params = {
   Destination: { /* required */
     CcAddresses: [
-      'lisheg.ipad@me.com',
+      'vlbos2018@gmail.com',
       /* more items */
     ],
     ToAddresses: [
-      'lishegcpp@gmail.com',
+      'vlbos2018@gmail.com',
       /* more items */
     ]
   },
@@ -62,9 +62,9 @@ var params = {
       Data: 'Test tmvl email'
      }
     },
-  Source: 'lisheg.ipad@me.com', /* required */
+  Source: 'lishengcpp@gmail.com', /* required */
   ReplyToAddresses: [
-     'lisheg.ipad@me.com',
+     'lishengcpp@gmail.com',
     /* more items */
   ],
 };
