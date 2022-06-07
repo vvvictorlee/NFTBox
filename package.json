@@ -2,9 +2,10 @@
   "name": "tvl-alert",
   "version": "0.1.0",
   "private": false,
+"type":"commonjs",
   "scripts": {
-    "scantx:test": "DEBUG=app node  -r dotenv/config preactionmgmt.js scantx dotenv_config_path=.env.test",
-    "scantx": "DEBUG=app node  -r dotenv/config preactionmgmt.js scantx dotenv_config_path=.env"
+    "tvl:test": "DEBUG=app node  -r dotenv/config alert.js scantx dotenv_config_path=.env.test",
+    "tvl": "DEBUG=app node  -r dotenv/config alert.js scantx dotenv_config_path=.env"
   },
   "dependencies": {
     "aws-sdk": "^2.1148.0",

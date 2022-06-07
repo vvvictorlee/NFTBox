@@ -32,7 +32,7 @@ var AWS = require('aws-sdk');
 AWS.config.update({region: 'ap-northeast-1'});
 
 const params = {
-  TopicArn : 'TOPIC_ARN'
+  TopicArn : 'arn:aws:sns:ap-northeast-1:001552894677:hsc_monitor'
 }
 
 // Create promise and SNS service object

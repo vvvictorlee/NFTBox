@@ -11,8 +11,6 @@ const putJSON = (fileName, json) => {
     fs.writeFileSync(path.join(__dirname, fileName), JSON.stringify(json));
 }
 
-
-
 const readCSV = (fileName) => {
     const data = fs.readFileSync(path.join(__dirname, fileName));
     const table = ToTable(data);
